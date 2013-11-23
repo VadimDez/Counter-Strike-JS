@@ -2,6 +2,8 @@
 	<head>
 	<link rel="stylesheet" type="text/css" href="styles.css">
 	
+	<script type="text/javascript" src="config.js"></script>
+	<script type="text/javascript" src="util/PointerLock.js"></script>
 	<script type="text/javascript" src="lib/gl-matrix.js"></script>
 	<script type="text/javascript" src="lib/webgl-utils.js"></script>
 	<script type="text/javascript" src="MapParser.js"></script>
@@ -53,9 +55,8 @@
 		//Normal matrix not yet needed
 		//var uNMatrix = mat3.create();
 		//Hardcoded cs_assault position. TODO: Read this from the entity set
-		cs.player = new cs.Player(351, 160, 48, 5);
+		cs.player = new cs.Player(-320, 352, 48, 5);
 		//http://forums.steampowered.com/forums/showthread.php?t=1613876
-		cs.FIELD_OF_VIEW = 59;
 	
 		//Boilerplate code begin
 		function initGL(canvas) {
@@ -147,8 +148,8 @@
 			gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
 			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-			mat4.perspective(pMatrix, cs.FIELD_OF_VIEW*Math.PI/180,
-				gl.viewportWidth / gl.viewportHeight, 0.1, 10000.0);
+			mat4.perspective(pMatrix, cs.config.FIELD_OF_VIEW*Math.PI/180,
+				gl.viewportWidth / gl.viewportHeight, cs.config.NEAR_CLIPPING, cs.config.FAR_CLIPPING);
 
 			//Rotate the player
 			mat4.identity(mvMatrix);
@@ -156,7 +157,7 @@
 			mat4.rotateY(mvMatrix, mvMatrix, player.yAngle);
 			
 			//Move the player by moving the map in the reverse direction
-			mat4.translate(mvMatrix, mvMatrix, [player.y, -player.z - 10, player.x]);
+			mat4.translate(mvMatrix, mvMatrix, [player.y, -player.z - cs.config.PLAYER_HEIGHT, player.x]);
 			
 			//Rotate the map so it matches the first person shooter style
 			mat4.rotateX(mvMatrix, mvMatrix, -Math.PI/2);
@@ -178,7 +179,7 @@
 		
 		//Download the bsp file and call callback on the result
 		function getMapData(callback) {
-			var path = "data/maps/cs_assault.bsp";
+			var path = cs.config.MAP_PATH;
 			var req = new XMLHttpRequest();
 			req.open("GET", path, true);
 			req.responseType = "arraybuffer";
@@ -216,19 +217,19 @@
 				
 				//Listen for clicks on the canvas
 				canvas.addEventListener("click", function() {
-					canvas.webkitRequestPointerLock();
-					
-					//Listen for pointer locking
-					document.addEventListener("webkitpointerlockchange", function(e) {
-						//Did the pointer just go from unlocked to locked?
-						if(!!document.webkitPointerLockElement) {
-							//Yep! Add mousemove listener
-							document.addEventListener("mousemove", rotatePlayer, false);
-						}
-						else { //Nope. Remove mouse move listener
-							document.removeEventListener("mousemove", rotatePlayer);
-						}
-					}, false);
+					PointerLock.requestPointerLock(canvas);
+				}, false);
+				
+				//Listen for pointer locking
+				PointerLock.addPointerLockExchangeEventListener(document, function(e) {
+					//Did the pointer just go from unlocked to locked?
+					if(!!PointerLock.pointerLockElement()) {
+						//Yep! Add mousemove listener
+						PointerLock.addMouseMoveEventListener(document, rotatePlayer, false);
+					}
+					else { //Nope. Remove mouse move listener
+						PointerLock.removeMouseMoveEventListener(document, rotatePlayer);
+					}
 				}, false);
 				
 				mainLoop();
@@ -237,7 +238,7 @@
 		
 		//Rotate the player when the mouse is moved
 		function rotatePlayer(e) {
-			cs.player.rotate(e.webkitMovementX, e.webkitMovementY);
+			cs.player.rotate(e.movementX, e.movementY);
 		}
 	</script>
 	</head>

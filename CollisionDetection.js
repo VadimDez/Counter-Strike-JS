@@ -13,7 +13,7 @@ cs.CollisionDetection = (function() {
 			vStart[2] === vEnd[2];
 	}
 
-	var trace = function(vStart, vEnd) {
+	var trace = function(vStart, vEnd, shouldSlide) {
 		var mapData = cs.map.mapData;
 		//No need to do anything if no movement is required
 		if(samePosition(vStart, vEnd)) {
@@ -25,6 +25,7 @@ cs.CollisionDetection = (function() {
 			allSolid: true,
 			ratio: 1.0 //How far we got before colliding with anything
 		};
+		//models[0] is the geometry of the entire map
 		recursiveHullCheck(mapData.models[0].iHeadNodes[0], 0, 1,
 			vStart, vEnd, traceObj);
 		
@@ -45,6 +46,10 @@ cs.CollisionDetection = (function() {
 		var vMove = [];
 		vec3.sub(vMove, vEnd, vNewPosition);
 		
+		if(!shouldSlide) {
+			return vNewPosition;
+		}
+		
 		//We now calculate how much the player should "slide"
 		//i.e when hitting a wall we don't completely stop, but rather slide
 		//along the wall
@@ -56,7 +61,7 @@ cs.CollisionDetection = (function() {
 		];
 		
 		//Make sure we don't collide with anything else from the new positions
-		return trace(vNewPosition, vEndPosition);
+		return trace(vNewPosition, vEndPosition, true);
 	};
 	
 	var recursiveHullCheck = function(iNode, p1f, p2f, p1, p2, traceObj) {
@@ -179,18 +184,17 @@ cs.CollisionDetection = (function() {
 	//Check whether the point p is a solid or not
 	var hullPointContentIsSolid = function(iNode, p) {
 		var mapData = cs.map.mapData;
-		var d, node, plane, vNormal;
 		
 		while(iNode >= 0) {
-			node = mapData.clipNodes[iNode];
-			plane = mapData.planes.planes[node.iPlane];
-			vNormal = [
+			var node = mapData.clipNodes[iNode];
+			var plane = mapData.planes.planes[node.iPlane];
+			var vNormal = [
 				mapData.planes.normals[3*node.iPlane],
 				mapData.planes.normals[3*node.iPlane + 1],
 				mapData.planes.normals[3*node.iPlane + 2]
 			]; 
 			
-			d = vec3.dot(vNormal, p) - plane.distance;
+			var d = vec3.dot(vNormal, p) - plane.distance;
 			
 			if(d < 0) {
 				iNode = node.iChildren[1];
@@ -204,8 +208,15 @@ cs.CollisionDetection = (function() {
 	};
 	
 	return {
-		findPosition: function(vStart, vEnd) {	
-			return trace(vStart, vEnd);
+		move: function(vStart, vEnd) {	
+			return trace(vStart, vEnd, true);
+		},
+		
+		isOnGround: function(pos) {
+			var x = pos[0];
+			var y = pos[1];
+			var z = pos[2];
+			return trace(pos, [x, y, z-1], false)[2] >= z;
 		}
 	};
 })();

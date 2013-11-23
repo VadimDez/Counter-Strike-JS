@@ -1,4 +1,3 @@
-window.cs = window.cs || { };
 /**
 	This file defines the representation of a Player
 	A player is responsible for its own movement by
@@ -6,7 +5,7 @@ window.cs = window.cs || { };
 	
 	TODO: Place a render function here for rendering a player
 **/
-
+window.cs = window.cs || { };
 
 cs.Player = function(x, y, z, speed) {
 	this.x = x;
@@ -22,19 +21,28 @@ cs.Player = function(x, y, z, speed) {
 		return [this.x, this.y, this.z];
 	}
 	
-	this.move = function() {		
+	this.move = function() {
+		var onGround = cs.CollisionDetection.isOnGround(this.position());
+	
+		//TODO: If not on the ground the formulas for newX and newY should be changed
 		var normalDir = [0, 0];
 		vec2.normalize(normalDir, dir);
 		//Move forward
 		var newX = this.x + speed*normalDir[0]*Math.cos(this.yAngle);
 		var newY = this.y - speed*normalDir[0]*Math.sin(this.yAngle);
-		var newZ = this.z; //TODO: Gravity
-			
+		var newZ = this.z;
+		
 		//Strafe
 		newY -= speed*normalDir[1]*Math.cos(Math.PI - this.yAngle);
 		newX += speed*normalDir[1]*Math.sin(Math.PI - this.yAngle);
-			
-		var newPosition = cs.CollisionDetection.findPosition([this.x, this.y, this.z], [newX, newY, newZ]);
+		
+		//Apply gravity if we're not on the ground. TODO: Accelerate instead of subtracting a constant
+		if(!onGround) {
+			newZ -= cs.config.GRAVITY;
+		}
+		
+		newPosition = cs.CollisionDetection.move([this.x, this.y, this.z + cs.config.MAX_Z_CHANGE], [newX, newY, newZ], true);
+
 		this.x = newPosition[0];
 		this.y = newPosition[1];
 		this.z = newPosition[2];
@@ -45,7 +53,7 @@ cs.Player = function(x, y, z, speed) {
 		var PI_TWO = Math.PI*2.0;
 		
 		//Hardcoded sensitivity. TODO: Read off some future "Settings" class
-		this.yAngle += xDelta*0.0025;
+		this.yAngle += xDelta * cs.config.MOUSE_SENSITIVITY;
 		//Make sure we're in the interval [0, 2*pi]
 		while (this.yAngle < 0) {
 			this.yAngle += PI_TWO;
@@ -54,7 +62,7 @@ cs.Player = function(x, y, z, speed) {
 			this.yAngle -= PI_TWO;
 		}
 								
-		this.xAngle += yDelta*0.0025;
+		this.xAngle += yDelta * cs.config.MOUSE_SENSITIVITY;
 		//Make sure we're in the interval [-pi/2, pi/2]
 		if(this.xAngle < -PI_HALF) {
 			this.xAngle = -PI_HALF;
@@ -64,7 +72,6 @@ cs.Player = function(x, y, z, speed) {
 		}
 	}
 	
-	//VERY UGLY! But it works!
 	//Handle w and s keys
 	KeyboardJS.on("w,s", function(event, keys, combo){
 		//Is w down?

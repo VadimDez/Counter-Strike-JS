@@ -106,7 +106,7 @@ cs.MapRender = function(shaderProgram, gl, map) {
 		//No need to render it if it has no light
 		if(face.nStyles[0] == 0xFF) return;
 		
-		//Render face needs to convert from triangle fans to triangles to allow
+		//We need to convert from triangle fans to triangles to allow
 		//for a single draw call
 		//Thus a sequence of indices describing a triangle fan:
 		//0 1 2 3 4 5 6
@@ -171,7 +171,7 @@ cs.MapRender = function(shaderProgram, gl, map) {
 		case 2:
 			location = pos[2] - plane.distance;
 		default:
-			//Not perpendicular :( Calculate the location the hard way using:
+			//Not perpendicular. Calculate the location the hard way using:
 			//location = dot(normal, pos) - distance
 			//(from http://en.wikipedia.org/wiki/Hesse_normal_form)
 			location = (map.planes.normals[3*plane_index] * pos[0] +
