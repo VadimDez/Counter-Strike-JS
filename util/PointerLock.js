@@ -7,11 +7,11 @@ var PointerLock = (function() {
 	
 	var mouseMoveCallbackWrapper = function(callback) {
 		return function(e) {
-			e.movementX = e.movementX	||
+			e.movementX = e.movementX		||
 						e.mozMovementX	||
 						e.webkitMovementX;
 						
-			e.movementY = e.movementY	||
+			e.movementY = e.movementY		||
 						e.mozMovementY	||
 						e.webkitMovementY;
 			return callback(e);
