@@ -2,12 +2,10 @@
 	This file defines the representation of a Player
 	A player is responsible for its own movement by
 	providing keyboard listeners
-	
-	TODO: Place a render function here for rendering a player
 **/
 window.cs = window.cs || { };
 
-cs.Player = function(x, y, z, speed) {
+cs.Player = function(gl, x, y, z, data, speed) {
 	this.x = x;
 	this.y = y;
 	this.z = z;
@@ -16,6 +14,8 @@ cs.Player = function(x, y, z, speed) {
 	//X and Y direction. Not necessarily normalized
 	var dir = [0, 0];
 	this.speed = speed;
+	var playerData = cs.PlayerParser.parse(gl, data);
+	var playerRender = new cs.PlayerRender(gl, playerData);
 	
 	this.position = function() {
 		return [this.x, this.y, this.z];
@@ -110,6 +110,10 @@ cs.Player = function(x, y, z, speed) {
 			}
 		}
 	});
+	
+	this.render = function() {
+		return playerRender.render();
+	}
 	
 	//Handle a and d keys
 	//Symmetric to the handling of w and s

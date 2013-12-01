@@ -5,9 +5,9 @@
 
 window.cs = window.cs || { };
 
-cs.Map = function(shaderProgram, gl, data) {
+cs.Map = function(gl, data) {
 	var mapData = cs.MapParser.parse(data);
-	var mapRender = new cs.MapRender(shaderProgram, gl, mapData);
+	var mapRender = new cs.MapRender(gl, mapData);
 	
 	this.mapData = mapData;
 	/**

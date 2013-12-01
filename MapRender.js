@@ -7,26 +7,74 @@
 
 window.cs = window.cs || { };
 
-cs.MapRender = function(shaderProgram, gl, map) {
+cs.MapRender = function(gl, map) {
+	//Shaders
+	var fragmentShader =
+	"	precision mediump float;" +
+	"	varying vec3 forFragColor;" +
+
+	"	void main(void) {" +
+	"		gl_FragColor = vec4(forFragColor, 1.0);" +
+	"	}";
+		
+	var vertexShader =
+	"	attribute vec3 aVertexPosition;" +
+	"	attribute vec3 aVertexColor;" +
+	
+	"	varying vec3 forFragColor;" +
+			
+	"	uniform mat4 uMVMatrix;" +
+	"	uniform mat4 uPMatrix;" +
+
+	"	void main(void) {" +
+	"		gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);" +
+	"		forFragColor = aVertexColor;" +
+	"	}";
+
 	this.map = map;
 	this.gl = gl;
-	this.shaderProgram = shaderProgram;
+	
+	function getShader(gl, shaderCode, shaderType) {
+		var shader = gl.createShader(shaderType);
+
+		gl.shaderSource(shader, shaderCode);
+		gl.compileShader(shader);
+
+		if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+			alert(gl.getShaderInfoLog(shader));
+			return null;
+		}
+
+		return shader;
+	}
+	
+	var shaderProgram = (function() {
+		var sFragmentShader = getShader(gl, fragmentShader, gl.FRAGMENT_SHADER);
+		var sVertexShader = getShader(gl, vertexShader, gl.VERTEX_SHADER);
+		
+		var program = gl.createProgram();
+		gl.attachShader(program, sVertexShader);
+		gl.attachShader(program, sFragmentShader);
+		gl.linkProgram(program);
+		
+		if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+			alert("Could not initialise shaders");
+		}
+		
+		gl.useProgram(program);
+		program.vertexPositionAttribute = gl.getAttribLocation(program, "aVertexPosition");
+		program.vertexColorAttribute = gl.getAttribLocation(program, "aVertexColor");
+
+		program.pMatrixUniform = gl.getUniformLocation(program, "uPMatrix");
+		program.mvMatrixUniform = gl.getUniformLocation(program, "uMVMatrix");
+		
+		return program;
+	})();
 	
 	//Create buffers
 	var indexBuffer = gl.createBuffer();
 	var vertexBuffer = gl.createBuffer();
 	var colorBuffer = gl.createBuffer();
-	
-	//Bind all of our data to the buffers
-	gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, map.vertices, gl.STATIC_DRAW);
-	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 3,
-		gl.FLOAT, false, 0, 0);
-		
-	gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, map.lighting, gl.STATIC_DRAW);
-	gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, 3,
-		gl.FLOAT, false, 0, 0);
 	
 	//Array of already drawn faces
 	var renderedFaces = [];
@@ -192,6 +240,27 @@ cs.MapRender = function(shaderProgram, gl, map) {
 	};
 	
 	this.render = function(pos) {
+		gl.useProgram(shaderProgram);
+		
+		gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+		gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
+		
+		//Rotate the map
+		mat4.rotateX(cs.mvMatrix, cs.mvMatrix, -Math.PI/2);
+		mat4.rotateZ(cs.mvMatrix, cs.mvMatrix, Math.PI/2);
+		gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, cs.pMatrix);
+		gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, cs.mvMatrix);
+			
+		gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, map.vertices, gl.STATIC_DRAW);
+		gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 3,
+			gl.FLOAT, false, 0, 0);
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, map.lighting, gl.STATIC_DRAW);
+		gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, 3,
+			gl.FLOAT, false, 0, 0);
+			
 		//Clear the array that tells us which faces we've already drawn
 		renderedFaces.length = 0;
 		
@@ -208,5 +277,8 @@ cs.MapRender = function(shaderProgram, gl, map) {
 		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, buffer, gl.STATIC_DRAW);
 		//Finally draw the map!
 		gl.drawElements(gl.TRIANGLES, buffer.length, gl.UNSIGNED_SHORT, 0);
+		
+		gl.disableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+		gl.disableVertexAttribArray(shaderProgram.vertexColorAttribute);
 	};
 };
