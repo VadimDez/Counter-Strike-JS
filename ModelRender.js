@@ -43,10 +43,9 @@ cs.ModelRender = function(gl, player) {
 		STUDIO_RLOOP:	0x8000
 	};
 	
-	this.sequenceIndex = 1;
+	this.sequenceIndex = 0;
 	
 	var frame = 0;
-	
 	var vertexBuffer = gl.createBuffer();
 	
 	var fragmentShader = 

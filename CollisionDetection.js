@@ -28,9 +28,9 @@ cs.CollisionDetection = (function() {
 		//models[0] is the geometry of the entire map
 		recursiveHullCheck(mapData.models[0].iHeadNodes[0], 0, 1,
 			vStart, vEnd, traceObj);
-		
+
 		//If ratio is still 1 we never collided with anything
-		if(traceObj.ratio == 1.0) {
+		if(traceObj.ratio === 1.0) {
 			return vEnd;
 		}
 		//Collision found
@@ -216,7 +216,8 @@ cs.CollisionDetection = (function() {
 			var x = pos[0];
 			var y = pos[1];
 			var z = pos[2];
-			return trace(pos, [x, y, z-1], false)[2] >= z;
+			var t = trace(pos, [x, y, z-1], false);
+			return Math.abs(t[2] - z) < 0.000001;
 		}
 	};
 })();
