@@ -424,7 +424,6 @@ cs.ModelRender = function(gl, player) {
 			transforms[n] = vectorTransform([vertices[i], vertices[i+1], vertices[i+2]], transformations[model.transformIndices[n]]);
 		}
 		
-		var k = 0;
 		for(var i = 0; i < model.numMesh; ++i) {
 			var mesh = model.mesh[i];
 			var texture = player.textures[DataReader.readSignedShort(player.data, player.header.skinIndex + 2*mesh.skinRef)];
@@ -460,10 +459,6 @@ cs.ModelRender = function(gl, player) {
 					
 					//Add vertex
 					var vertex = transforms[vertIndex];
-					++k;
-					if(k === 130) {
-						var g = 0;
-					}
 					
 					buffer.push(vertex[0]);
 					buffer.push(vertex[1]);
