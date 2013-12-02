@@ -6,7 +6,7 @@ window.cs = window.cs || { };
 
 cs.config = {
 	MAP_PATH: "data/maps/cs_assault.bsp",
-	PLAYER_PATH: "data/models/gign.mdl",
+	PLAYER_PATH: "data/models/equipment/v_ak47.mdl",
 	NEAR_CLIPPING: 0.1,
 	FAR_CLIPPING: 10000.0,
 	FIELD_OF_VIEW: 59.0, //In degrees

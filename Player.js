@@ -5,17 +5,17 @@
 **/
 window.cs = window.cs || { };
 
-cs.Player = function(gl, x, y, z, data, speed) {
+cs.Player = function(gl, x, y, z, data) {
 	this.x = x;
 	this.y = y;
 	this.z = z;
 	this.yAngle = 0;
 	this.xAngle = 0;
+	this.speed = 5;
 	//X and Y direction. Not necessarily normalized
 	var dir = [0, 0];
-	this.speed = speed;
 	var playerData = cs.PlayerParser.parse(gl, data);
-	var playerRender = new cs.PlayerRender(gl, playerData);
+	var playerRender = new cs.ModelRender(gl, playerData);
 	
 	this.position = function() {
 		return [this.x, this.y, this.z];
@@ -28,13 +28,13 @@ cs.Player = function(gl, x, y, z, data, speed) {
 		var normalDir = [0, 0];
 		vec2.normalize(normalDir, dir);
 		//Move forward
-		var newX = this.x + speed*normalDir[0]*Math.cos(this.yAngle);
-		var newY = this.y - speed*normalDir[0]*Math.sin(this.yAngle);
+		var newX = this.x + this.speed*normalDir[0]*Math.cos(this.yAngle);
+		var newY = this.y - this.speed*normalDir[0]*Math.sin(this.yAngle);
 		var newZ = this.z;
 		
 		//Strafe
-		newY -= speed*normalDir[1]*Math.cos(Math.PI - this.yAngle);
-		newX += speed*normalDir[1]*Math.sin(Math.PI - this.yAngle);
+		newY -= this.speed*normalDir[1]*Math.cos(Math.PI - this.yAngle);
+		newX += this.speed*normalDir[1]*Math.sin(Math.PI - this.yAngle);
 		
 		//Apply gravity if we're not on the ground. TODO: Accelerate instead of subtracting a constant
 		if(!onGround) {
@@ -52,7 +52,6 @@ cs.Player = function(gl, x, y, z, data, speed) {
 		var PI_HALF = Math.PI/2.0;
 		var PI_TWO = Math.PI*2.0;
 		
-		//Hardcoded sensitivity. TODO: Read off some future "Settings" class
 		this.yAngle += xDelta * cs.config.MOUSE_SENSITIVITY;
 		//Make sure we're in the interval [0, 2*pi]
 		while (this.yAngle < 0) {

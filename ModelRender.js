@@ -2,8 +2,7 @@
 	This file contains all the code needed in order to render a textured
 	.mdl version 10
 	
-	TODO: Fix mvMatrix so it looks CS-ish
-	Provide easy-to-use public functions for choosing the animations
+	TODO: Provide easy-to-use public functions for choosing the animations
 **/
 
 /**
@@ -30,7 +29,7 @@ quat.fromAngles = function(angles) {
 	return [x, y, z, w];
 };
 
-cs.PlayerRender = function(gl, player) {
+cs.ModelRender = function(gl, player) {
 	var constants = {
 		valid:			0,
 		total:			1,
@@ -44,12 +43,9 @@ cs.PlayerRender = function(gl, player) {
 		STUDIO_RLOOP:	0x8000
 	};
 	
-	this.player = player;
-	this.gl = gl;
+	this.sequenceIndex = 1;
 	
 	var frame = 0;
-	var controllers = [0, 0, 0, 0];
-	var mouth = 0;
 	
 	var vertexBuffer = gl.createBuffer();
 	
@@ -125,36 +121,26 @@ cs.PlayerRender = function(gl, player) {
 			var value;
 			if(i <= 3) {
 				if(boneController.type & constants.RLOOP) {
-					//TODO: Woah magic constant ftw
-					value = controllers[i] * 1.40625 + boneController.start;
+					value = boneController.start;
 				}
-				else {
-					value = controllers[i] / 255.0;
-					if (value < 0)
-						value = 0;
-					if (value > 1.0)
-						value = 1.0;
-						
-					value = (1.0 - value) * boneController.start + value * boneController.end;
+				else {						
+					value = boneController.start + value * boneController.end;
 				}
 			}
 			else {
-				value = mouth / 64.0;
-				if (value > 1.0)
-					value = 1.0;
-				value = (1.0 - value) * boneController.start + value * boneController.end;
+				value = boneController.start + value * boneController.end;
 			}
 			//Chrome refuses to optimize the function due to non constant switch labels
 			switch(boneController.type & constants.STUDIO_TYPES)
 			{
-			case 0x0008: //STUDIO_XR
-			case 0x0010: //STUDIO_YR
-			case 0x0020: //STUDIO_ZR
+			case constants.STUDIO_XR:
+			case constants.STUDIO_YR:
+			case constants.STUDIO_ZR:
 				adj[j] = value * (Math.PI / 180.0);
 				break;
-			case 0x0001: //STUDIO_X
-			case 0x0002: //STUDIO_Y
-			case 0x0004: //STUDIO_Z
+			case constants.STUDIO_X:
+			case constants.STUDIO_Y:
+			case constants.STUDIO_Z:
 				adj[j] = value;
 				break;
 			}
@@ -438,6 +424,7 @@ cs.PlayerRender = function(gl, player) {
 			transforms[n] = vectorTransform([vertices[i], vertices[i+1], vertices[i+2]], transformations[model.transformIndices[n]]);
 		}
 		
+		var k = 0;
 		for(var i = 0; i < model.numMesh; ++i) {
 			var mesh = model.mesh[i];
 			var texture = player.textures[DataReader.readSignedShort(player.data, player.header.skinIndex + 2*mesh.skinRef)];
@@ -445,17 +432,17 @@ cs.PlayerRender = function(gl, player) {
 			var s = 1.0/texture.width;
 			var t = 1.0/texture.height;
 			
-			var index = mesh.triIndex + i;
+			var index = mesh.triIndex;
 			
 			gl.bindTexture(gl.TEXTURE_2D, texture.id);
 			gl.uniform1i(shaderProgram.samplerUniform, 0);
 			
 			while(true) {
 				var j = DataReader.readSignedShort(player.data, index);
-				index += 2;
 				if(j === 0) {
 					break;
 				}
+				index += 2;
 				
 				var fanMode = false;
 				if(j < 0) {
@@ -473,6 +460,11 @@ cs.PlayerRender = function(gl, player) {
 					
 					//Add vertex
 					var vertex = transforms[vertIndex];
+					++k;
+					if(k === 130) {
+						var g = 0;
+					}
+					
 					buffer.push(vertex[0]);
 					buffer.push(vertex[1]);
 					buffer.push(vertex[2]);
@@ -506,14 +498,13 @@ cs.PlayerRender = function(gl, player) {
 		gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 		gl.enableVertexAttribArray(shaderProgram.texCoordAttribute);
 		
-		//TODO: Find the magic mvMatrix that looks correct
+		
 		mat4.rotateX(cs.mvMatrix, cs.mvMatrix, -Math.PI/2);
 		mat4.rotateZ(cs.mvMatrix, cs.mvMatrix, Math.PI/2);
 		gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, cs.pMatrix);
 		gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, cs.mvMatrix);
 		
-		var sequenceIndex = 1;
-		var sequence = player.sequences[sequenceIndex];
+		var sequence = player.sequences[this.sequenceIndex];
 		var transformations = setupBones(frame, sequence);
 		
 		for(var i = 0; i < player.header.numBodyParts; ++i) {

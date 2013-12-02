@@ -12,7 +12,7 @@
 	<script type="text/javascript" src="MapRender.js"></script>
 	<script type="text/javascript" src="Map.js"></script>
 	<script type="text/javascript" src="PlayerParser.js"></script>
-	<script type="text/javascript" src="PlayerRender.js"></script>
+	<script type="text/javascript" src="ModelRender.js"></script>
 	<script type="text/javascript" src="Player.js"></script>
 	<script type="text/javascript" src="lib/keyboard.js"></script>
 	
@@ -99,7 +99,7 @@
 				
 				download(cs.config.PLAYER_PATH, function(data) {
 					//Hardcoded cs_assault position. TODO: Read this from the entity set
-					cs.player = new cs.Player(gl, -320, 352, 48, data, 5);
+					cs.player = new cs.Player(gl, -320, 352, 48, data);
 					
 					gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -116,7 +116,11 @@
 					
 					//Listen for clicks on the canvas
 					canvas.addEventListener("click", function() {
-						PointerLock.requestPointerLock(canvas);
+						//is the mouse not currently locked?
+						if(!PointerLock.pointerLockElement()) {
+							//Nope. Request locking
+							PointerLock.requestPointerLock(canvas);
+						}
 					}, false);
 					
 					//Listen for pointer locking
