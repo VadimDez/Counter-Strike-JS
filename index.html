@@ -4,10 +4,6 @@
 	<script type="text/javascript" src="lib/keyboard.js"></script>
 
 	<script>
-		KeyboardJS.on("esc", function(event, keys, combo){
-			//Open console
-		}, function(event, keys, combo){});
-	
 		function openNewGameMenu() {
 			var menu = document.getElementById("newGameMenu");
 			var menuHeight = screen.height / 2;
@@ -24,57 +20,6 @@
 			var menu = document.getElementById("newGameMenu");
 			console.log(menu);
 			menu.style.visibility = "hidden";
-		}
-		
-		function webGLStart() {
-			var canvas = document.getElementById("canvas");
-			initGL(canvas);
-			
-			download(cs.config.MAP_PATH, function(data) {
-				//Parse map
-				cs.map = new cs.Map(gl, data);
-				
-				download(cs.config.PLAYER_PATH, function(data) {
-					//Hardcoded cs_assault position. TODO: Read this from the entity set
-					cs.player = new cs.Player(gl, -186, 2597, 165, data);
-					
-					gl.clearColor(0.0, 0.0, 0.0, 1.0);
-
-					//Set event handler for resizing the screen every time
-					//the window changes size
-					var resizeCallback = function() {
-						canvas.width = window.innerWidth;
-						canvas.height = window.innerHeight;
-						gl.viewportWidth = window.innerWidth;
-						gl.viewportHeight = window.innerHeight;
-					};
-					resizeCallback();
-					window.addEventListener("resize", resizeCallback, false);
-					
-					//Listen for clicks on the canvas
-					canvas.addEventListener("click", function() {
-						//is the mouse not currently locked?
-						if(!PointerLock.pointerLockElement()) {
-							//Nope. Request locking
-							PointerLock.requestPointerLock(canvas);
-						}
-					}, false);
-					
-					//Listen for pointer locking
-					PointerLock.addPointerLockExchangeEventListener(document, function(e) {
-						//Did the pointer just go from unlocked to locked?
-						if(!!PointerLock.pointerLockElement()) {
-							//Yep! Add mousemove listener
-							PointerLock.addMouseMoveEventListener(document, rotatePlayer, false);
-						}
-						else { //Nope. Remove mouse move listener
-							PointerLock.removeMouseMoveEventListener(document, rotatePlayer);
-						}
-					}, false);
-					
-					mainLoop();
-				});
-			});
 		}
 		
 		function startGame() {
