@@ -13,7 +13,7 @@ cs.Player = function(gl, x, y, z, data) {
 	this.xAngle = 0;
 	this.speed = 5;
 	//X and Y direction. Not necessarily normalized
-	var dir = [0, 0];
+	var dir = [0, 0, 0];
 	var playerData = cs.PlayerParser.parse(gl, data);
 	var playerRender = new cs.ModelRender(gl, playerData);
 	
@@ -23,14 +23,13 @@ cs.Player = function(gl, x, y, z, data) {
 	
 	this.move = function() {
 		var onGround = cs.CollisionDetection.isOnGround(this.position());
-	
-		//TODO: If not on the ground the formulas for newX and newY should be changed
-		var normalDir = [0, 0];
-		vec2.normalize(normalDir, dir);
+		var normalDir = [0, 0, 0];
+		vec3.normalize(normalDir, dir);
+		
 		//Move forward
 		var newX = this.x + this.speed*normalDir[0]*Math.cos(this.yAngle);
 		var newY = this.y - this.speed*normalDir[0]*Math.sin(this.yAngle);
-		var newZ = this.z;
+		var newZ = this.z + 18*dir[2];
 		
 		//Strafe
 		newY -= this.speed*normalDir[1]*Math.cos(Math.PI - this.yAngle);
@@ -39,9 +38,10 @@ cs.Player = function(gl, x, y, z, data) {
 		//Apply gravity if we're not on the ground. TODO: Accelerate instead of subtracting a constant
 		if(!onGround) {
 			newZ -= cs.config.GRAVITY;
+			dir[2] = Math.max(0, dir[2] - 0.1);
 		}
 		
-		newPosition = cs.CollisionDetection.move([this.x, this.y, this.z + cs.config.MAX_Z_CHANGE], [newX, newY, newZ], true);
+		newPosition = cs.CollisionDetection.move([this.x, this.y, this.z + cs.config.MAX_Z_CHANGE], [newX, newY, newZ]);
 
 		this.x = newPosition[0];
 		this.y = newPosition[1];
@@ -69,7 +69,25 @@ cs.Player = function(gl, x, y, z, data) {
 		if(this.xAngle > PI_HALF) {
 			this.xAngle = PI_HALF;
 		}
+	};
+	
+	this.render = function() {
+		return playerRender.render();
 	}
+	
+	MouseJS.on("left", function(e) {
+		//Player is shooting. Set shooting animation
+		playerRender.queueAnimation(3, 125);
+	}, function(e) {
+		//No longer shooting. Set idle animation once the current animation has finished
+		playerRender.queueAnimation(0);
+	});
+	
+	KeyboardJS.on("r", function(event, keys, combo) {
+		//Play reload animation
+		playerRender.queueAnimation(1);
+		playerRender.queueAnimation(0);
+	}, function(event, keys, combo) {});
 	
 	//Handle w and s keys
 	KeyboardJS.on("w,s", function(event, keys, combo){
@@ -110,10 +128,6 @@ cs.Player = function(gl, x, y, z, data) {
 		}
 	});
 	
-	this.render = function() {
-		return playerRender.render();
-	}
-	
 	//Handle a and d keys
 	//Symmetric to the handling of w and s
 	KeyboardJS.on("a,d", function(event, keys, combo){
@@ -146,4 +160,12 @@ cs.Player = function(gl, x, y, z, data) {
 			}
 		}
 	});
+	
+	KeyboardJS.on("space", function(event, keys, combo) {
+		//Cannot access outer scope, so we have to do the jump code in here :(
+		var d = dir[2];
+		if(d < 0.0001 && d > -0.0001) {
+			dir[2] = 1;
+		}
+	}, function(event, keys, combo) {});
 }

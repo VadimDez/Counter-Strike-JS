@@ -43,11 +43,12 @@ cs.ModelRender = function(gl, player) {
 		STUDIO_RLOOP:	0x8000
 	};
 	
-	this.sequenceIndex = 1;
-	
+	var sequenceIndex = 0;
 	var frame = 0;
-	
+	var customFPS = null;
 	var vertexBuffer = gl.createBuffer();
+	var animationQueue = [];
+	var previous = new Date().getTime();
 	
 	var fragmentShader = 
 	"	precision mediump float;" +
@@ -401,13 +402,25 @@ cs.ModelRender = function(gl, player) {
 		if(dt > 0.1) {
 			dt = 0.1;
 		}
-		frame += dt * sequence.fps;
+		frame += dt * (customFPS || sequence.fps);
 		
 		if(sequence.numFrames <= 1) {
 			frame = 0;
 		}
 		else {
-			frame -= Math.floor(frame / (sequence.numFrames - 1)) * (sequence.numFrames - 1);
+			var newFrame = frame - Math.floor(frame / (sequence.numFrames - 1)) * (sequence.numFrames - 1);
+			//Did we just restart our animation?
+			if(newFrame < frame) {
+				//Do we have an animation queued up?
+				if(animationQueue.length != 0) {
+					//Yep. Set index and requested fps
+					newFrame = 0;
+					var anim = animationQueue.shift();
+					sequenceIndex = anim.index;
+					customFPS = anim.fps;
+				}
+			}
+			frame = newFrame;
 		}
 		return frame;
 	};
@@ -424,7 +437,6 @@ cs.ModelRender = function(gl, player) {
 			transforms[n] = vectorTransform([vertices[i], vertices[i+1], vertices[i+2]], transformations[model.transformIndices[n]]);
 		}
 		
-		var k = 0;
 		for(var i = 0; i < model.numMesh; ++i) {
 			var mesh = model.mesh[i];
 			var texture = player.textures[DataReader.readSignedShort(player.data, player.header.skinIndex + 2*mesh.skinRef)];
@@ -460,10 +472,6 @@ cs.ModelRender = function(gl, player) {
 					
 					//Add vertex
 					var vertex = transforms[vertIndex];
-					++k;
-					if(k === 130) {
-						var g = 0;
-					}
 					
 					buffer.push(vertex[0]);
 					buffer.push(vertex[1]);
@@ -490,8 +498,6 @@ cs.ModelRender = function(gl, player) {
 		}
 	};
 	
-	var previous = new Date().getTime();
-	
 	this.render = function(){
 		gl.useProgram(shaderProgram);
 		
@@ -504,7 +510,7 @@ cs.ModelRender = function(gl, player) {
 		gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, cs.pMatrix);
 		gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, cs.mvMatrix);
 		
-		var sequence = player.sequences[this.sequenceIndex];
+		var sequence = player.sequences[sequenceIndex];
 		var transformations = setupBones(frame, sequence);
 		
 		for(var i = 0; i < player.header.numBodyParts; ++i) {
@@ -519,5 +525,11 @@ cs.ModelRender = function(gl, player) {
 		
 		gl.disableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 		gl.disableVertexAttribArray(shaderProgram.texCoordAttribute);
+	};
+	
+	this.queueAnimation = function(sequenceIndex, fps) {
+		//If no fps was provided, use the default
+		fps = fps || player.sequences[sequenceIndex].fps;
+		animationQueue.push({index: sequenceIndex, fps: fps});
 	};
 };

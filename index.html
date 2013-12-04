@@ -1,155 +1,61 @@
 <html>
 	<head>
-	<link rel="stylesheet" type="text/css" href="styles.css">
-	
-	<script type="text/javascript" src="config.js"></script>
-	<script type="text/javascript" src="util/PointerLock.js"></script>
-	<script type="text/javascript" src="util/DataReader.js"></script>
-	<script type="text/javascript" src="lib/gl-matrix.js"></script>
-	<script type="text/javascript" src="lib/webgl-utils.js"></script>
-	<script type="text/javascript" src="CollisionDetection.js"></script>
-	<script type="text/javascript" src="MapParser.js"></script>
-	<script type="text/javascript" src="MapRender.js"></script>
-	<script type="text/javascript" src="Map.js"></script>
-	<script type="text/javascript" src="PlayerParser.js"></script>
-	<script type="text/javascript" src="ModelRender.js"></script>
-	<script type="text/javascript" src="Player.js"></script>
+	<link rel="stylesheet" type="text/css" href="stylesmenu.css">
 	<script type="text/javascript" src="lib/keyboard.js"></script>
+
+	<script>
+		KeyboardJS.on("esc", function(event, keys, combo){
+			//Open console
+		}, function(event, keys, combo){});
 	
-	<script type="text/javascript">
-		//Define namespace
-		window.cs = window.cs || { };
-		//Webgl context
-		var gl;
-		//Modelview matrix
-		cs.mvMatrix = mat4.create();
-		//Projection matrix
-		cs.pMatrix = mat4.create();
-	
-		function initGL(canvas) {
-			try {
-				gl = canvas.getContext("experimental-webgl");
-				gl.viewportWidth = canvas.width;
-				gl.viewportHeight = canvas.height;
-				
-				gl.enable(gl.DEPTH_TEST);
-				gl.enable(gl.CULL_FACE);
-				gl.cullFace(gl.FRONT);
-				
-			} catch (e) { }
-			if (!gl) {
-				console.log("Could not initialise WebGL");
-			}
+		function openNewGameMenu() {
+			var menu = document.getElementById("newGameMenu");
+			var menuHeight = screen.height / 2;
+			var menuWidth = screen.width / 4.2;
+			
+			menu.style.height = menuHeight + "px";
+			menu.style.width = menuWidth + "px";
+			menu.style.marginTop = "-" + (menuHeight/2).toString() + "px";
+			menu.style.marginLeft = "-" + (menuWidth/2).toString() + "px";
+			menu.style.visibility = "visible";
 		}
 		
-		function render() {			
-			var player = cs.player;
-			gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-			mat4.perspective(cs.pMatrix, cs.config.FIELD_OF_VIEW*Math.PI/180,
-				gl.viewportWidth / gl.viewportHeight,
-				cs.config.NEAR_CLIPPING, cs.config.FAR_CLIPPING);
-				
-			mat4.identity(cs.mvMatrix);
-
-			//Draw player
-			cs.player.render();
-			
-			mat4.identity(cs.mvMatrix);
-			mat4.rotateX(cs.mvMatrix, cs.mvMatrix, player.xAngle);
-			mat4.rotateY(cs.mvMatrix, cs.mvMatrix, player.yAngle);
-			
-			//Move the player by moving the map in the reverse direction
-			mat4.translate(cs.mvMatrix, cs.mvMatrix,
-				[player.y, -player.z - cs.config.PLAYER_HEIGHT, player.x]);
-			
-			cs.map.render(player.position());
+		function closeGameMenu() {
+			var menu = document.getElementById("newGameMenu");
+			console.log(menu);
+			menu.style.visibility = "hidden";
 		}
 		
-		function mainLoop() {
-			requestAnimFrame(mainLoop);
-			cs.player.move();
-			
-			render();
-		}
-		
-		//Download the bsp file and call callback on the result
-		function download(path, callback) {
-			var req = new XMLHttpRequest();
-			req.open("GET", path, true);
-			req.responseType = "arraybuffer";
-			req.onreadystatechange = function () {
-				if(req.readyState === 4) {
-					if(req.status === 200 || req.status == 0) {
-						callback(new Uint8Array(req.response));
-					}
-				}
-			}
-			req.send(null);
-		}
-		
-		function webGLStart() {
-			var canvas = document.getElementById("canvas");
-			initGL(canvas);
-			
-			download(cs.config.MAP_PATH, function(data) {
-				//Parse map
-				cs.map = new cs.Map(gl, data);
-				
-				download(cs.config.PLAYER_PATH, function(data) {
-					//Hardcoded cs_assault position. TODO: Read this from the entity set
-					cs.player = new cs.Player(gl, -320, 352, 48, data);
-					
-					gl.clearColor(0.0, 0.0, 0.0, 1.0);
-
-					//Set event handler for resizing the screen every time
-					//the window changes size
-					var resizeCallback = function() {
-						canvas.width = window.innerWidth;
-						canvas.height = window.innerHeight;
-						gl.viewportWidth = window.innerWidth;
-						gl.viewportHeight = window.innerHeight;
-					};
-					resizeCallback();
-					window.addEventListener("resize", resizeCallback, false);
-					
-					//Listen for clicks on the canvas
-					canvas.addEventListener("click", function() {
-						//is the mouse not currently locked?
-						if(!PointerLock.pointerLockElement()) {
-							//Nope. Request locking
-							PointerLock.requestPointerLock(canvas);
-						}
-					}, false);
-					
-					//Listen for pointer locking
-					PointerLock.addPointerLockExchangeEventListener(document, function(e) {
-						//Did the pointer just go from unlocked to locked?
-						if(!!PointerLock.pointerLockElement()) {
-							//Yep! Add mousemove listener
-							PointerLock.addMouseMoveEventListener(document, rotatePlayer, false);
-						}
-						else { //Nope. Remove mouse move listener
-							PointerLock.removeMouseMoveEventListener(document, rotatePlayer);
-						}
-					}, false);
-					
-					mainLoop();
-				});
-			});
-		}
-		
-		//Rotate the player when the mouse is moved
-		function rotatePlayer(e) {
-			cs.player.rotate(e.movementX, e.movementY);
+		function startGame() {
+			var e = document.getElementById("map");
+			var map = e.options[e.selectedIndex].value;
+			window.location = "game.html#" + map;
 		}
 	</script>
+	
 	</head>
-
-
-	<body onload="webGLStart();">
-		<canvas id="canvas" style="display: block; margin:0; padding:0"></canvas>
+	<body>
+		<table id="menu">
+			<tr>
+				<td><a href="#" onClick="openNewGameMenu()">New Game</a></td>
+			</tr>
+			<tr>
+				<td><a href="#">Find Servers</a></td>
+			</tr>
+		</table>
+	
+		<div id="newGameMenu" style="visibility:hidden;">
+			Map
+			<select id="map">
+				<option value="">< Random Map ></option>
+				<option value="cs_assault.bsp">cs_assault</option>
+				<option value="cs_italy.bsp">cs_italy</option>
+			</select>
+			<hr />
+			
+			<button id="menuStartButton" onclick="startGame()">Start</button>
+			<button id="menuCancelButton" onclick="closeGameMenu()">Cancel</button>
+		</div>
 	</body>
 
 </html>

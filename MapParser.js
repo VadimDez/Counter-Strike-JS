@@ -80,6 +80,72 @@ cs.MapParser = (function () {
 		//Split into an array of entities
 		var entitiesArray = sEntities.split("}\n{");
 		
+		//Helper formatters
+		var identity = function(x) { return x; };
+		var parseList = function(formatter) {
+			return function(x) {
+				var list = [];
+				for(var o in x.split(" ")) {
+					list.push(formatter(o));
+				}
+				return list;
+			};
+		};
+		//A map from key to value formatters.
+		var formatters = {
+			MaxRange: parseInt,
+			classname: identity,
+			light: parseInt,
+			message: identity,
+			skyname: identity,
+			sounds: parseInt,
+			wad: function(x) { return x.split(";"); },
+			model: function(x) {
+				//Most entities have a value of the form *N where N is an integer
+				//But some entities have a string value instead,
+				//(i.e path to models in case of hostages)
+				if(x[0] === "*")
+					return parseInt(x.substr(1));
+				return identity;
+			},
+			renderamt: parseInt,
+			rendercolor: new parseList(parseInt),
+			rendermode: parseInt,
+			skin: parseInt,
+			angles: new parseList(parseInt),
+			delay: parseInt,
+			distance: parseInt,
+			dmg: parseInt,
+			health: parseInt,
+			lip: parseInt,
+			locked_sentence: parseInt,
+			locked_sound: parseInt,
+			movesnd: parseInt,
+			origin: new parseList(parseInt),
+			renderfx: parseInt,
+			speed: parseInt,
+			stopsnd: parseInt,
+			unlocked_sentence: parseInt,
+			unlocked_sound: parseInt,
+			wait: parseInt,
+			_light: new parseList(parseInt),
+			pitch: parseInt,
+			angle: parseInt,
+			spawnflags: parseInt,
+			target: identity,
+			deceleration: parseInt,
+			targetname: identity,
+			explodemagnitude: parseInt,
+			explosion: parseInt,
+			material: parseInt,
+			spawnobject: parseInt,
+			texture: identity,
+			acceleration: parseInt,
+			killtarget: identity,
+			triggerstate: parseInt,
+			_fade: parseFloat
+		};
+		
 		var entityLump = Array(entitiesArray.length);
 		for(var i = 0; i < entitiesArray.length; ++i) {
 			//Get key
@@ -87,7 +153,11 @@ cs.MapParser = (function () {
 			var map = {};
 			//Create a mapping from key => value
 			for(var j = 1; j < sKeyVal.length; j += 4) {
-				map[sKeyVal[j]] = sKeyVal[j+2];
+				var key = sKeyVal[j];
+				var value = sKeyVal[j+2];
+				var formatter = formatters[key];
+				if(!formatter) console.log("Unknown entity name: " + key);
+				else map[key] = formatter(value);
 			}
 			entityLump[i] = map;
 		}
