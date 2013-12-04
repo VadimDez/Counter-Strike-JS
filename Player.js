@@ -162,7 +162,6 @@ cs.Player = function(gl, x, y, z, data) {
 	});
 	
 	KeyboardJS.on("space", function(event, keys, combo) {
-		//Cannot access outer scope, so we have to do the jump code in here :(
 		var d = dir[2];
 		if(d < 0.0001 && d > -0.0001) {
 			dir[2] = 1;

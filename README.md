@@ -6,8 +6,9 @@ Counter-Strike 1.6 implementation in JavaScript utilizing state of the art brows
 <b>Current state</b>
 <ul>
 <li>Parses and renders .bsp files (version 30) containing map data</li>
+<li>Parses and renders .mdl files (version 10) with textures </li>
 <li>Camera movement, yaw and pitch fully implemented</li>
-<li>Collision detection mostly completed</li>
+<li>Collision detection implemented</li>
 <li>Naive gravity implemented</li>
 </ul>
 
