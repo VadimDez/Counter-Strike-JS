@@ -62,7 +62,7 @@ cs.SpriteParser = (function(){
 		return palette;
 	};
 	
-	var parseSingleFrame = function(offset) {
+	var parseSingleFrame = function(palette, offset) {
 		var group = DataReader.readInteger(data, offset);
 		var originX = DataReader.readInteger(data, offset+4);
 		var originY = DataReader.readInteger(data, offset+8);
@@ -70,10 +70,22 @@ cs.SpriteParser = (function(){
 		var height = DataReader.readInteger(data, offset+16);
 		var end = width*height + offset + 20;
 		
-		var imageData = new Uint8Array(width * height);
+		//The transparent colour is the last colour in the palette
+		var transparentColor = palette[palette.length-1];
+		var isTransparent = function(rgb) {
+			return rgb[0] === transparentColor[0] &&
+				rgb[1] === transparentColor[1] &&
+				rgb[2] === transparentColor[2];
+		}
+		
+		var imageData = new Uint8Array(4 * width * height);
 		var n = 0;
 		for(var i = offset+20; i != end; ++i) {
-			imageData[n++] = data[i];
+			var rgb = palette[data[i]];
+			imageData[n++] = rgb[0]
+			imageData[n++] = rgb[1];
+			imageData[n++] = rgb[2];
+			imageData[n++] = isTransparent(rgb) ? 0 : 255;
 		}
 		return {
 			group: group,
@@ -85,13 +97,13 @@ cs.SpriteParser = (function(){
 		};
 	};
 	
-	var parseFrames = function(offset) {
+	var parseFrames = function(palette) {
 		var end = data.length;
-		var i = offset;
+		var i = 42 + palette.length * 3;
 		
 		var frames = [];
 		while(i != end) {
-			var frame = parseSingleFrame(i);
+			var frame = parseSingleFrame(palette, i);
 			frames.push(frame);
 			//Advance to the next frame
 			i += frame.width * frame.height + 20;
@@ -107,11 +119,9 @@ cs.SpriteParser = (function(){
 			var header = parseHeader();
 			if(!header) return;
 			var palette = parsePalette();
-			var frames = parseFrames(42 + palette.length * 3);
-			
+			var frames = parseFrames(palette);
 			return {
 				header: header,
-				palette: palette,
 				frames: frames
 			};
 		}

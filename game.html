@@ -10,6 +10,8 @@
 	<script type="text/javascript" src="lib/webgl-utils.js"></script>
 	<script type="text/javascript" src="CollisionDetection.js"></script>
 	<script type="text/javascript" src="SpriteParser.js"></script>
+	<script type="text/javascript" src="SpriteRender.js"></script>
+	<script type="text/javascript" src="Sprite.js"></script>
 	<script type="text/javascript" src="MapParser.js"></script>
 	<script type="text/javascript" src="MapRender.js"></script>
 	<script type="text/javascript" src="Map.js"></script>
@@ -29,6 +31,8 @@
 		cs.mvMatrix = mat4.create();
 		//Projection matrix
 		cs.pMatrix = mat4.create();
+		
+		var sprite;
 	
 		function initGL(canvas) {
 			try {
@@ -46,7 +50,7 @@
 			}
 		}
 		
-		function render() {			
+		function render() {
 			var player = cs.player;
 			gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
 			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -56,7 +60,7 @@
 				cs.config.NEAR_CLIPPING, cs.config.FAR_CLIPPING);
 				
 			mat4.identity(cs.mvMatrix);
-
+			
 			//Draw player
 			cs.player.render();
 			
@@ -69,6 +73,10 @@
 				[player.y, -player.z - cs.config.PLAYER_HEIGHT, player.x]);
 			
 			cs.map.render(player.position());
+			
+			mat4.identity(cs.mvMatrix);
+			mat4.translate(cs.mvMatrix, cs.mvMatrix, [0.0, 0.0, -50]);
+			sprite.render();
 		}
 		
 		function mainLoop() {
@@ -97,7 +105,7 @@
 			var canvas = document.getElementById("canvas");
 			initGL(canvas);
 			
-			var mapName = window.location.hash.substr(1)
+			var mapName = "cs_assault.bsp"/*window.location.hash.substr(1)*/;
 			download("data/maps/" + mapName, function(data) {
 				//Parse map
 				cs.map = new cs.Map(gl, data);
@@ -140,7 +148,10 @@
 						}
 					}, false);
 					
-					mainLoop();
+					download("data/sprites/crosshairs.spr", function(data) {
+						sprite = new cs.Sprite(gl, data).subSprite(24, 0, 24, 24);
+						mainLoop();
+					});
 				});
 			});
 		}
