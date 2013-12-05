@@ -532,4 +532,12 @@ cs.ModelRender = function(gl, player) {
 		fps = fps || player.sequences[sequenceIndex].fps;
 		animationQueue.push({index: sequenceIndex, fps: fps});
 	};
+	
+	this.forceAnimation = function(newSequenceIndex, fps) {
+		fps = fps || player.sequences[sequenceIndex].fps;
+		sequenceIndex = newSequenceIndex;
+		customFPS = fps;
+		
+		frame = 0;
+	};
 };

@@ -75,13 +75,14 @@ cs.Player = function(gl, x, y, z, data) {
 		return playerRender.render();
 	}
 	
-	MouseJS.on("left", function(e) {
-		//Player is shooting. Set shooting animation
-		playerRender.queueAnimation(3, 125);
-	}, function(e) {
+	MouseJS.on("left", function() {
+		//Player is shooting. Set shooting animation and play sound
+		document.getElementById("sound").cloneNode(true).play();
+		playerRender.forceAnimation(3, 125);
+	}, function() {
 		//No longer shooting. Set idle animation once the current animation has finished
 		playerRender.queueAnimation(0);
-	});
+	}, 100);
 	
 	KeyboardJS.on("r", function(event, keys, combo) {
 		//Play reload animation

@@ -5,21 +5,36 @@
 
 var MouseJS = (function() {
 	
-	//Index 1 is left, 2 is middle and 3 is right
+	//Listeners for mouse down and mouse up
+	//Index 0 is left, 1 is right and 2 is middle
 	var downListeners = [[], [], []];
 	var upListeners = [[], [], []];
+	//Interval IDs used for clearInterval
+	var intervalIds = [];
 	
-	var upListener = function(e) {
+	var downListener = function(e) {
+		//If we're not currently locked we should ignore the event
 		if(!PointerLock.pointerLockElement()) return;
-		upListeners[e.which-1].forEach(function(callback) {
-			callback(e);
+		//Call listeners waiting on the down event on this mouse button
+		downListeners[e.which-1].forEach(function(element) {
+			//If an interval is specified we should call the listener continuously
+			if(element.interval !== "undefined") {
+				var intervalID = setInterval(element.callback, element.interval);
+				intervalIds[element.id] = intervalID;
+			}
+			element.callback();
 		});
 	};
 	
-	var downListener = function(e) {
+	var upListener = function(e) {
 		if(!PointerLock.pointerLockElement()) return;
-		downListeners[e.which-1].forEach(function(callback) {
-			callback(e);
+		upListeners[e.which-1].forEach(function(element) {
+			//If we're doing a continuous call from a setInterval
+			if(intervalIds[element.id] !== "undefined") {
+				clearInterval(intervalIds[element.id]);
+				delete intervalIds[element.id];
+			}
+			element.callback();
 		});
 	};
 	
@@ -32,11 +47,20 @@ var MouseJS = (function() {
 		right: 2
 	};
 	
+	var id = 0;
 	return {
-		//"left", "right" or "middle"
-		on: function(which, down, up) {
-			downListeners[stringToWhich[which]].push(down);
-			upListeners[stringToWhich[which]].push(up);
+		on: function(which, down, up, cont) {
+			downListeners[stringToWhich[which]].push({
+				callback: down,
+				interval: cont,
+				id: id
+			});
+			
+			upListeners[stringToWhich[which]].push({
+				callback: up,
+				id: id
+			});
+			++id;
 		}
 	};
 })();
