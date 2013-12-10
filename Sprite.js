@@ -1,6 +1,7 @@
 /**
 	The sprite abstraction class for parsing and rendering a sprite.
 **/
+window.cs = window.cs || { };
 
 cs.Sprite = function(gl, data) {
 	//If data has a header field it means that it's an already

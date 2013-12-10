@@ -3,6 +3,7 @@
 	into a JSON datastructure.
 	Source: http://yuraj.ucoz.com/half-life-formats.pdf
 **/
+window.cs = window.cs || { };
 
 cs.SpriteParser = (function(){
 	var constants = {

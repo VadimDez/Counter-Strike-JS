@@ -5,7 +5,7 @@
 **/
 window.cs = window.cs || { };
 
-cs.Player = function(gl, x, y, z, data) {
+cs.Player = function(gl, x, y, z) {
 	this.x = x;
 	this.y = y;
 	this.z = z;
@@ -14,8 +14,7 @@ cs.Player = function(gl, x, y, z, data) {
 	this.speed = 5;
 	//X and Y direction. Not necessarily normalized
 	var dir = [0, 0, 0];
-	var playerData = cs.PlayerParser.parse(gl, data);
-	var playerRender = new cs.ModelRender(gl, playerData);
+	var weapon = null;
 	
 	this.position = function() {
 		return [this.x, this.y, this.z];
@@ -72,22 +71,21 @@ cs.Player = function(gl, x, y, z, data) {
 	};
 	
 	this.render = function() {
-		return playerRender.render();
+		return weapon.render();
+	}
+	
+	this.switchWeapon = function(weaponName) {
+		weapon = new cs.Weapon(weaponName);
 	}
 	
 	MouseJS.on("left", function() {
-		//Player is shooting. Set shooting animation and play sound
-		document.getElementById("sound").cloneNode(true).play();
-		playerRender.forceAnimation(3, 125);
+		weapon.shoot();
 	}, function() {
-		//No longer shooting. Set idle animation once the current animation has finished
-		playerRender.queueAnimation(0);
+		weapon.idle();
 	}, 100);
 	
 	KeyboardJS.on("r", function(event, keys, combo) {
-		//Play reload animation
-		playerRender.queueAnimation(1);
-		playerRender.queueAnimation(0);
+		weapon.reload();
 	}, function(event, keys, combo) {});
 	
 	//Handle w and s keys

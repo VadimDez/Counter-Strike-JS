@@ -2,6 +2,7 @@
 	This file contains all the code needed to render a .spr file (Version 2)
 	by converting the sprite into a texture.
 **/
+window.cs = window.cs || { };
 
 cs.SpriteRender = (function(gl, sprite) {
 
