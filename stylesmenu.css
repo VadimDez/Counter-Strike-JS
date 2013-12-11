@@ -44,3 +44,10 @@ html, body {
 	left: 50%;
 	color:#C4B550;
 }
+
+#dropDownMapMenu {
+	overflow: hidden;
+	background-color: #3E4637;
+	border: 1px solid #3E4637;
+	color: #C8C8C8;
+}

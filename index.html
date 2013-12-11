@@ -22,7 +22,7 @@
 		}
 		
 		function startGame() {
-			var e = document.getElementById("map");
+			var e = document.getElementById("dropDownMapMenu");
 			var map = e.options[e.selectedIndex].value;
 			window.location = "game.html#" + map;
 		}
@@ -41,7 +41,7 @@
 	
 		<div id="newGameMenu" style="visibility:hidden;">
 			Map
-			<select id="map">
+			<select id="dropDownMapMenu">
 				<option value="">< Random Map ></option>
 				<option value="cs_assault.bsp">cs_assault</option>
 				<option value="cs_italy.bsp">cs_italy</option>
