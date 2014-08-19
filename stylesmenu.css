@@ -35,7 +35,7 @@ html, body {
 	font-size:35px
 }
 
-#newGameMenu {
+.PopupMenu {
 	background-color: #4C5844;
 	width: 348px;
 	height: 400px;

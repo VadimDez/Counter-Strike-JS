@@ -3,9 +3,8 @@
 	into a JSON datastructure.
 	Source: http://yuraj.ucoz.com/half-life-formats.pdf
 **/
-window.cs = window.cs || { };
 
-cs.SpriteParser = (function(){
+define(["util/DataReader"], function(DataReader) {
 	var constants = {
 		SPR_MAGIC: 0x50534449,
 		SPR_VERSION: 2
@@ -113,7 +112,6 @@ cs.SpriteParser = (function(){
 	};
 	
 	return {
-		
 		parse: function(input) {
 			data = input;
 			
@@ -127,4 +125,4 @@ cs.SpriteParser = (function(){
 			};
 		}
 	};
-})();
+});

@@ -3,8 +3,8 @@
 	<link rel="stylesheet" type="text/css" href="stylesmenu.css">
 	<script type="text/javascript" src="lib/keyboard.js"></script>
 	<script>
-		function openNewGameMenu() {
-			var menu = document.getElementById("newGameMenu");
+		function openMenu(element) {
+			var menu = document.getElementById(element);
 			var menuHeight = screen.height / 2;
 			var menuWidth = screen.width / 4.2;
 			
@@ -15,16 +15,23 @@
 			menu.style.visibility = "visible";
 		}
 		
-		function closeGameMenu() {
-			var menu = document.getElementById("newGameMenu");
-			console.log(menu);
+		function closePopupMenu(element) {
+			var menu = document.getElementById(element);
 			menu.style.visibility = "hidden";
 		}
 		
 		function startGame() {
 			var e = document.getElementById("dropDownMapMenu");
 			var map = e.options[e.selectedIndex].value;
-			window.location = "game.html#" + map;
+			sessionStorage.setItem("map", map);
+			console.log(sessionStorage.getItem("map"));
+			window.location = "game.html";
+		}
+		
+		function joinGame() {
+			var server = document.getElementById("server").value;
+			sessionStorage.setItem("server", server);
+			window.location = "game.html";
 		}
 	</script>
 	
@@ -32,14 +39,14 @@
 	<body>
 		<table id="menu">
 			<tr>
-				<td><a href="#" onClick="openNewGameMenu()">New Game</a></td>
+				<td><a href="#" onClick="openMenu('newGameMenu')">New Game</a></td>
 			</tr>
 			<tr>
-				<td><a href="#">Find Servers</a></td>
+				<td><a href="#" onClick="openMenu('joinGameMenu')">Join Server</a></td>
 			</tr>
 		</table>
 	
-		<div id="newGameMenu" style="visibility:hidden;">
+		<div class="PopupMenu" id="newGameMenu" style="visibility:hidden;">
 			Map
 			<select id="dropDownMapMenu">
 				<option value="">< Random Map ></option>
@@ -49,7 +56,13 @@
 			<hr />
 			
 			<button id="menuStartButton" onclick="startGame()">Start</button>
-			<button id="menuCancelButton" onclick="closeGameMenu()">Cancel</button>
+			<button id="menuCancelButton" onclick="closePopupMenu('newGameMenu')">Cancel</button>
+		</div>
+		
+		<div class="PopupMenu" id="joinGameMenu" style="visibility:hidden;">
+			<input id="server"/>
+			<button id="menuStartButton" onclick="joinGame()">Join</button>
+			<button id="menuCancelButton" onclick="closePopupMenu('joinGameMenu')">Cancel</button>
 		</div>
 	</body>
 

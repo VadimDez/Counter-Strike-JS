@@ -3,9 +3,7 @@
 	into a JSON datastructure.
 **/
 
-window.cs = window.cs || { };
-
-cs.ModelParser = (function() {
+define(["util/DataReader"], function(DataReader) {
 	var constants = {
 		MDL_MAGIC: 0x54534449,
 		MDL_VERSION: 10
@@ -180,7 +178,7 @@ cs.ModelParser = (function() {
 				DataReader.readFloat(data, i + 104),
 				DataReader.readFloat(data, i + 108)
 			];
-		
+
 			bones[n++] = {
 				name: name,
 				parent: parent,
@@ -217,7 +215,7 @@ cs.ModelParser = (function() {
 		return controllers;
 	};
 	
-	var parseSequences = function(offset, num) {
+	var parseSequences = function(offset, num, name) {
 		var end = offset + num*176;
 		var n = 0;
 		var sequences = Array(num);
@@ -233,6 +231,28 @@ cs.ModelParser = (function() {
 			
 			var numEvents = DataReader.readInteger(data, i + 48);
 			var eventIndex = DataReader.readInteger(data, i + 52);
+			
+			var events = Array(numEvents);
+			// typedef struct mstudioevent_s
+			// {
+			// int 		frame;
+			// int		event;
+			// int		type;
+			// char		options[64];
+			// } mstudioevent_t;
+			var m = 0;
+			for(var j = eventIndex; m < numEvents; j += 76) {
+				var frame = DataReader.readInteger(data, j);
+				var event = DataReader.readInteger(data, j + 4);
+				var type = DataReader.readInteger(data, j + 8);
+				var options = DataReader.readBinaryString(data, j + 12, 64);
+				events[m++] = {
+					frame: frame,
+					event: event,
+					type: type,
+					options: options
+				};
+			}
 			
 			var numFrames = DataReader.readInteger(data, i + 56);
 			
@@ -294,8 +314,7 @@ cs.ModelParser = (function() {
 				 activity: activity,
 				 actWeight: actWeight,
 				
-				 numEvents: numEvents,
-				 eventIndex: eventIndex,
+				 events: events,
 				
 				 numFrames: numFrames,
 				
@@ -565,7 +584,8 @@ cs.ModelParser = (function() {
 			var header = parseHeader();
 			var bones = parseBones(header.boneIndex, header.numBones);
 			var boneControllers = parseBoneControllers(header.boneControllerIndex, header.numBoneControllers);
-			var sequences = parseSequences(header.seqIndex, header.numSeq);
+			var sequences = parseSequences(header.seqIndex, header.numSeq,
+				header.name.substr(2, header.name.lastIndexOf(".")-2));
 			var seqGroups = parseSequenceGroups(header.seqGroupIndex, header.numSeqGroups);
 			var textures = parseTextures(header.textureIndex, header.numTextures);
 			var bodyParts = parseBodyParts(header.bodyPartIndex, header.numBodyParts);
@@ -587,4 +607,4 @@ cs.ModelParser = (function() {
 			};
 		}
 	};
-})();
+});

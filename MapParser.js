@@ -8,13 +8,11 @@
 	A few changes has been made to the JSON layout for performance reasons
 **/
 
-window.cs = window.cs || { };
-
 /**
 	Provides easy-to-use functions for reading binary data
 **/
 
-cs.MapParser = (function () {
+define(["util/DataReader"], function(DataReader) {
 	var constants = {
 		BSP_VERSION: 30,
 		
@@ -683,5 +681,5 @@ cs.MapParser = (function () {
 				visibility: visibility
 			};
 		}
-	}
-}());
+	};
+});

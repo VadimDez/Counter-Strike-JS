@@ -3,10 +3,7 @@
 	The logic has been ported from the Quake 1 engine
 **/
 
-window.cs = window.cs || { };
-
-cs.CollisionDetection = (function() {
-
+define(["lib/gl-matrix", "GameInfo", "MapParser"], function(glMatrix, GameInfo, MapParser) {
 	var samePosition = function(vStart, vEnd) {
 		return vStart[0] === vEnd[0] &&
 			vStart[1] === vEnd[1] &&
@@ -14,7 +11,7 @@ cs.CollisionDetection = (function() {
 	}
 
 	var trace = function(vStart, vEnd, shouldSlide) {
-		var mapData = cs.map.mapData;
+		var mapData = GameInfo.map.mapData;
 		//No need to do anything if no movement is required
 		if(samePosition(vStart, vEnd)) {
 			return vEnd;
@@ -38,13 +35,13 @@ cs.CollisionDetection = (function() {
 		//formula:
 		//vNewPosition = vStart + (vEnd - vStart)*ratio
 		var vDelta = [];
-		vec3.sub(vDelta, vEnd, vStart);
+		glMatrix.vec3.sub(vDelta, vEnd, vStart);
 		var vNewPosition = [];
-		vec3.scaleAndAdd(vNewPosition, vStart, vDelta, traceObj.ratio);
+		glMatrix.vec3.scaleAndAdd(vNewPosition, vStart, vDelta, traceObj.ratio);
 		
 		//Calculate how much we still need to move
 		var vMove = [];
-		vec3.sub(vMove, vEnd, vNewPosition);
+		glMatrix.vec3.sub(vMove, vEnd, vNewPosition);
 		
 		if(!shouldSlide) {
 			return vNewPosition;
@@ -53,7 +50,7 @@ cs.CollisionDetection = (function() {
 		//We now calculate how much the player should "slide"
 		//i.e when hitting a wall we don't completely stop, but rather slide
 		//along the wall
-		var distance = vec3.dot(vMove, traceObj.plane.vNormal);
+		var distance = glMatrix.vec3.dot(vMove, traceObj.plane.vNormal);
 		var vEndPosition = [
 			vEnd[0] - traceObj.plane.vNormal[0] * distance,
 			vEnd[1] - traceObj.plane.vNormal[1] * distance,
@@ -65,9 +62,9 @@ cs.CollisionDetection = (function() {
 	};
 	
 	var recursiveHullCheck = function(iNode, p1f, p2f, p1, p2, traceObj) {
-		var mapData = cs.map.mapData;
+		var mapData = GameInfo.map.mapData;
 		if(iNode < 0) {
-			if(iNode != cs.MapParser.constants.CONTENTS_SOLID) {
+			if(iNode != MapParser.constants.CONTENTS_SOLID) {
 				traceObj.allSolid = false;
 			}
 			return true;
@@ -91,8 +88,8 @@ cs.CollisionDetection = (function() {
 		}
 		else {
 			//Not perpendicular to any axis
-			t1 = vec3.dot(vNormal, p1) - plane.distance;
-			t2 = vec3.dot(vNormal, p2) - plane.distance;
+			t1 = glMatrix.vec3.dot(vNormal, p1) - plane.distance;
+			t2 = glMatrix.vec3.dot(vNormal, p2) - plane.distance;
 		}
 		
 		if(t1 >= 0 && t2 >= 0) {
@@ -155,7 +152,7 @@ cs.CollisionDetection = (function() {
 		}
 		else {
 			var negvNormal = [];
-			vec3.negate(negvNormal, vNormal);
+			glMatrix.vec3.negate(negvNormal, vNormal);
 			traceObj.plane.vNormal = negvNormal;
 			traceObj.plane.distance = -plane.distance;
 		}
@@ -172,8 +169,8 @@ cs.CollisionDetection = (function() {
 			//We could go further, calculate new ratio of how far we went
 			mid = p1f + (p2f - p1f)*frac;
 			var vDelta = [];
-			vec3.sub(vDelta, p2, p1);
-			vec3.scaleAndAdd(vMid, p1, vDelta, frac);
+			glMatrix.vec3.sub(vDelta, p2, p1);
+			glMatrix.vec3.scaleAndAdd(vMid, p1, vDelta, frac);
 		}
 		
 		//Store how far we were able to go
@@ -183,7 +180,7 @@ cs.CollisionDetection = (function() {
 	
 	//Check whether the point p is a solid or not
 	var hullPointContentIsSolid = function(iNode, p) {
-		var mapData = cs.map.mapData;
+		var mapData = GameInfo.map.mapData;
 		
 		while(iNode >= 0) {
 			var node = mapData.clipNodes[iNode];
@@ -194,7 +191,7 @@ cs.CollisionDetection = (function() {
 				mapData.planes.normals[3*node.iPlane + 2]
 			]; 
 			
-			var d = vec3.dot(vNormal, p) - plane.distance;
+			var d = glMatrix.vec3.dot(vNormal, p) - plane.distance;
 			
 			if(d < 0) {
 				iNode = node.iChildren[1];
@@ -204,7 +201,7 @@ cs.CollisionDetection = (function() {
 			}
 		}
 		
-		return iNode == cs.MapParser.constants.CONTENTS_SOLID;
+		return iNode == MapParser.constants.CONTENTS_SOLID;
 	};
 	
 	return {
@@ -220,4 +217,4 @@ cs.CollisionDetection = (function() {
 			return Math.abs(t[2] - z) < 0.000001;
 		}
 	};
-})();
+});

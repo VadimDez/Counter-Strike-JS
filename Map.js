@@ -3,17 +3,16 @@
 	class that performs both actions.
 **/
 
-window.cs = window.cs || { };
-
-cs.Map = function(gl, data) {
-	var mapData = cs.MapParser.parse(data);
-	var mapRender = new cs.MapRender(gl, mapData);
-	
-	this.mapData = mapData;
-	/**
-		Render the map as seen from the "pos" position
-	**/
-	this.render = function(pos) {
-		return mapRender.render(pos);
+define(["MapParser", "MapRender"], function(MapParser, MapRender) {
+	return function(gl, data) {
+		var mapData = MapParser.parse(data);
+		var mapRender = new MapRender(gl, mapData);
+		this.mapData = mapData;
+		/**
+			Render the map as seen from the "pos" position
+		**/
+		this.render = function(pos) {
+			return mapRender.render(pos);
+		};
 	};
-}
+});

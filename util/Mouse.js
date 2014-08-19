@@ -2,9 +2,7 @@
 	This file provides high level mechanisms for mouse event listeners
 	as well as abstracting away browser differences.
 **/
-
-var MouseJS = (function() {
-	
+define(["util/PointerLock"], function(PointerLock) {
 	//Listeners for mouse down and mouse up
 	//Index 0 is left, 1 is right and 2 is middle
 	var downListeners = [[], [], []];
@@ -18,7 +16,7 @@ var MouseJS = (function() {
 		//Call listeners waiting on the down event on this mouse button
 		downListeners[e.which-1].forEach(function(element) {
 			//If an interval is specified we should call the listener continuously
-			if(element.interval !== "undefined") {
+			if(element.interval !== undefined) {
 				var intervalID = setInterval(element.callback, element.interval);
 				intervalIds[element.id] = intervalID;
 			}
@@ -63,4 +61,4 @@ var MouseJS = (function() {
 			++id;
 		}
 	};
-})();
+});

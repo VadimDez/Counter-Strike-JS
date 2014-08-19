@@ -2,7 +2,7 @@
 	This class implements functionality for reading binary data from a JS array
 **/
 
-DataReader = (function () {
+define(function () {
 	var view = new DataView(new ArrayBuffer(4));
 	
 	return {
@@ -33,8 +33,15 @@ DataReader = (function () {
 		},
 		
 		readBinaryString: function(data, n, length) {
-			var str = data.subarray(n, n + length);
-			return String.fromCharCode.apply(null, str);
+			var end = length + n;
+			var str = "";
+			for(var i = n; i != end; ++i) {
+				if(data[i] > 0) {
+					str += String.fromCharCode(data[i]);
+				}
+				else break;
+			}
+			return str;
 		}
 	};
-})();
+});

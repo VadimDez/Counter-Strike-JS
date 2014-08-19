@@ -3,8 +3,7 @@
 	implementations across browsers. (Currently Chrome 23+ and Firefox 14+)
 **/
 
-var PointerLock = (function() {
-	
+define(function() {
 	var mouseMoveCallbackWrapper = function(callback) {
 		return function(e) {
 			e.movementX = e.movementX		||
@@ -67,4 +66,4 @@ var PointerLock = (function() {
 			return result;
 		}
 	};
-})();
+});
