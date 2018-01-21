@@ -21,4 +21,5 @@ Counter-Strike 1.6 implementation in JavaScript utilizing state of the art brows
 <ul>
 <li>Please note: No actual data (maps, models, textures, etc.) is included in the project, due to copyright reasons!</li>
 </ul>
-![Screenshot](http://i.imgur.com/9kMVte7.png "Ingame screenshot from cs_assault")
+
+![Screenshot](http://i.imgur.com/9kMVte7.png)
