@@ -2,9 +2,9 @@
  * Created by Vadym Yatsyuk on 25.02.18
  */
 
-// import { mat4 } from 'gl-matrix';
-import * as glMatrix from '../lib/gl-matrix';
-const mat4 = glMatrix.mat4;
+import { mat4 } from 'gl-matrix';
+// import * as glMatrix from '../lib/gl-matrix';
+// const mat4 = glMatrix.mat4;
 import { download } from "./util/download";
 import { GameInfo } from './GameInfo';
 import { Player } from './Player';

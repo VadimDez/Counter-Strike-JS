@@ -214,41 +214,42 @@ export const ModelRender = function(gl, modelData) {
 	};
 
 	let calcBoneQuaternion = function(frame, s, bone, animation, adj) {
-		let angle1 = [0, 0, 0];
-		let angle2 = [0, 0, 0];
-		for(let j = 0; j < 3; ++j) {
-			if(animation.offset[j + 3] === 0) {
+		let angle1 = vec3.fromValues(0, 0, 0);
+		let angle2 = vec3.fromValues(0, 0, 0);
+
+		for (let j = 0; j < 3; ++j) {
+			if (animation.offset[j + 3] === 0) {
 				//default;
 				angle1[j] = bone.value[j+3];
 				angle2[j] = angle1[j];
-			}
-			else {
+			} else {
 				let animIndex = animation.base + animation.offset[j+3];
 				let k = Math.floor(frame);
-				while(total(animIndex, 0) <= k) {
+
+				while (total(animIndex, 0) <= k) {
 					k -= total(animIndex, 0);
 					let _valid = valid(animIndex, 0);
 					animIndex += 2*_valid + 2;
 				}
-				if(valid(animIndex, 0) > k) {
+
+				if (valid(animIndex, 0) > k) {
 					angle1[j] = value(animIndex, k+ 1);
 
-					if(valid(animIndex, 0) > k + 1) {
+					if (valid(animIndex, 0) > k + 1) {
 						angle2[j] = value(animIndex, k + 2);
+					} else {
+						if (total(animIndex, 0) > k + 1) {
+              angle2[j] = angle1[j];
+            } else {
+              angle2[j] = value(animIndex, valid(animIndex, 0) + 2);
+            }
 					}
-					else {
-						if (total(animIndex, 0) > k + 1)
-							angle2[j] = angle1[j];
-						else
-							angle2[j] = value(animIndex, valid(animIndex, 0)+2);
-					}
-				}
-				else {
+				} else {
 					angle1[j] = value(animIndex, valid(animIndex, 0));
+
 					if (total(animIndex, 0) > k + 1) {
 						angle2[j] = angle1[j];
-					}
-					else {
+					} else {
 						angle2[j] = value(animIndex, valid(animIndex, 0)+2);
 					}
 				}
@@ -256,31 +257,31 @@ export const ModelRender = function(gl, modelData) {
 				angle2[j] = bone.value[j+3] + angle2[j] * bone.scale[j+3];
 			}
 
-			if(bone.boneController[j + 3] != -1) {
+			if (bone.boneController[j + 3] != -1) {
 				angle1[j] += adj[bone.boneController[j + 3]];
 				angle2[j] += adj[bone.boneController[j + 3]];
 			}
 		}
 
 		//Spherical linear interpolation between the 2 angles
-		if(!vec3Equal(angle1, angle2, 0.001)) {
+		if (!vec3Equal(angle1, angle2, 0.001)) {
 			let q1 = quatFromAngles(angle1);
 			let q2 = quatFromAngles(angle2);
 			let q = quat.create();
 			quat.slerp(q, q1, q2, s);
 			return q;
-		} else {
-			return quatFromAngles(angle1);
 		}
+
+    return quatFromAngles(angle1);
 	};
 
 	let calcBonePosition = function(frame, s, bone, animation, adj) {
 		let pos = [0, 0, 0];
 
-		for(let j = 0; j < 3; ++j) {
+		for (let j = 0; j < 3; ++j) {
 			pos[j] = bone.value[j]; //default value
 
-			if(animation.offset[j] != 0) {
+			if (animation.offset[j] != 0) {
 				let animIndex = animation.base + animation.offset[j];
 
 				let k = Math.floor(frame);
@@ -290,30 +291,26 @@ export const ModelRender = function(gl, modelData) {
 				}
 
 				//If inside span
-				if(valid(animIndex, 0) > k) {
+				if (valid(animIndex, 0) > k) {
 					//Is there more data in the span?
-					if(valid(animIndex, 0) > k + 1) {
+					if (valid(animIndex, 0) > k + 1) {
 						pos[j] += ((1.0 - s)*value(animIndex, k+1) + s*value(animIndex, k+2)) * bone.scale[j];
-					}
-					else {
+					} else {
 						pos[j] += value(animIndex, k+1) * bone.scale[j];
 					}
-				}
-				else {
+				} else {
 					//We are at the end of the span.
 					//Do we have another section with data?
-					if(total(animIndex, 0) <= k + 1) {
+					if (total(animIndex, 0) <= k + 1) {
 						pos[j] += (value(animIndex, valid(animIndex, 0)) * (1.0 - s) +
 							s * value(animIndex, valid(animIndex, 0)+2)) * bone.scale[j];
 
-					}
-					//No more sections
-					else {
+					} else { //No more sections
 						pos[j] += value(animIndex, valid(animIndex, 0)) * bone.scale[j];
 					}
 				}
 			}
-			if(bone.boneController[j] != -1) {
+			if (bone.boneController[j] != -1) {
 				pos[j] += adj[bone.boneController[j]];
 			}
 		}
@@ -404,11 +401,11 @@ export const ModelRender = function(gl, modelData) {
 	};
 
 	let vectorTransform = function(vec, mat) {
-		let vecOut = vec3.create();
-		vecOut[0] = vec3.dot(vec, [mat[0][0], mat[0][1], mat[0][2]]) + mat[0][3];
-		vecOut[1] = vec3.dot(vec, [mat[1][0], mat[1][1], mat[1][2]]) + mat[1][3];
-		vecOut[2] = vec3.dot(vec, [mat[2][0], mat[2][1], mat[2][2]]) + mat[2][3];
-		return vecOut;
+		return vec3.fromValues(
+      vec3.dot(vec, [mat[0][0], mat[0][1], mat[0][2]]) + mat[0][3],
+      vec3.dot(vec, [mat[1][0], mat[1][1], mat[1][2]]) + mat[1][3],
+      vec3.dot(vec, [mat[2][0], mat[2][1], mat[2][2]]) + mat[2][3]
+    );
 	};
 
 
@@ -511,8 +508,8 @@ export const ModelRender = function(gl, modelData) {
 			let mesh = model.mesh[i];
 			let texture = modelData.textures[DataReader.readSignedShort(modelData.data, modelData.header.skinIndex + 2*mesh.skinRef)];
 
-			let s = 1.0/texture.width;
-			let t = 1.0/texture.height;
+			let s = 1.0 / texture.width;
+			let t = 1.0 / texture.height;
 
 			let index = mesh.triIndex;
 

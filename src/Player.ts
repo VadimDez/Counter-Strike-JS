@@ -7,9 +7,9 @@
 	providing keyboard listeners
 **/
 
-// import { vec3 } from 'gl-matrix';
-import * as glMatrix from '../lib/gl-matrix';
-const vec3 = glMatrix.vec3;
+import { vec3 } from 'gl-matrix';
+// import * as glMatrix from '../lib/gl-matrix';
+// const vec3 = glMatrix.vec3;
 
 import * as KeyboardJS from '../lib/keyboard';
 import { Mouse as MouseJS } from './util/Mouse';
@@ -43,8 +43,8 @@ export const Player = function(gl, x, y, z) {
 		let newZ = this.z + 18*dir[2];
 
 		//Strafe
-		newY -= this.speed*normalDir[1]*Math.cos(Math.PI - this.yAngle);
-		newX += this.speed*normalDir[1]*Math.sin(Math.PI - this.yAngle);
+		newY -= this.speed*normalDir[1] * Math.cos(Math.PI - this.yAngle);
+		newX += this.speed*normalDir[1] * Math.sin(Math.PI - this.yAngle);
 
 		//Apply gravity if we're not on the ground. TODO: Accelerate instead of subtracting a constant
 		if(!onGround) {
