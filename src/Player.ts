@@ -7,15 +7,16 @@
 	providing keyboard listeners
 **/
 
-import { vec3 } from 'gl-matrix';
+// import { vec3 } from 'gl-matrix';
+import * as glMatrix from '../lib/gl-matrix';
+const vec3 = glMatrix.vec3;
 
-import KeyboardJS from '../lib/keyboard';
+import * as KeyboardJS from '../lib/keyboard';
 import { Mouse as MouseJS } from './util/Mouse';
 import { config } from './config';
 import { CollisionDetection } from './CollisionDetection';
 import { Weapon } from './Weapon';
 
-// define(["lib/keyboard", "util/Mouse", "CollisionDetection", "Weapon", "config", "lib/gl-matrix"], function(KeyboardJS, MouseJS, CollisionDetection, Weapon, config, glMatrix) {
 export const Player = function(gl, x, y, z) {
 	this.x = x;
 	this.y = y;
@@ -24,21 +25,21 @@ export const Player = function(gl, x, y, z) {
 	this.xAngle = 0;
 	this.speed = 5;
 	//X and Y direction. Not necessarily normalized
-	var dir = [0, 0, 0];
+	var dir = vec3.fromValues(0, 0, 0);
 	var weapon = null;
 
 	this.position = function() {
 		return [this.x, this.y, this.z];
-	}
+	};
 
 	this.move = function() {
 		var onGround = CollisionDetection.isOnGround(this.position());
-		var normalDir = [0, 0, 0];
-		vec3.normalize(normalDir as any, dir);
+		var normalDir = vec3.fromValues(0, 0, 0);
+		vec3.normalize(normalDir, dir);
 
 		//Move forward
-		var newX = this.x + this.speed*normalDir[0]*Math.cos(this.yAngle);
-		var newY = this.y - this.speed*normalDir[0]*Math.sin(this.yAngle);
+		var newX = this.x + this.speed * normalDir[0] * Math.cos(this.yAngle);
+		var newY = this.y - this.speed * normalDir[0] * Math.sin(this.yAngle);
 		var newZ = this.z + 18*dir[2];
 
 		//Strafe
@@ -62,7 +63,8 @@ export const Player = function(gl, x, y, z) {
 		var PI_HALF = Math.PI/2.0;
 		var PI_TWO = Math.PI*2.0;
 
-		this.yAngle += xDelta * config.MOUSE_SENSITIVITY;
+		this.yAngle += (xDelta * config.MOUSE_SENSITIVITY) || 0;
+
 		//Make sure we're in the interval [0, 2*pi]
 		while (this.yAngle < 0) {
 			this.yAngle += PI_TWO;
@@ -71,7 +73,8 @@ export const Player = function(gl, x, y, z) {
 			this.yAngle -= PI_TWO;
 		}
 
-		this.xAngle += yDelta * config.MOUSE_SENSITIVITY;
+		this.xAngle += (yDelta * config.MOUSE_SENSITIVITY) || 0;
+
 		//Make sure we're in the interval [-pi/2, pi/2]
 		if(this.xAngle < -PI_HALF) {
 			this.xAngle = -PI_HALF;

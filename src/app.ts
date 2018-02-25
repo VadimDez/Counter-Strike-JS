@@ -62,4 +62,7 @@ import { Menu } from './menu';
   }
 
   init();
+
+
+  Menu.startGame();
 }());

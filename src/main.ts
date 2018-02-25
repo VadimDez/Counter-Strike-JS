@@ -2,15 +2,15 @@
  * Created by Vadym Yatsyuk on 25.02.18
  */
 
-import { mat4 } from 'gl-matrix';
+// import { mat4 } from 'gl-matrix';
+import * as glMatrix from '../lib/gl-matrix';
+const mat4 = glMatrix.mat4;
 import { download } from "./util/download";
 import { GameInfo } from './GameInfo';
 import { Player } from './Player';
 import { Map } from './Map';
 import { config } from './config';
 import { PointerLock } from './util/PointerLock';
-// import * as Peer from '../lib/peer.min';
-const Peer = (window as any).Peer;
 
 
 export class Main {
@@ -67,7 +67,7 @@ export class Main {
   }
 
   mainLoop() {
-    (window as any).requestAnimFrame!(this.mainLoop);
+    (window as any).requestAnimFrame(this.mainLoop.bind(this));
     GameInfo.player.move();
 
     this.render();
@@ -79,7 +79,7 @@ export class Main {
     var gl = GameInfo.gl;
 
     var mapName = "cs_assault.bsp"/*sessionStorage.getItem("map")*/;
-    download("data/maps/" + mapName, "arraybuffer", function(data) {
+    download("data/maps/" + mapName, "arraybuffer", (data) => {
       gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
       //Parse map
@@ -88,17 +88,18 @@ export class Main {
       GameInfo.player.switchWeapon(config.PLAYER_DEFAULT_WEAPON);
       //Set event handler for resizing the screen every time
       //the window changes size
-      var resizeCallback = function() {
+      var resizeCallback = () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         gl.viewportWidth = window.innerWidth;
         gl.viewportHeight = window.innerHeight;
       };
+
       resizeCallback();
       window.addEventListener("resize", resizeCallback, false);
 
       //Listen for clicks on the canvas
-      canvas.addEventListener("click", function() {
+      canvas.addEventListener("click", () => {
         //is the mouse not currently locked?
         if(!PointerLock.pointerLockElement()) {
           //Nope. Request locking
@@ -107,13 +108,14 @@ export class Main {
       }, false);
 
       //Listen for pointer locking
-      PointerLock.addPointerLockExchangeEventListener(document, function(e) {
+      PointerLock.addPointerLockExchangeEventListener(document, (e) => {
         //Did the pointer just go from unlocked to locked?
-        if(!!PointerLock.pointerLockElement()) {
+        if (!!PointerLock.pointerLockElement()) {
+          console.log('add mouse move');
           //Yep! Add mousemove listener
           PointerLock.addMouseMoveEventListener(document, this.rotatePlayer, false);
-        }
-        else { //Nope. Remove mouse move listener
+        } else { //Nope. Remove mouse move listener
+          console.log('remove mouse move');
           PointerLock.removeMouseMoveEventListener(document, this.rotatePlayer);
         }
       }, false);
@@ -124,40 +126,39 @@ export class Main {
 
   //Rotate the player when the mouse is moved
   rotatePlayer(e) {
-    var player = GameInfo.player;
+    let player = GameInfo.player;
     player.rotate(e.movementX, e.movementY);
   }
 
   start() {
-    var peer = new Peer({key: (window as any).cs.peerJSApiKey});
-    var server = sessionStorage.getItem("server");
-    //Should we connect to a server?
-    if(server !== null) {
-      //Yep. Connect to it
-      var conn = peer.connect(server);
-      conn.on("open", function() {
-        conn.send("Hello, I am " + peer.id);
-      });
-      conn.on("error", function(err) {
-        console.log(err);
-      });
-    }
-    else {
-      //No server specified: We are the server
-      peer.on("open", function() {
-        console.log("Game server started with ID: " + peer.id);
-      });
-
-      peer.on("error", function(err) {
-        console.log("Error starting game server: " + err);
-      });
-
-      peer.on("connection", function(conn) {
-        conn.on("data", function(data){
-          console.log(data);
-        });
-      });
-    }
+    // var peer = new Peer({key: (window as any).cs.peerJSApiKey});
+    // var server = sessionStorage.getItem("server");
+    // //Should we connect to a server?
+    // if (server !== null) {
+    //   //Yep. Connect to it
+    //   var conn = peer.connect(server);
+    //   conn.on("open", function() {
+    //     conn.send("Hello, I am " + peer.id);
+    //   });
+    //   conn.on("error", function(err) {
+    //     console.log(err);
+    //   });
+    // } else {
+    //   //No server specified: We are the server
+    //   peer.on("open", function() {
+    //     console.log("Game server started with ID: " + peer.id);
+    //   });
+    //
+    //   peer.on("error", function(err) {
+    //     console.log("Error starting game server: " + err);
+    //   });
+    //
+    //   peer.on("connection", function(conn) {
+    //     conn.on("data", function(data){
+    //       console.log(data);
+    //     });
+    //   });
+    // }
 
     this.webGLStart();
   }

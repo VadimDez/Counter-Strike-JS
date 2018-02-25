@@ -3,7 +3,11 @@
 html, body { width:100%; height:100%;}
 
 canvas {
-    display: none;
+    display: block;
     margin: 0;
     padding: 0;
+}
+
+.main-menu {
+    display: none;
 }

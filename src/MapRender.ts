@@ -5,7 +5,9 @@
 	TODO: Render WAD textures and textures defined in the bsp file
 **/
 
-import { mat4 } from 'gl-matrix';
+// import { mat4 } from 'gl-matrix';
+import * as glMatrix from '../lib/gl-matrix';
+const mat4 = glMatrix.mat4;
 import { GameInfo } from './GameInfo';
 
 export const MapRender = function(gl, map) {

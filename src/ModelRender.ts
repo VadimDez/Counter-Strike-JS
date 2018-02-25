@@ -3,7 +3,12 @@
 	.mdl version 10
 **/
 import { DataReader } from './util/DataReader';
-import { quat, vec3, mat3, mat4 } from 'gl-matrix';
+// import { quat, vec3, mat3, mat4 } from 'gl-matrix';
+import * as glMatrix from '../lib/gl-matrix';
+const quat = glMatrix.quat;
+const vec3 = glMatrix.vec3;
+const mat3 = glMatrix.mat3;
+const mat4 = glMatrix.mat4;
 // const createjs = require('../lib/createjs.js');
 const createjs = (window as any).createjs;
 import { GameInfo } from './GameInfo';
@@ -127,7 +132,8 @@ export const ModelRender = function(gl, modelData) {
 			var value;
 			if(i <= 3) {
 				// if(boneController.type & constants.RLOOP) {
-				if(boneController.type & constants.STUDIO_RLOOP) {
+				if(boneController.type & (constants as any).RLOOP) {
+				// if(boneController.type & constants.STUDIO_RLOOP) {
 					value = boneController.start;
 				}
 				else {

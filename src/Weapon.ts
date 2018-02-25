@@ -1,7 +1,9 @@
 /**
  * Created by Vadym Yatsyuk on 25.02.18
  */
-import { mat4 } from 'gl-matrix';
+// import { mat4 } from 'gl-matrix';
+import * as glMatrix from '../lib/gl-matrix';
+const mat4 = glMatrix.mat4;
 import { GameInfo } from './GameInfo';
 import { Sprite } from './Sprite';
 import { download } from './util/download';
@@ -14,8 +16,6 @@ import { ModelRender } from './ModelRender';
 	A weapon is a 1st person model which provides functionality
 	such as shooting and reloading as well as rendering.
 **/
-// define(["ModelRender", "util/download", "Sprite", "ModelParser", "GameInfo", "lib/gl-matrix", "WeaponStateManager"],
-// 	function(ModelRender, download, Sprite, ModelParser, GameInfo, glMatrix, WeaponStateManager) {
 
 export const Weapon = function(weaponName) {
 	var sprite = {};
