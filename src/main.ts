@@ -21,7 +21,7 @@ export class Main {
 
   static initGL(canvas: HTMLCanvasElement) {
     try {
-      GameInfo.gl = canvas.getContext("experimental-webgl");
+      GameInfo.gl = canvas.getContext('experimental-webgl');
       GameInfo.gl.viewportWidth = canvas.width;
       GameInfo.gl.viewportHeight = canvas.height;
 
@@ -32,7 +32,7 @@ export class Main {
     } catch (e) { }
 
     if (!GameInfo.gl) {
-      console.log("Could not initialise WebGL");
+      console.log('Could not initialise WebGL');
     }
   }
 
@@ -44,7 +44,7 @@ export class Main {
 
     mat4.perspective(
       GameInfo.pMatrix,
-      config.FIELD_OF_VIEW*Math.PI/180,
+      config.FIELD_OF_VIEW * Math.PI / 180,
       gl.viewportWidth / gl.viewportHeight,
       config.NEAR_CLIPPING,
       config.FAR_CLIPPING
@@ -54,7 +54,7 @@ export class Main {
     mat4.rotateX(GameInfo.mvMatrix, GameInfo.mvMatrix, player.xAngle);
     mat4.rotateY(GameInfo.mvMatrix, GameInfo.mvMatrix, player.yAngle);
 
-    //Move the player by moving the map in the reverse direction
+    // Move the player by moving the map in the reverse direction
     mat4.translate(GameInfo.mvMatrix, GameInfo.mvMatrix,
       [player.y, -player.z - config.PLAYER_HEIGHT, player.x]);
 
@@ -62,7 +62,7 @@ export class Main {
 
     mat4.identity(GameInfo.mvMatrix);
 
-    //Draw player
+    // Draw player
     player.render();
   }
 
@@ -74,22 +74,22 @@ export class Main {
   }
 
   webGLStart() {
-    let canvas = document.getElementById("canvas") as HTMLCanvasElement;
+    let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
     Main.initGL(canvas);
 
     let gl = GameInfo.gl;
 
-    let mapName = "cs_assault.bsp"/*sessionStorage.getItem("map")*/;
-    download("data/maps/" + mapName, "arraybuffer", (data) => {
+    let mapName = 'cs_assault.bsp'/*sessionStorage.getItem("map")*/;
+    download(`data/maps/${ mapName }`, 'arraybuffer', (data) => {
       gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
-      //Parse map
+      // Parse map
       GameInfo.map = new Map(gl, data);
       GameInfo.player = new Player(gl, -496, 2352, 176);
       GameInfo.player.switchWeapon(config.PLAYER_DEFAULT_WEAPON);
-      //Set event handler for resizing the screen every time
-      //the window changes size
+      // Set event handler for resizing the screen every time
+      // the window changes size
       let resizeCallback = () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -98,25 +98,25 @@ export class Main {
       };
 
       resizeCallback();
-      window.addEventListener("resize", resizeCallback, false);
+      window.addEventListener('resize', resizeCallback, false);
 
-      //Listen for clicks on the canvas
-      canvas.addEventListener("click", () => {
-        //is the mouse not currently locked?
-        if(!PointerLock.pointerLockElement()) {
-          //Nope. Request locking
+      // Listen for clicks on the canvas
+      canvas.addEventListener('click', () => {
+        // is the mouse not currently locked?
+        if (!PointerLock.pointerLockElement()) {
+          // Nope. Request locking
           PointerLock.requestPointerLock(canvas);
         }
       }, false);
 
-      //Listen for pointer locking
+      // Listen for pointer locking
       PointerLock.addPointerLockExchangeEventListener(document, (e) => {
-        //Did the pointer just go from unlocked to locked?
+        // Did the pointer just go from unlocked to locked?
         if (!!PointerLock.pointerLockElement()) {
           console.log('add mouse move');
-          //Yep! Add mousemove listener
+          // Yep! Add mousemove listener
           PointerLock.addMouseMoveEventListener(document, Main.rotatePlayer, false);
-        } else { //Nope. Remove mouse move listener
+        } else { // Nope. Remove mouse move listener
           console.log('remove mouse move');
           PointerLock.removeMouseMoveEventListener(document, Main.rotatePlayer);
         }
@@ -126,7 +126,7 @@ export class Main {
     });
   }
 
-  //Rotate the player when the mouse is moved
+  // Rotate the player when the mouse is moved
   static rotatePlayer(e) {
     let player = GameInfo.player;
     player.rotate(e.movementX, e.movementY);

@@ -17,6 +17,15 @@ var config = {
   },
   module: {
     rules: [
+      // commented for now due to issue with webpack 4
+      // {
+      //   test: /\.tsx?$/,
+      //   enforce: 'pre',
+      //   loader: 'tslint-loader',
+      //   options: {
+      //     configFile: 'tslint.json'
+      //   }
+      // },
       {
         test: /\.tsx?$/,
         loader: 'ts-loader',

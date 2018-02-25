@@ -12,86 +12,87 @@ import { ModelParser } from './ModelParser';
 import { ModelRender } from './ModelRender';
 
 /**
-	This file defines the representation of a weapon.
-	A weapon is a 1st person model which provides functionality
-	such as shooting and reloading as well as rendering.
+  This file defines the representation of a weapon.
+  A weapon is a 1st person model which provides functionality
+  such as shooting and reloading as well as rendering.
 **/
 
 export const Weapon = function(weaponName) {
-	let sprite = {};
-	this.renderer = null;
-	this.name = weaponName;
-	let crosshair = null;
-	let gl = GameInfo.gl;
+  let sprite = {};
+  this.renderer = null;
+  this.name = weaponName;
+  let crosshair = null;
+  let gl = GameInfo.gl;
 
-	let stateManager = WeaponStateManager.shotgunManager;
+  let stateManager = WeaponStateManager.shotgunManager;
 
-	//Download weapon information
-	download("data/sprites/weapon_" + weaponName + ".txt", "text", function(txt) {
-		let lines = txt.split("\n");
-		//The last line is an empty string
-		let length = lines.length-1
-		for(let i = 1; i < length; ++i) {
-			let tokens = lines[i].split(/ |\t/g)
-			.filter(function (str) {
-				return str.length != 0;
-			});
-			//Note: The 640 res sprites are stored last in the file,
-			//so if there exists a 640 res version of the sprite then
-			//that's the one that will end up in the sprite object
-			sprite[tokens[0]] = {
-				res: tokens[1],
-				file: tokens[2],
-				x: tokens[3],
-				y: tokens[4],
-				w: tokens[5],
-				h: tokens[6],
-			};
-		}
+  // Download weapon information
+  download(`data/sprites/weapon_${ weaponName }.txt`, 'text', function(txt) {
+    let lines = txt.split('\n');
+    // The last line is an empty string
+    let length = lines.length - 1;
 
-		if(sprite["crosshair"] !== undefined) {
-			//Dwonload crosshair spritesheet
-			download("data/sprites/" + sprite["crosshair"].file + ".spr", "arraybuffer", function(data) {
-				let crosshairInfo = sprite["crosshair"];
-				crosshair = new Sprite(gl, data).subSprite(crosshairInfo.x, crosshairInfo.y, crosshairInfo.w, crosshairInfo.h);
-			});
-		}
-	});
+    for (let i = 1; i < length; ++i) {
+      let tokens = lines[i].split(/ |\t/g)
+      .filter(function (str) {
+        return str.length != 0;
+      });
+      // Note: The 640 res sprites are stored last in the file,
+      // so if there exists a 640 res version of the sprite then
+      // that's the one that will end up in the sprite object
+      sprite[tokens[0]] = {
+        res: tokens[1],
+        file: tokens[2],
+        x: tokens[3],
+        y: tokens[4],
+        w: tokens[5],
+        h: tokens[6],
+      };
+    }
 
-	//Download weapon model
-	let _this = this;
-	download("data/models/v_" + weaponName + ".mdl", "arraybuffer", function(data) {
-		let weaponData = ModelParser.parse(gl, data);
-		_this.renderer = new ModelRender(gl, weaponData);
-	});
+    if (sprite['crosshair'] !== undefined) {
+      // Dwonload crosshair spritesheet
+      download(`data/sprites/${ sprite['crosshair'].file }.spr`, 'arraybuffer', function(data) {
+        let crosshairInfo = sprite['crosshair'];
+        crosshair = new Sprite(gl, data).subSprite(crosshairInfo.x, crosshairInfo.y, crosshairInfo.w, crosshairInfo.h);
+      });
+    }
+  });
 
-	this.render = function() {
-		if(this.renderer !== null) {
-			//Render the weapon
-			this.renderer.render();
-		}
+  // Download weapon model
+  let _this = this;
+  download(`data/models/v_${ weaponName }.mdl`, 'arraybuffer', function(data) {
+    let weaponData = ModelParser.parse(gl, data);
+    _this.renderer = new ModelRender(gl, weaponData);
+  });
 
-		if(crosshair !== null) {
-			//Render the crosshair
-			mat4.identity(GameInfo.mvMatrix);
-			mat4.translate(GameInfo.mvMatrix, GameInfo.mvMatrix, [0.0, 0.0, -50]);
-			crosshair.render();
-		}
-	};
+  this.render = function() {
+    if (this.renderer !== null) {
+      // Render the weapon
+      this.renderer.render();
+    }
 
-	this.shoot = function() {
-		stateManager.onShoot(this);
-	};
+    if (crosshair !== null) {
+      // Render the crosshair
+      mat4.identity(GameInfo.mvMatrix);
+      mat4.translate(GameInfo.mvMatrix, GameInfo.mvMatrix, [0.0, 0.0, -50]);
+      crosshair.render();
+    }
+  };
 
-	this.idle = function() {
-		stateManager.onIdle(this);
-	};
+  this.shoot = function() {
+    stateManager.onShoot(this);
+  };
 
-	this.reload = function() {
-		stateManager.onReload(this);
-	};
+  this.idle = function() {
+    stateManager.onIdle(this);
+  };
 
-	this.special = function() {
-		stateManager.onSpecial(this);
-	}
+  this.reload = function() {
+    stateManager.onReload(this);
+  };
+
+  this.special = function() {
+    stateManager.onSpecial(this);
+  };
 };
