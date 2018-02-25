@@ -19,7 +19,7 @@ export class Main {
     (window as any).cs = (window as any).cs || { };
   }
 
-  initGL(canvas: HTMLCanvasElement) {
+  static initGL(canvas: HTMLCanvasElement) {
     try {
       GameInfo.gl = canvas.getContext("experimental-webgl");
       GameInfo.gl.viewportWidth = canvas.width;
@@ -36,9 +36,9 @@ export class Main {
     }
   }
 
-  render() {
-    var player = GameInfo.player;
-    var gl = GameInfo.gl;
+  static render() {
+    let player = GameInfo.player;
+    let gl = GameInfo.gl;
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -70,15 +70,17 @@ export class Main {
     (window as any).requestAnimFrame(this.mainLoop.bind(this));
     GameInfo.player.move();
 
-    this.render();
+    Main.render();
   }
 
   webGLStart() {
     let canvas = document.getElementById("canvas") as HTMLCanvasElement;
-    this.initGL(canvas);
-    var gl = GameInfo.gl;
 
-    var mapName = "cs_assault.bsp"/*sessionStorage.getItem("map")*/;
+    Main.initGL(canvas);
+
+    let gl = GameInfo.gl;
+
+    let mapName = "cs_assault.bsp"/*sessionStorage.getItem("map")*/;
     download("data/maps/" + mapName, "arraybuffer", (data) => {
       gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -88,7 +90,7 @@ export class Main {
       GameInfo.player.switchWeapon(config.PLAYER_DEFAULT_WEAPON);
       //Set event handler for resizing the screen every time
       //the window changes size
-      var resizeCallback = () => {
+      let resizeCallback = () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         gl.viewportWidth = window.innerWidth;
@@ -113,10 +115,10 @@ export class Main {
         if (!!PointerLock.pointerLockElement()) {
           console.log('add mouse move');
           //Yep! Add mousemove listener
-          PointerLock.addMouseMoveEventListener(document, this.rotatePlayer, false);
+          PointerLock.addMouseMoveEventListener(document, Main.rotatePlayer, false);
         } else { //Nope. Remove mouse move listener
           console.log('remove mouse move');
-          PointerLock.removeMouseMoveEventListener(document, this.rotatePlayer);
+          PointerLock.removeMouseMoveEventListener(document, Main.rotatePlayer);
         }
       }, false);
 
@@ -125,7 +127,7 @@ export class Main {
   }
 
   //Rotate the player when the mouse is moved
-  rotatePlayer(e) {
+  static rotatePlayer(e) {
     let player = GameInfo.player;
     player.rotate(e.movementX, e.movementY);
   }

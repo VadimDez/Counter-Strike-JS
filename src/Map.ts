@@ -12,8 +12,8 @@ import { MapRender } from './MapRender';
 
 
 export const Map = function(gl: any, data: any) {
-  var mapData = MapParser.parse(data);
-  var mapRender = new MapRender(gl, mapData);
+  let mapData = MapParser.parse(data);
+  let mapRender = new MapRender(gl, mapData);
   this.mapData = mapData;
 
   /**

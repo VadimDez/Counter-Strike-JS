@@ -4,7 +4,7 @@
 **/
 import { GameInfo } from './GameInfo';
 
-var fragmentShader =
+let fragmentShader =
 "	precision mediump float;" +
 "	varying vec2 vTexCoord;" +
 "	uniform sampler2D uSampler;" +
@@ -13,7 +13,7 @@ var fragmentShader =
 "		gl_FragColor = texture2D(uSampler, vec2(vTexCoord.s, vTexCoord.t));" +
 "	}";
 
-var vertexShader =
+let vertexShader =
 "	attribute vec3 aVertexPosition;" +
 "	attribute vec2 aTexCoord;" +
 
@@ -29,7 +29,7 @@ var vertexShader =
 
 export const SpriteRender = function(gl, sprite) {
 	function getShader(gl, shaderCode, shaderType) {
-		var shader = gl.createShader(shaderType);
+		let shader = gl.createShader(shaderType);
 
 		gl.shaderSource(shader, shaderCode);
 		gl.compileShader(shader);
@@ -42,11 +42,11 @@ export const SpriteRender = function(gl, sprite) {
 		return shader;
 	}
 
-	var shaderProgram = (function() {
-		var sFragmentShader = getShader(gl, fragmentShader, gl.FRAGMENT_SHADER);
-		var sVertexShader = getShader(gl, vertexShader, gl.VERTEX_SHADER);
+	let shaderProgram = (function() {
+		let sFragmentShader = getShader(gl, fragmentShader, gl.FRAGMENT_SHADER);
+		let sVertexShader = getShader(gl, vertexShader, gl.VERTEX_SHADER);
 
-		var program = gl.createProgram();
+		let program = gl.createProgram();
 		gl.attachShader(program, sVertexShader);
 		gl.attachShader(program, sFragmentShader);
 		gl.linkProgram(program);
@@ -66,9 +66,9 @@ export const SpriteRender = function(gl, sprite) {
 		return program;
 	})();
 
-	var buffer = gl.createBuffer();
+	let buffer = gl.createBuffer();
 
-	var texture = gl.createTexture();
+	let texture = gl.createTexture();
 	gl.bindTexture(gl.TEXTURE_2D, texture);
 	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, sprite.frames[0].width, sprite.frames[0].height, 0, gl.RGBA, gl.UNSIGNED_BYTE, sprite.frames[0].imageData);
 	gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -87,7 +87,7 @@ export const SpriteRender = function(gl, sprite) {
 		gl.disable(gl.DEPTH_TEST);
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-		var vertices = [
+		let vertices = [
 			1.0,  1.0,  0.0,	1.0, 0.0,
 			-1.0,  1.0,  0.0,	0.0, 0.0,
 			1.0, -1.0,  0.0,	1.0, 1.0,

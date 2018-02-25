@@ -18,21 +18,21 @@ import { ModelRender } from './ModelRender';
 **/
 
 export const Weapon = function(weaponName) {
-	var sprite = {};
+	let sprite = {};
 	this.renderer = null;
 	this.name = weaponName;
-	var crosshair = null;
-	var gl = GameInfo.gl;
+	let crosshair = null;
+	let gl = GameInfo.gl;
 
-	var stateManager = WeaponStateManager.shotgunManager;
+	let stateManager = WeaponStateManager.shotgunManager;
 
 	//Download weapon information
 	download("data/sprites/weapon_" + weaponName + ".txt", "text", function(txt) {
-		var lines = txt.split("\n");
+		let lines = txt.split("\n");
 		//The last line is an empty string
-		var length = lines.length-1
-		for(var i = 1; i < length; ++i) {
-			var tokens = lines[i].split(/ |\t/g)
+		let length = lines.length-1
+		for(let i = 1; i < length; ++i) {
+			let tokens = lines[i].split(/ |\t/g)
 			.filter(function (str) {
 				return str.length != 0;
 			});
@@ -52,16 +52,16 @@ export const Weapon = function(weaponName) {
 		if(sprite["crosshair"] !== undefined) {
 			//Dwonload crosshair spritesheet
 			download("data/sprites/" + sprite["crosshair"].file + ".spr", "arraybuffer", function(data) {
-				var crosshairInfo = sprite["crosshair"];
+				let crosshairInfo = sprite["crosshair"];
 				crosshair = new Sprite(gl, data).subSprite(crosshairInfo.x, crosshairInfo.y, crosshairInfo.w, crosshairInfo.h);
 			});
 		}
 	});
 
 	//Download weapon model
-	var _this = this;
+	let _this = this;
 	download("data/models/v_" + weaponName + ".mdl", "arraybuffer", function(data) {
-		var weaponData = ModelParser.parse(gl, data);
+		let weaponData = ModelParser.parse(gl, data);
 		_this.renderer = new ModelRender(gl, weaponData);
 	});
 

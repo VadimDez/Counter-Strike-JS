@@ -17,28 +17,28 @@ import { GameInfo } from './GameInfo';
 		Construct quaternion from Euler angles
 	**/
 let quatFromAngles = function(angles) {
-	var angle0 = angles[0] * 0.5;
-	var sr = Math.sin(angle0);
-	var cr = Math.cos(angle0);
+	let angle0 = angles[0] * 0.5;
+	let sr = Math.sin(angle0);
+	let cr = Math.cos(angle0);
 
-	var angle1 = angles[1] * 0.5;
-	var sp = Math.sin(angle1);
-	var cp = Math.cos(angle1);
+	let angle1 = angles[1] * 0.5;
+	let sp = Math.sin(angle1);
+	let cp = Math.cos(angle1);
 
-	var angle2 = angles[2] * 0.5;
-	var sy = Math.sin(angle2);
-	var cy = Math.cos(angle2);
+	let angle2 = angles[2] * 0.5;
+	let sy = Math.sin(angle2);
+	let cy = Math.cos(angle2);
 
-	var x = sr*cp*cy-cr*sp*sy;
-	var y = cr*sp*cy+sr*cp*sy;
-	var z = cr*cp*sy-sr*sp*cy;
-	var w = cr*cp*cy+sr*sp*sy;
+	let x = sr*cp*cy-cr*sp*sy;
+	let y = cr*sp*cy+sr*cp*sy;
+	let z = cr*cp*sy-sr*sp*cy;
+	let w = cr*cp*cy+sr*sp*sy;
 
 	return quat.fromValues(x, y, z, w);
 };
 
 export const ModelRender = function(gl, modelData) {
-	var constants = {
+	let constants = {
 		valid:			0,
 		total:			1,
 		STUDIO_X:		0x0001,
@@ -53,14 +53,14 @@ export const ModelRender = function(gl, modelData) {
 		EVENT_FIRE:		5001
 	};
 
-	var sequenceIndex = 0;
-	var frame = 0;
-	var customFPS = null;
-	var vertexBuffer = gl.createBuffer();
-	var animationQueue = [];
-	var previous = new Date().getTime();
+	let sequenceIndex = 0;
+	let frame = 0;
+	let customFPS = null;
+	let vertexBuffer = gl.createBuffer();
+	let animationQueue = [];
+	let previous = new Date().getTime();
 
-	var fragmentShader =
+	let fragmentShader =
 	"	precision mediump float;" +
 	"	varying vec2 vTexCoord;" +
 	"	uniform sampler2D uSampler;" +
@@ -69,7 +69,7 @@ export const ModelRender = function(gl, modelData) {
 	"		gl_FragColor = texture2D(uSampler, vec2(vTexCoord.s, vTexCoord.t));" +
 	"	}";
 
-	var vertexShader =
+	let vertexShader =
 	"	attribute vec3 aVertexPosition;" +
 	"	attribute vec2 aTexCoord;" +
 
@@ -85,7 +85,7 @@ export const ModelRender = function(gl, modelData) {
 	;
 
 	function getShader(gl, shaderCode, shaderType) {
-		var shader = gl.createShader(shaderType);
+		let shader = gl.createShader(shaderType);
 
 		gl.shaderSource(shader, shaderCode);
 		gl.compileShader(shader);
@@ -98,11 +98,11 @@ export const ModelRender = function(gl, modelData) {
 		return shader;
 	}
 
-	var shaderProgram = (function() {
-		var sFragmentShader = getShader(gl, fragmentShader, gl.FRAGMENT_SHADER);
-		var sVertexShader = getShader(gl, vertexShader, gl.VERTEX_SHADER);
+	let shaderProgram = (function() {
+		let sFragmentShader = getShader(gl, fragmentShader, gl.FRAGMENT_SHADER);
+		let sVertexShader = getShader(gl, vertexShader, gl.VERTEX_SHADER);
 
-		var program = gl.createProgram();
+		let program = gl.createProgram();
 		gl.attachShader(program, sVertexShader);
 		gl.attachShader(program, sFragmentShader);
 		gl.linkProgram(program);
@@ -122,14 +122,14 @@ export const ModelRender = function(gl, modelData) {
 		return program;
 	})();
 
-	var CalcBoneAdj = function() {
-		var adj = [0, 0, 0, 0];
-		var numBoneControllers = modelData.header.numBoneControllers;
-		for(var j = 0; j < numBoneControllers; ++j) {
-			var boneController = modelData.boneControllers[j];
-			var i = boneController.index;
+	let CalcBoneAdj = function() {
+		let adj = [0, 0, 0, 0];
+		let numBoneControllers = modelData.header.numBoneControllers;
+		for(let j = 0; j < numBoneControllers; ++j) {
+			let boneController = modelData.boneControllers[j];
+			let i = boneController.index;
 
-			var value;
+			let value;
 			if(i <= 3) {
 				// if(boneController.type & constants.RLOOP) {
 				if(boneController.type & (constants as any).RLOOP) {
@@ -161,26 +161,26 @@ export const ModelRender = function(gl, modelData) {
 		return adj;
 	};
 
-	var value = function(base, index) {
+	let value = function(base, index) {
 		return DataReader.readSignedShort([modelData.data[base + 2*index], modelData.data[base + 2*index + 1]], 0);
 	};
 
-	var valid = function(base, index) {
+	let valid = function(base, index) {
 		return modelData.data[base + 2*index];
 	};
 
-	var total = function(base, index) {
+	let total = function(base, index) {
 		return modelData.data[base + 2*index + 1];
 	};
 
-	var vec3Equal = function(v1, v2, epsilon) {
+	let vec3Equal = function(v1, v2, epsilon) {
 		return Math.abs(v1[0] - v2[0]) < epsilon &&
 			Math.abs(v1[1] - v2[1]) < epsilon &&
 			Math.abs(v1[1] - v2[2]) < epsilon;
 	};
 
-	var concatTransforms = function(mat1, mat2) {
-		var out = [
+	let concatTransforms = function(mat1, mat2) {
+		let out = [
 			[0, 0, 0, 0],
 			[0, 0, 0, 0],
 			[0, 0, 0, 0]
@@ -213,21 +213,21 @@ export const ModelRender = function(gl, modelData) {
 		return out;
 	};
 
-	var calcBoneQuaternion = function(frame, s, bone, animation, adj) {
-		var angle1 = [0, 0, 0];
-		var angle2 = [0, 0, 0];
-		for(var j = 0; j < 3; ++j) {
+	let calcBoneQuaternion = function(frame, s, bone, animation, adj) {
+		let angle1 = [0, 0, 0];
+		let angle2 = [0, 0, 0];
+		for(let j = 0; j < 3; ++j) {
 			if(animation.offset[j + 3] === 0) {
 				//default;
 				angle1[j] = bone.value[j+3];
 				angle2[j] = angle1[j];
 			}
 			else {
-				var animIndex = animation.base + animation.offset[j+3];
-				var k = Math.floor(frame);
+				let animIndex = animation.base + animation.offset[j+3];
+				let k = Math.floor(frame);
 				while(total(animIndex, 0) <= k) {
 					k -= total(animIndex, 0);
-					var _valid = valid(animIndex, 0);
+					let _valid = valid(animIndex, 0);
 					animIndex += 2*_valid + 2;
 				}
 				if(valid(animIndex, 0) > k) {
@@ -264,9 +264,9 @@ export const ModelRender = function(gl, modelData) {
 
 		//Spherical linear interpolation between the 2 angles
 		if(!vec3Equal(angle1, angle2, 0.001)) {
-			var q1 = quatFromAngles(angle1);
-			var q2 = quatFromAngles(angle2);
-			var q = quat.create();
+			let q1 = quatFromAngles(angle1);
+			let q2 = quatFromAngles(angle2);
+			let q = quat.create();
 			quat.slerp(q, q1, q2, s);
 			return q;
 		} else {
@@ -274,16 +274,16 @@ export const ModelRender = function(gl, modelData) {
 		}
 	};
 
-	var calcBonePosition = function(frame, s, bone, animation, adj) {
-		var pos = [0, 0, 0];
+	let calcBonePosition = function(frame, s, bone, animation, adj) {
+		let pos = [0, 0, 0];
 
-		for(var j = 0; j < 3; ++j) {
+		for(let j = 0; j < 3; ++j) {
 			pos[j] = bone.value[j]; //default value
 
 			if(animation.offset[j] != 0) {
-				var animIndex = animation.base + animation.offset[j];
+				let animIndex = animation.base + animation.offset[j];
 
-				var k = Math.floor(frame);
+				let k = Math.floor(frame);
 				while(total(animIndex, 0) <= k) {
 					k -= total(animIndex, 0);
 					animIndex += 2*valid(animIndex, 0) + 2;
@@ -320,20 +320,22 @@ export const ModelRender = function(gl, modelData) {
 		return pos;
 	};
 
-	var calcRotations = function(frame, sequence) {
-		var adj = CalcBoneAdj();
+	let calcRotations = function(frame, sequence) {
+    let pos;
+    let q;
+		let adj = CalcBoneAdj();
 
-		var s = frame - Math.floor(frame);
+		let s = frame - Math.floor(frame);
 
-		var quats = Array(modelData.header.numBones);
-		var vecs = Array(modelData.header.numBones);
-		for(var i = 0; i < modelData.header.numBones; ++i) {
-			var bone = modelData.bones[i];
-			var animation = getAnimation(sequence, i);
+		let quats = Array(modelData.header.numBones);
+		let vecs = Array(modelData.header.numBones);
+		for(let i = 0; i < modelData.header.numBones; ++i) {
+			let bone = modelData.bones[i];
+			let animation = getAnimation(sequence, i);
 
-			var q = calcBoneQuaternion(frame, s, bone, animation, adj);
+			q = calcBoneQuaternion(frame, s, bone, animation, adj);
 			quats[i] = q;
-			var pos = calcBonePosition(frame, s, bone, animation, adj);
+			pos = calcBonePosition(frame, s, bone, animation, adj);
 			vecs[i] = pos;
 		}
 
@@ -350,9 +352,9 @@ export const ModelRender = function(gl, modelData) {
 		};
 	};
 
-	var getAnimation = function(sequence, n) {
-		var seqGroup = modelData.seqGroups[sequence.seqGroup];
-		var index = sequence.animIndex + seqGroup.data + n * 12;
+	let getAnimation = function(sequence, n) {
+		let seqGroup = modelData.seqGroups[sequence.seqGroup];
+		let index = sequence.animIndex + seqGroup.data + n * 12;
 		return {
 			base: index,
 			offset: [
@@ -366,17 +368,17 @@ export const ModelRender = function(gl, modelData) {
 		};
 	};
 
-	var setupBones = function(frame, sequence) {
-		var qv = calcRotations(frame, sequence);
+	let setupBones = function(frame, sequence) {
+		let qv = calcRotations(frame, sequence);
 
-		var transformations = Array(modelData.header.numBones);
-		var bones = modelData.bones;
+		let transformations = Array(modelData.header.numBones);
+		let bones = modelData.bones;
 
-		for(var i = 0; i < modelData.header.numBones; ++i) {
-			var mat = mat3.create();
+		for(let i = 0; i < modelData.header.numBones; ++i) {
+			let mat = mat3.create();
 			mat3.fromQuat(mat, qv.quaternions[i]);
 
-			var transformation = [
+			let transformation = [
 				[mat[0], mat[1], mat[2], qv.vectors[i][0]],
 				[mat[3], mat[4], mat[5], qv.vectors[i][1]],
 				[mat[6], mat[7], mat[8], qv.vectors[i][2]]
@@ -389,20 +391,20 @@ export const ModelRender = function(gl, modelData) {
 		return transformations;
 	};
 
-	var setupModel = function(bodyNum: number, n?: number) {
+	let setupModel = function(bodyNum: number, n?: number) {
 		if (n > modelData.header.numBodyParts) {
 			n = 0;
 		}
 
-		var bodyPart = modelData.bodyParts[bodyNum];
-		var index = bodyNum / bodyPart.base;
+		let bodyPart = modelData.bodyParts[bodyNum];
+		let index = bodyNum / bodyPart.base;
 		index = index % bodyPart.numModels;
 
 		return modelData.models[bodyNum][index];
 	};
 
-	var vectorTransform = function(vec, mat) {
-		var vecOut = vec3.create();
+	let vectorTransform = function(vec, mat) {
+		let vecOut = vec3.create();
 		vecOut[0] = vec3.dot(vec, [mat[0][0], mat[0][1], mat[0][2]]) + mat[0][3];
 		vecOut[1] = vec3.dot(vec, [mat[1][0], mat[1][1], mat[1][2]]) + mat[1][3];
 		vecOut[2] = vec3.dot(vec, [mat[2][0], mat[2][1], mat[2][2]]) + mat[2][3];
@@ -410,59 +412,63 @@ export const ModelRender = function(gl, modelData) {
 	};
 
 
-	var performEvent = function(event) {
+	let performEvent = function(event) {
 		console.log(event);
+		let path: string;
+
 		switch(event.event) {
 			case constants.EVENT_SOUND:
-				var path = "data/sounds/" + event.options;
+				path = "data/sounds/" + event.options;
 				createjs.Sound.play(path, {interrupt: createjs.Sound.INTERRUPT_ANY});
 				break;
 			case constants.EVENT_FIRE:
-				var weapon = modelData.header.name;
-				var path = "data/sounds/weapons/" + weapon.substr(2, weapon.length-6) + "-1.wav";
+				let weapon = modelData.header.name;
+				path = "data/sounds/weapons/" + weapon.substr(2, weapon.length-6) + "-1.wav";
 				createjs.Sound.play(path, {interrupt: createjs.Sound.INTERRUPT_ANY});
 		}
 	};
 
-	var resetEvents = function() {
-		var events = modelData.sequences[sequenceIndex].events;
-		for(var i = 0; i < events.length; ++i) {
+	let resetEvents = function() {
+		let events = modelData.sequences[sequenceIndex].events;
+		for(let i = 0; i < events.length; ++i) {
 			events[i].started = false;
 		}
-	}
+	};
 
-	var preloadEvents = function() {
-		var events = modelData.sequences[sequenceIndex].events;
-		for(var i = 0; i < events.length; ++i) {
-			var event = events[i];
+	let preloadEvents = function() {
+    let path: string;
+		let events = modelData.sequences[sequenceIndex].events;
+
+		for(let i = 0; i < events.length; ++i) {
+			let event = events[i];
 			switch(event.type) {
 				case constants.EVENT_SOUND:
-					var path = "data/sounds/" + event.filename;
+					path = "data/sounds/" + event.filename;
 					createjs.Sound.registerSound(path);
 					break;
 				case constants.EVENT_FIRE:
-					var path = "data/sounds/weapons/" + event.sound;
+					path = "data/sounds/weapons/" + event.sound;
 					createjs.Sound.registerSound(path);
 			}
 		}
-	}
+	};
 
-	var advanceFrame = function(dt, sequence, frame) {
+	let advanceFrame = function(dt, sequence, frame) {
 		if(dt > 0.1) {
 			dt = 0.1;
 		}
 		frame += dt * (customFPS || sequence.fps);
 
-		var events = sequence.events;
+		let events = sequence.events;
 		if(sequence.numFrames <= 1) {
 			frame = 0;
 		}
 		else {
-			var newFrame = frame - Math.floor(frame / (sequence.numFrames - 1)) * (sequence.numFrames - 1);
+			let newFrame = frame - Math.floor(frame / (sequence.numFrames - 1)) * (sequence.numFrames - 1);
 
 			//Check for events
-			for(var i = 0; i < events.length; ++i) {
-				var event = events[i];
+			for(let i = 0; i < events.length; ++i) {
+				let event = events[i];
 
 				if(newFrame >= event.frame && !event.started) {
 					performEvent(event);
@@ -478,7 +484,7 @@ export const ModelRender = function(gl, modelData) {
 				if(animationQueue.length != 0) {
 					//Yep. Set index and requested fps
 					newFrame = 0;
-					var anim = animationQueue.shift();
+					let anim = animationQueue.shift();
 					sequenceIndex = anim.index;
 					customFPS = anim.fps;
 					preloadEvents();
@@ -489,53 +495,53 @@ export const ModelRender = function(gl, modelData) {
 		return frame;
 	};
 
-	var drawPoints = function(model, transformations) {
-		var normBones = model.normInfoIndex;
-		var mesh = model.meshIndex;
+	let drawPoints = function(model, transformations) {
+		let normBones = model.normInfoIndex;
+		let mesh = model.meshIndex;
 
-		var vertices = model.vertices;
+		let vertices = model.vertices;
 
-		var transforms = Array(model.numVerts);
-		var n = 0;
-		for(var i = 0; n < model.numVerts; i += 3, ++n) {
+		let transforms = Array(model.numVerts);
+		let n = 0;
+		for(let i = 0; n < model.numVerts; i += 3, ++n) {
 			transforms[n] = vectorTransform([vertices[i], vertices[i+1], vertices[i+2]], transformations[model.transformIndices[n]]);
 		}
 
-		for(var i = 0; i < model.numMesh; ++i) {
-			var mesh = model.mesh[i];
-			var texture = modelData.textures[DataReader.readSignedShort(modelData.data, modelData.header.skinIndex + 2*mesh.skinRef)];
+		for(let i = 0; i < model.numMesh; ++i) {
+			let mesh = model.mesh[i];
+			let texture = modelData.textures[DataReader.readSignedShort(modelData.data, modelData.header.skinIndex + 2*mesh.skinRef)];
 
-			var s = 1.0/texture.width;
-			var t = 1.0/texture.height;
+			let s = 1.0/texture.width;
+			let t = 1.0/texture.height;
 
-			var index = mesh.triIndex;
+			let index = mesh.triIndex;
 
 			gl.bindTexture(gl.TEXTURE_2D, texture.id);
 			gl.uniform1i(shaderProgram.samplerUniform, 0);
 
 			while(true) {
-				var j = DataReader.readSignedShort(modelData.data, index);
+				let j = DataReader.readSignedShort(modelData.data, index);
 				if(j === 0) {
 					break;
 				}
 				index += 2;
 
-				var fanMode = false;
+				let fanMode = false;
 				if(j < 0) {
 					//Triangle fan mode
 					j = -j;
 					fanMode = true;
 				}
 
-				var buffer = [];
+				let buffer = [];
 
 				for(; j > 0; --j) {
-					var vertIndex = DataReader.readSignedShort(modelData.data, index);
-					var sCoord = DataReader.readSignedShort(modelData.data, index + 4);
-					var tCoord = DataReader.readSignedShort(modelData.data, index + 6);
+					let vertIndex = DataReader.readSignedShort(modelData.data, index);
+					let sCoord = DataReader.readSignedShort(modelData.data, index + 4);
+					let tCoord = DataReader.readSignedShort(modelData.data, index + 6);
 
 					//Add vertex
-					var vertex = transforms[vertIndex];
+					let vertex = transforms[vertIndex];
 
 					buffer.push(vertex[0]);
 					buffer.push(vertex[1]);
@@ -574,16 +580,16 @@ export const ModelRender = function(gl, modelData) {
 		gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, GameInfo.pMatrix);
 		gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, GameInfo.mvMatrix);
 
-		var sequence = modelData.sequences[sequenceIndex];
-		var transformations = setupBones(frame, sequence);
+		let sequence = modelData.sequences[sequenceIndex];
+		let transformations = setupBones(frame, sequence);
 
-		for(var i = 0; i < modelData.header.numBodyParts; ++i) {
-			var model = setupModel(i);
+		for(let i = 0; i < modelData.header.numBodyParts; ++i) {
+			let model = setupModel(i);
 			drawPoints(model, transformations);
 		}
 
-		var now = new Date().getTime();
-		var delta = (now - previous)/1000.0;
+		let now = new Date().getTime();
+		let delta = (now - previous)/1000.0;
 		frame = advanceFrame(delta, sequence, frame);
 		previous = now;
 

@@ -12,7 +12,7 @@ import { GameInfo } from './GameInfo';
 
 export const MapRender = function(gl, map) {
 	//Shaders
-	var fragmentShader =
+	let fragmentShader =
 	"	precision mediump float;" +
 	"	varying vec3 forFragColor;" +
 
@@ -20,7 +20,7 @@ export const MapRender = function(gl, map) {
 	"		gl_FragColor = vec4(forFragColor, 1.0);" +
 	"	}";
 
-	var vertexShader =
+	let vertexShader =
 	"	attribute vec3 aVertexPosition;" +
 	"	attribute vec3 aVertexColor;" +
 
@@ -38,7 +38,7 @@ export const MapRender = function(gl, map) {
 	this.gl = gl;
 
 	function getShader(gl, shaderCode, shaderType) {
-		var shader = gl.createShader(shaderType);
+		let shader = gl.createShader(shaderType);
 
 		gl.shaderSource(shader, shaderCode);
 		gl.compileShader(shader);
@@ -51,11 +51,11 @@ export const MapRender = function(gl, map) {
 		return shader;
 	}
 
-	var shaderProgram = (function() {
-		var sFragmentShader = getShader(gl, fragmentShader, gl.FRAGMENT_SHADER);
-		var sVertexShader = getShader(gl, vertexShader, gl.VERTEX_SHADER);
+	let shaderProgram = (function() {
+		let sFragmentShader = getShader(gl, fragmentShader, gl.FRAGMENT_SHADER);
+		let sVertexShader = getShader(gl, vertexShader, gl.VERTEX_SHADER);
 
-		var program = gl.createProgram();
+		let program = gl.createProgram();
 		gl.attachShader(program, sVertexShader);
 		gl.attachShader(program, sFragmentShader);
 		gl.linkProgram(program);
@@ -75,84 +75,81 @@ export const MapRender = function(gl, map) {
 	})();
 
 	//Create buffers
-	var indexBuffer = gl.createBuffer();
-	var vertexBuffer = gl.createBuffer();
-	var colorBuffer = gl.createBuffer();
+	let indexBuffer = gl.createBuffer();
+	let vertexBuffer = gl.createBuffer();
+	let colorBuffer = gl.createBuffer();
 
 	//Array of already drawn faces
-	var renderedFaces = [];
+	let renderedFaces = [];
 
 	//Check if point lies within min and max
-	var pointInBox = function(point, min, max) {
-		var x = point[0],
+	let pointInBox = function(point, min, max) {
+		let x = point[0],
 			y = point[1],
 			z = point[2];
 
 		return (min[0] <= x && x <= max[0] &&
 				min[1] <= y && y <= max[1] &&
 				min[2] <= z && z <= max[2]);
-	}
+	};
 
 	//Search for which leaf the vector "pos" is in. i is the i'th
 	//child of the parent node.
-	var getLeafForPositionHelper = function(pos, iNode, i) {
-		var node = map.nodes[iNode];
+	let getLeafForPositionHelper = function(pos, iNode, i) {
+		let node = map.nodes[iNode];
 		//If the child index is positive it's an index into the node array
 		//Otherwise it's an index into the leaf array
-		if(node.iChildren[i] >= 0) {
-			var min = map.nodes[node.iChildren[i]].nMins;
-			var max = map.nodes[node.iChildren[i]].nMaxs;
+		if (node.iChildren[i] >= 0) {
+			let min = map.nodes[node.iChildren[i]].nMins;
+			let max = map.nodes[node.iChildren[i]].nMaxs;
 			if(pointInBox(pos, min, max)) {
 				return getLeafForPosition(pos, node.iChildren[i]);
 			}
-		}
-		else if(~node.iChildren[i] != 0) {
-			var min = map.leaves[~node.iChildren[i]].nMins;
-			var max = map.leaves[~node.iChildren[i]].nMaxs;
+		} else if(~node.iChildren[i] != 0) {
+			let min = map.leaves[~node.iChildren[i]].nMins;
+			let max = map.leaves[~node.iChildren[i]].nMaxs;
 			if(pointInBox(pos, min, max)) {
 				//Bitwise inversion according to the specification
 				return ~node.iChildren[i];
 			}
 		}
 		return -1;
-	}
+	};
 
 	//Search for which leaf the vector "pos" is in.
-	var getLeafForPosition = function(pos, iNode) {
-		var first = getLeafForPositionHelper(pos, iNode, 0);
+	let getLeafForPosition = function(pos, iNode) {
+		let first = getLeafForPositionHelper(pos, iNode, 0);
 		//Was it in the first one?
 		if(first != -1) {
 			//Yep! Return that leaf
 			return first;
-		}
-		else {
+		} else {
 			//Nope. Check the other child
 			return getLeafForPositionHelper(pos, iNode, 1);
 		}
 	};
 
-	var getIndex = function(i, face) {
-		var iEdge = map.surfedges[face.iFirstEdge + i];
-		var index;
+	let getIndex = function(i, face) {
+		let iEdge = map.surfedges[face.iFirstEdge + i];
+		let index;
 		if(iEdge > 0) {
-			var edge = map.edges[iEdge];
+			let edge = map.edges[iEdge];
 			index = edge[0];
-		}
-		else {
-			var edge = map.edges[-iEdge];
+		} else {
+			let edge = map.edges[-iEdge];
 			index = edge[1];
 		}
 		return index;
-	}
+	};
 
-	var renderFace = function(iFace, index_array) {
+	let renderFace = function(iFace, index_array) {
 		//If this face has already been drawn just return
 		if(!!renderedFaces[iFace]) {
 			return;
 		}
 		//Remember that we have drawn this face
 		renderedFaces[iFace] = true;
-		var face = map.faces[iFace];
+		let face = map.faces[iFace];
 
 		//No need to render it if it has no light
 		if(face.nStyles[0] == 0xFF) return;
@@ -165,19 +162,19 @@ export const MapRender = function(gl, map) {
 		//0 1 2 0 2 3 0 3 4 0 4 5 0 5 6
 
 		//Hardcode the first triangle since we need to reuse this vertex
-		var index = getIndex(0, face);
-		var center = index;
+		let index = getIndex(0, face);
+		let center = index;
 		index_array.push(index);
 
 		index = getIndex(1, face);
 		index_array.push(index);
-		var previous = index;
+		let previous = index;
 
 		index = getIndex(2, face);
 		index_array.push(index);
 		previous = index;
 
-		for(var i = 3; i < face.nEdges; ++i) {
+		for(let i = 3; i < face.nEdges; ++i) {
 			index = getIndex(i, face);
 
 			index_array.push(center);
@@ -185,17 +182,17 @@ export const MapRender = function(gl, map) {
 			index_array.push(index);
 			previous = index;
 		}
-	}
+	};
 
-	var renderLeaf = function(iLeaf, index_array) {
-		var leaf = map.leaves[iLeaf];
-		var n = leaf.nMarkSurfaces;
-		for(var i = 0; i < n; ++i) {
+	let renderLeaf = function(iLeaf, index_array) {
+		let leaf = map.leaves[iLeaf];
+		let n = leaf.nMarkSurfaces;
+		for(let i = 0; i < n; ++i) {
 			renderFace(map.markSurfaces[leaf.iFirstMarkSurface + i], index_array);
 		}
-	}
+	};
 
-	var render = function(iNode, iLeaf, pos, index_array) {
+	let render = function(iNode, iLeaf, pos, index_array) {
 		//If iNode points to a leaf
 		if(iNode < 0) {
 			if(iNode == -1) return;
@@ -209,25 +206,25 @@ export const MapRender = function(gl, map) {
 			return renderLeaf(~iNode, index_array);
 		}
 
-		var location;
+		let location;
 
-		var plane_index = map.nodes[iNode].iPlane;
-		var plane = map.planes.planes[plane_index];
+		let plane_index = map.nodes[iNode].iPlane;
+		let plane = map.planes.planes[plane_index];
 		//If the plane is perpendicular to an axis it's either 0, 1 or 2
 		switch (plane.nType) {
-		case 0:
-			location = pos[0] - plane.distance;
-		case 1:
-			location = pos[1] - plane.distance;
-		case 2:
-			location = pos[2] - plane.distance;
-		default:
-			//Not perpendicular. Calculate the location the hard way using:
-			//location = dot(normal, pos) - distance
-			//(from http://en.wikipedia.org/wiki/Hesse_normal_form)
-			location = (map.planes.normals[3*plane_index] * pos[0] +
-				map.planes.normals[3*plane_index+1] * pos[1] +
-				map.planes.normals[3*plane_index+2] * pos[2]) - plane.distance;
+			case 0:
+				location = pos[0] - plane.distance;
+			case 1:
+				location = pos[1] - plane.distance;
+			case 2:
+				location = pos[2] - plane.distance;
+			default:
+				//Not perpendicular. Calculate the location the hard way using:
+				//location = dot(normal, pos) - distance
+				//(from http://en.wikipedia.org/wiki/Hesse_normal_form)
+				location = (map.planes.normals[3*plane_index] * pos[0] +
+					map.planes.normals[3*plane_index+1] * pos[1] +
+					map.planes.normals[3*plane_index+2] * pos[2]) - plane.distance;
 		}
 
 		//Is the player behind this node or in front?
@@ -235,8 +232,7 @@ export const MapRender = function(gl, map) {
 			//In front: Render the leaves furthest behind first
 			render(map.nodes[iNode].iChildren[1], iLeaf, pos, index_array);
 			render(map.nodes[iNode].iChildren[0], iLeaf, pos, index_array);
-		}
-		else {
+		} else {
 			render(map.nodes[iNode].iChildren[0], iLeaf, pos, index_array);
 			render(map.nodes[iNode].iChildren[1], iLeaf, pos, index_array);
 		}
@@ -268,14 +264,14 @@ export const MapRender = function(gl, map) {
 		renderedFaces.length = 0;
 
 		//Find the leaf that the vector "pos" is locate in
-		var iLeaf = getLeafForPosition(pos, 0);
+		let iLeaf = getLeafForPosition(pos, 0);
 
 		//Get indices of the required vertices
-		var index_array = [];
+		let index_array = [];
 		render(0, iLeaf, pos, index_array);
 
 		//Bind index buffer
-		var buffer = new Uint16Array(index_array);
+		let buffer = new Uint16Array(index_array);
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, buffer, gl.STATIC_DRAW);
 		//Finally draw the map!

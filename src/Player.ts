@@ -25,22 +25,22 @@ export const Player = function(gl, x, y, z) {
 	this.xAngle = 0;
 	this.speed = 5;
 	//X and Y direction. Not necessarily normalized
-	var dir = vec3.fromValues(0, 0, 0);
-	var weapon = null;
+	let dir = vec3.fromValues(0, 0, 0);
+	let weapon = null;
 
 	this.position = function() {
 		return [this.x, this.y, this.z];
 	};
 
 	this.move = function() {
-		var onGround = CollisionDetection.isOnGround(this.position());
-		var normalDir = vec3.fromValues(0, 0, 0);
+		let onGround = CollisionDetection.isOnGround(this.position());
+		let normalDir = vec3.fromValues(0, 0, 0);
 		vec3.normalize(normalDir, dir);
 
 		//Move forward
-		var newX = this.x + this.speed * normalDir[0] * Math.cos(this.yAngle);
-		var newY = this.y - this.speed * normalDir[0] * Math.sin(this.yAngle);
-		var newZ = this.z + 18*dir[2];
+		let newX = this.x + this.speed * normalDir[0] * Math.cos(this.yAngle);
+		let newY = this.y - this.speed * normalDir[0] * Math.sin(this.yAngle);
+		let newZ = this.z + 18*dir[2];
 
 		//Strafe
 		newY -= this.speed*normalDir[1]*Math.cos(Math.PI - this.yAngle);
@@ -60,8 +60,8 @@ export const Player = function(gl, x, y, z) {
 	};
 
 	this.rotate = function(xDelta, yDelta) {
-		var PI_HALF = Math.PI/2.0;
-		var PI_TWO = Math.PI*2.0;
+		let PI_HALF = Math.PI/2.0;
+		let PI_TWO = Math.PI*2.0;
 
 		this.yAngle += (xDelta * config.MOUSE_SENSITIVITY) || 0;
 
@@ -86,11 +86,11 @@ export const Player = function(gl, x, y, z) {
 
 	this.render = function() {
 		return weapon.render();
-	}
+	};
 
 	this.switchWeapon = function(weaponName) {
 		weapon = new Weapon(weaponName);
-	}
+	};
 
 	MouseJS.on("left", function() {
 		weapon.shoot();
@@ -181,7 +181,7 @@ export const Player = function(gl, x, y, z) {
 	});
 
 	KeyboardJS.on("space", function(event, keys, combo) {
-		var d = dir[2];
+		let d = dir[2];
 		if(d < 0.0001 && d > -0.0001) {
 			dir[2] = 1;
 		}
