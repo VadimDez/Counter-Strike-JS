@@ -1,49 +1,14 @@
 <html>
-	<head>
-		<link rel="stylesheet" type="text/css" href="stylesmenu.css">
-		<link rel="stylesheet" type="text/css" href="styles.css">
+<head>
+	<link rel="stylesheet" type="text/css" href="styles.css">
 
-		<script type="text/javascript" src="lib/keyboard.js"></script>
-		<script type="text/javascript" src="lib/peer.min.js"></script>
-		<script type="text/javascript" src="lib/webgl-utils.js"></script>
-		<script type="text/javascript" src="lib/createjs.js"></script>
-	</head>
+	<script type="text/javascript" src="lib/peer.min.js"></script>
+	<script type="text/javascript" src="lib/webgl-utils.js"></script>
+	<script data-main="main" src="lib/require.js"></script>
+</head>
 
-	<body>
+<body>
+<canvas id="canvas" style="display: block; margin:0; padding:0"></canvas>
+</body>
 
-		<div class="main-menu">
-			<table id="menu">
-				<tr>
-					<td><a href="#" class="new-game">New Game</a></td>
-				</tr>
-				<tr>
-					<td><a href="#" class="join-server">Join Server</a></td>
-				</tr>
-			</table>
-
-			<div class="PopupMenu" id="newGameMenu" style="visibility:hidden;">
-				Map
-				<select id="dropDownMapMenu">
-					<option value="">< Random Map ></option>
-					<option value="cs_assault.bsp">cs_assault</option>
-					<option value="cs_italy.bsp">cs_italy</option>
-				</select>
-
-				<hr />
-
-				<button class="menu-start-game" type="button">Start</button>
-				<button class="menu-cancel">Cancel</button>
-			</div>
-
-			<div class="PopupMenu" id="joinGameMenu" style="visibility:hidden;">
-				<input id="server"/>
-				<button class="join-game-button">Join</button>
-				<button class="cancel-join-button">Cancel</button>
-			</div>
-		</div>
-
-		<canvas id="canvas"></canvas>
-
-		<script src="bundle.js" type="text/javascript"></script>
-	</body>
 </html>
