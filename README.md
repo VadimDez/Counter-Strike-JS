@@ -1,6 +1,8 @@
-CS
+Counter-Strike JS
 ==
 Counter-Strike 1.6 implementation in JavaScript utilizing state of the art browser APIs.
+
+*Uses https://github.com/MathiasVP/CS as the base.*
 
 <b>Current state</b>
 <ul>
