@@ -1,3 +1,7 @@
 ## Suspected copyrighted data
 data/
 peerJSApiKey.js
+
+node_modules/
+
+.idea/
