@@ -24,7 +24,8 @@
   "homepage": "https://github.com/VadimDez/CS#readme",
   "dependencies": {
     "@types/gl-matrix": "^2.4.0",
-    "gl-matrix": "^2.4.0"
+    "gl-matrix": "^2.4.0",
+    "soundjs": "^1.0.1"
   },
   "devDependencies": {
     "html-webpack-plugin": "^2.30.1",

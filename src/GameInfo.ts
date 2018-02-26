@@ -5,8 +5,9 @@ import { mat4 } from 'gl-matrix';
 // import * as glMatrix from '../lib/gl-matrix';
 // const mat4 = glMatrix.mat4;
 import { Map } from './Map';
+import { Player } from './Player';
 
-export type GameInfoType = { gl: any, player: any, map: Map, mvMatrix: mat4, pMatrix: mat4 };
+export type GameInfoType = { gl: any, player: Player, map: Map, mvMatrix: mat4, pMatrix: mat4 };
 
 export const GameInfo: GameInfoType = {
   gl: null,

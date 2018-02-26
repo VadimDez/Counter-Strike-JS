@@ -10,8 +10,6 @@ import * as glMatrix from '../lib/gl-matrix';
 // const vec3 = glMatrix.vec3;
 const mat3 = glMatrix.mat3;
 // const mat4 = glMatrix.mat4;
-// const createjs = require('../lib/createjs.js');
-const createjs = (window as any).createjs;
 import { GameInfo } from './GameInfo';
 
 /**

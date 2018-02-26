@@ -17,82 +17,89 @@ import { ModelRender } from './ModelRender';
   such as shooting and reloading as well as rendering.
 **/
 
-export const Weapon = function(weaponName) {
-  let sprite = {};
-  this.renderer = null;
-  this.name = weaponName;
-  let crosshair = null;
-  let gl = GameInfo.gl;
+export class Weapon {
+  sprite = {};
+  renderer = null;
+  name: string;
+  crosshair: Sprite = null;
+  gl = GameInfo.gl;
+  stateManager = WeaponStateManager.shotgunManager;
 
-  let stateManager = WeaponStateManager.shotgunManager;
+  constructor(private weaponName: string) {
+    this.name = weaponName;
+
+    this.loadWeaponInformation();
+  }
 
   // Download weapon information
-  download(`data/sprites/weapon_${ weaponName }.txt`, 'text', function(txt) {
-    let lines = txt.split('\n');
-    // The last line is an empty string
-    let length = lines.length - 1;
+  loadWeaponInformation() {
+    download(`data/sprites/weapon_${ this.weaponName }.txt`, 'text', (txt) => {
+      let lines = txt.split('\n');
+      // The last line is an empty string
+      let length = lines.length - 1;
 
-    for (let i = 1; i < length; ++i) {
-      let tokens = lines[i].split(/ |\t/g)
-      .filter(function (str) {
-        return str.length != 0;
-      });
-      // Note: The 640 res sprites are stored last in the file,
-      // so if there exists a 640 res version of the sprite then
-      // that's the one that will end up in the sprite object
-      sprite[tokens[0]] = {
-        res: tokens[1],
-        file: tokens[2],
-        x: tokens[3],
-        y: tokens[4],
-        w: tokens[5],
-        h: tokens[6],
-      };
-    }
+      for (let i = 1; i < length; ++i) {
+        let tokens = lines[i]
+          .split(/ |\t/g)
+          .filter((str) => str.length !== 0);
 
-    if (sprite['crosshair'] !== undefined) {
-      // Dwonload crosshair spritesheet
-      download(`data/sprites/${ sprite['crosshair'].file }.spr`, 'arraybuffer', function(data) {
-        let crosshairInfo = sprite['crosshair'];
-        crosshair = new Sprite(gl, data).subSprite(crosshairInfo.x, crosshairInfo.y, crosshairInfo.w, crosshairInfo.h);
-      });
-    }
-  });
+        // Note: The 640 res sprites are stored last in the file,
+        // so if there exists a 640 res version of the sprite then
+        // that's the one that will end up in the sprite object
+        this.sprite[tokens[0]] = {
+          res: tokens[1],
+          file: tokens[2],
+          x: tokens[3],
+          y: tokens[4],
+          w: tokens[5],
+          h: tokens[6],
+        };
+      }
 
-  // Download weapon model
-  let _this = this;
-  download(`data/models/v_${ weaponName }.mdl`, 'arraybuffer', function(data) {
-    let weaponData = ModelParser.parse(gl, data);
-    _this.renderer = new ModelRender(gl, weaponData);
-  });
+      if (this.sprite['crosshair'] !== undefined) {
+        // Dwonload crosshair spritesheet
+        download(`data/sprites/${ this.sprite['crosshair'].file }.spr`, 'arraybuffer', (data: any) => {
+          let crosshairInfo = this.sprite['crosshair'];
+          this.crosshair = new Sprite(this.gl, data).subSprite(crosshairInfo.x, crosshairInfo.y, crosshairInfo.w, crosshairInfo.h);
+        });
+      }
+    });
 
-  this.render = function() {
+    // Download weapon model
+    download(`data/models/v_${ this.weaponName }.mdl`, 'arraybuffer', (data) => {
+      let weaponData = ModelParser.parse(this.gl, data);
+      this.renderer = new ModelRender(this.gl, weaponData);
+    });
+  }
+
+
+  render() {
     if (this.renderer !== null) {
       // Render the weapon
       this.renderer.render();
     }
 
-    if (crosshair !== null) {
+    if (this.crosshair !== null) {
       // Render the crosshair
       mat4.identity(GameInfo.mvMatrix);
       mat4.translate(GameInfo.mvMatrix, GameInfo.mvMatrix, [0.0, 0.0, -50]);
-      crosshair.render();
+      this.crosshair.render();
     }
-  };
+  }
 
-  this.shoot = function() {
-    stateManager.onShoot(this);
-  };
+  shoot() {
+    this.stateManager.onShoot(this);
+  }
 
-  this.idle = function() {
-    stateManager.onIdle(this);
-  };
+  idle() {
+    this.stateManager.onIdle(this);
+  }
 
-  this.reload = function() {
-    stateManager.onReload(this);
-  };
+  reload() {
+    this.stateManager.onReload(this);
+  }
 
-  this.special = function() {
-    stateManager.onSpecial(this);
-  };
-};
+  special() {
+    this.stateManager.onSpecial(this);
+  }
+}
