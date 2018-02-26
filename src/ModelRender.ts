@@ -427,12 +427,12 @@ export const ModelRender = function(gl, modelData) {
     switch (event.event) {
       case constants.EVENT_SOUND:
         path = 'data/sounds/' + event.options;
-        createjs.Sound.play(path, {interrupt: createjs.Sound.INTERRUPT_ANY});
+        createjs.Sound.play(path, { interrupt: createjs.Sound.INTERRUPT_ANY, volume: 0.1 });
         break;
       case constants.EVENT_FIRE:
         let weapon = modelData.header.name;
         path = 'data/sounds/weapons/' + weapon.substr(2, weapon.length - 6) + '-1.wav';
-        createjs.Sound.play(path, {interrupt: createjs.Sound.INTERRUPT_ANY});
+        createjs.Sound.play(path, { interrupt: createjs.Sound.INTERRUPT_ANY, volume: 0.1 });
     }
   };
 

@@ -6,20 +6,16 @@
 let mouseMoveCallbackWrapper = function(callback) {
   return function(e) {
     let a: any = {
-      movementX: e.movementX    ||
-          e.mozMovementX  ||
-          e.webkitMovementX,
-      movementY: e.movementY    ||
-            e.mozMovementY  ||
-            e.webkitMovementY
+      movementX: e.movementX || e.mozMovementX || e.webkitMovementX,
+      movementY: e.movementY || e.mozMovementY || e.webkitMovementY
     };
 
     return callback(a);
   };
 };
 
-export const PointerLock = {
-  requestPointerLock: function(elem) {
+export class PointerLock {
+  static requestPointerLock(elem) {
     let _requestPointerLock =
       elem.requestPointerLock    ||
       elem.mozRequestPointerLock  ||
@@ -27,26 +23,21 @@ export const PointerLock = {
     if (!!_requestPointerLock) {
       _requestPointerLock.call(elem);
     }
-  },
+  }
 
-  pointerLockElement: function() {
+  static pointerLockElement() {
     return document.pointerLockElement  ||
       (document as any).mozPointerLockElement  ||
       (document as any).webkitPointerLockElement;
-  },
+  }
 
-  addPointerLockExchangeEventListener: function(target, callback,
-    useCapture) {
+  static addPointerLockExchangeEventListener(target, callback, useCapture) {
+    target.addEventListener('pointerlockchange', callback, useCapture);
+    target.addEventListener('mozpointerlockchange', callback, useCapture);
+    target.addEventListener('webkitpointerlockchange', callback, useCapture);
+  }
 
-    target.addEventListener('pointerlockchange', callback,
-      useCapture);
-    target.addEventListener('mozpointerlockchange', callback,
-      useCapture);
-    target.addEventListener('webkitpointerlockchange', callback,
-      useCapture);
-  },
-
-  addMouseMoveEventListener: function(target, callback, useCapture) {
+  static addMouseMoveEventListener(target, callback, useCapture) {
     // Every function used as an argument to addMouseMoveEventListener
     // gets an assoc array mapping DOM elements to the wrapped function
     // which is used for the mousemove event.
@@ -54,14 +45,13 @@ export const PointerLock = {
     callback.__MouseLockWrapper[target] = mouseMoveCallbackWrapper(callback);
 
     return target.addEventListener('mousemove', callback.__MouseLockWrapper[target], useCapture);
-  },
+  }
 
-  removeMouseMoveEventListener: function(target, callback) {
-    let result = target.removeEventListener('mousemove',
-      callback.__MouseLockWrapper[target]);
+  static removeMouseMoveEventListener(target, callback) {
+    let result = target.removeEventListener('mousemove', callback.__MouseLockWrapper[target]);
 
     // Delete the wrapper property element
     delete callback.__MouseLockWrapper[target];
     return result;
   }
-};
+}
