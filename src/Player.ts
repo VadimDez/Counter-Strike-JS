@@ -7,11 +7,12 @@
  * providing keyboard listeners
 **/
 
+import * as KeyboardJS from 'keyboardjs/dist/keyboard.min.js';
+console.log(KeyboardJS);
 import { vec3 } from 'gl-matrix';
 // import * as glMatrix from '../lib/gl-matrix';
 // const vec3 = glMatrix.vec3;
 
-import * as KeyboardJS from '../lib/keyboard';
 import { Mouse as MouseJS } from './util/Mouse';
 import { config } from './config';
 import { CollisionDetection } from './CollisionDetection';
@@ -119,82 +120,49 @@ export class Player {
     }, (event, keys, combo) => {
     });
 
+
+    KeyboardJS.on('w', (event: KeyboardEvent) => {
+      this.dir[0] = 1;
+    }, (event) => {
+      this.dir[0] = 0;
+    });
+
+    KeyboardJS.on('s', (event: KeyboardEvent) => {
+      this.dir[0] = -1;
+    }, (event) => {
+      this.dir[0] = 0;
+    });
+
     // Handle w and s keys
-    KeyboardJS.on('w,s', (event, keys, combo) => {
-      // Is w down?
-      if (combo === 'w') {
-        this.dir[0] = 1;
-      }
-      // Is s down?
-      if (combo === 's') {
-        this.dir[0] = -1;
-      }
+    KeyboardJS.on('w + s', (event: KeyboardEvent) => {
+      this.dir[0] = 0;
+    });
 
-      // Are both keys down?
-      if (keys.indexOf('w') !== -1 && keys.indexOf('s') !== -1) {
-        this.dir[0] = 0;
-      }
-    }, (event, keys, combo) => {
-      // Did we release the w key?
-      if (combo === 'w') {
-        // Yep! Is s still being pressed?
-        if (keys.indexOf('s') === -1) {
-          // Nope. Stop movement
-          this.dir[0] = 0;
-        }
-        else {
-          this.dir[0] = -1;
-        }
-      }
 
-      // Symmetric to the case above
-      if (combo === 's') {
-        if (keys.indexOf('w') === -1) {
-          this.dir[0] = 0;
-        }
-        else {
-          this.dir[0] = 1;
-        }
-      }
+    KeyboardJS.on('a', (event: KeyboardEvent) => {
+      this.dir[1] = 1;
+    }, (event) => {
+      this.dir[1] = 0;
+    });
+
+    KeyboardJS.on('d', (event: KeyboardEvent) => {
+      this.dir[1] = -1;
+    }, (event) => {
+      this.dir[1] = 0;
     });
 
     // Handle a and d keys
     // Symmetric to the handling of w and s
-    KeyboardJS.on('a,d', (event, keys, combo) => {
-      if (combo === 'a') {
-        this.dir[1] = 1;
-      }
-      if (combo === 'd') {
-        this.dir[1] = -1;
-      }
-
-      if (keys.indexOf('a') !== -1 && keys.indexOf('d') !== -1) {
-        this.dir[1] = 0;
-      }
-    }, (event, keys, combo) => {
-      if (combo === 'a') {
-        if (keys.indexOf('d') === -1) {
-          this.dir[1] = 0;
-        } else {
-          this.dir[1] = -1;
-        }
-      }
-
-      if (combo === 'd') {
-        if (keys.indexOf('a') === -1) {
-          this.dir[1] = 0;
-        } else {
-          this.dir[1] = 1;
-        }
-      }
+    KeyboardJS.on('a + d', () => {
+      this.dir[1] = 0;
     });
 
-    KeyboardJS.on('space', (event, keys, combo) => {
+    KeyboardJS.on('space', (event) => {
       let d = this.dir[2];
       if (d < 0.0001 && d > -0.0001) {
         this.dir[2] = 1;
       }
-    }, function (event, keys, combo) {
+    }, function (event) {
     });
   }
 }

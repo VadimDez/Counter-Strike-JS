@@ -25,6 +25,7 @@
   "dependencies": {
     "@types/gl-matrix": "^2.4.0",
     "gl-matrix": "^2.4.0",
+    "keyboardjs": "^2.4.1",
     "soundjs": "^1.0.1"
   },
   "devDependencies": {
