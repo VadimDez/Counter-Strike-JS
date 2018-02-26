@@ -26,6 +26,7 @@
     "@types/gl-matrix": "^2.4.0",
     "gl-matrix": "^2.4.0",
     "keyboardjs": "^2.4.1",
+    "peerjs": "^0.3.14",
     "soundjs": "^1.0.1"
   },
   "devDependencies": {
