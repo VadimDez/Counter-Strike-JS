@@ -4,30 +4,38 @@
 import { SpriteParser } from './SpriteParser';
 import { SpriteRender } from './SpriteRender';
 
-export const Sprite = function Sprite(gl, data) {
-  // If data has a header field it means that it's an already
-  // parsed JSON representation. If not we need to parse it
-  let sprite = data.header === undefined ? SpriteParser.parse(data) : data;
-  let spriteRender;
-  this.render = function() {
-    if (!spriteRender) {
-      spriteRender = new SpriteRender(gl, sprite);
-    }
-    spriteRender.render();
-  };
+export class Sprite {
+  sprite: any;
+  spriteRender: any;
 
-  this.subSprite = function(x, y, w, h) {
+  constructor(public gl, public data) {
+    // If data has a header field it means that it's an already
+    // parsed JSON representation. If not we need to parse it
+    this.sprite = data.header === undefined ? SpriteParser.parse(data) : data;
+  }
+
+  render() {
+    if (!this.spriteRender) {
+      this.spriteRender = new SpriteRender(this.gl, this.sprite);
+    }
+
+    this.spriteRender.render();
+  }
+
+  subSprite(x, y, w, h) {
     let subsprite: any = {};
-    subsprite.header = sprite.header;
-    subsprite.frames = Array(sprite.frames.length);
-    let width = sprite.header.maxWidth;
-    for (let i = 0; i < sprite.frames.length; ++i) {
-      let frame = sprite.frames[i];
+    subsprite.header = this.sprite.header;
+    subsprite.frames = Array(this.sprite.frames.length);
+    let width = this.sprite.header.maxWidth;
+
+    for (let i = 0; i < this.sprite.frames.length; ++i) {
+      let frame = this.sprite.frames[i];
       let imageData = new Uint8Array(4 * w * h);
 
       // The first pixel in our new image
       let start = 4 * (width * y + x);
       let n = start;
+
       // Loop through each row containing part of the image we need
       for (let j = 0; j != h; ++j) {
         // Grab the subarray of the row we need
@@ -47,6 +55,6 @@ export const Sprite = function Sprite(gl, data) {
       };
     }
 
-    return new Sprite(gl, subsprite);
-  };
-};
+    return new Sprite(this.gl, subsprite);
+  }
+}

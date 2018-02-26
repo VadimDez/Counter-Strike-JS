@@ -472,8 +472,7 @@ export const ModelRender = function(gl, modelData) {
     let events = sequence.events;
     if (sequence.numFrames <= 1) {
       frame = 0;
-    }
-    else {
+    } else {
       let newFrame = frame - Math.floor(frame / (sequence.numFrames - 1)) * (sequence.numFrames - 1);
 
       // Check for events

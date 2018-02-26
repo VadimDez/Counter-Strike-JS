@@ -67,12 +67,14 @@ let trace = function(vStart, vEnd, shouldSlide) {
 
 let recursiveHullCheck = function(iNode, p1f, p2f, p1, p2, traceObj) {
   let mapData = GameInfo.map.mapData;
+
   if (iNode < 0) {
     if (iNode != MapParser.constants.CONTENTS_SOLID) {
       traceObj.allSolid = false;
     }
     return true;
   }
+
   // Get possible collision plane
   let node = mapData.clipNodes[iNode];
   let plane = mapData.planes.planes[node.iPlane];
@@ -126,15 +128,13 @@ let recursiveHullCheck = function(iNode, p1f, p2f, p1, p2, traceObj) {
   );
   let side = t1 < 0 ? 1 : 0;
 
-  if (!recursiveHullCheck(node.iChildren[side], p1f, mid, p1, vMid,
-    traceObj)) {
-      return false;
+  if (!recursiveHullCheck(node.iChildren[side], p1f, mid, p1, vMid, traceObj)) {
+    return false;
   }
 
   let otherSide = side ^ 1;
   if (!hullPointContentIsSolid(node.iChildren[otherSide], vMid)) {
-    return recursiveHullCheck(node.iChildren[otherSide], mid, p2f,
-      vMid, p2, traceObj);
+    return recursiveHullCheck(node.iChildren[otherSide], mid, p2f, vMid, p2, traceObj);
   }
 
   // Check if we ever got out of the solid area
@@ -150,8 +150,7 @@ let recursiveHullCheck = function(iNode, p1f, p2f, p1, p2, traceObj) {
 
     traceObj.plane.distance = plane.distance;
     traceObj.plane.type = plane.type;
-  }
-  else {
+  } else {
     let negvNormal = vec3.create();
     vec3.negate(negvNormal, vNormal);
     traceObj.plane.vNormal = negvNormal;

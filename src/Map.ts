@@ -11,15 +11,20 @@ import { MapRender } from './MapRender';
  **/
 
 
-export const Map = function(gl: any, data: any) {
-  let mapData = MapParser.parse(data);
-  let mapRender = new MapRender(gl, mapData);
-  this.mapData = mapData;
+export class Map {
+  mapData: any;
+  mapRender: any;
+
+  constructor(public gl: any, public data: any) {
+    let mapData = MapParser.parse(data);
+    this.mapRender = new MapRender(gl, mapData);
+    this.mapData = mapData;
+  }
 
   /**
    Render the map as seen from the "pos" position
    **/
-  this.render = function(pos: any) {
-    return mapRender.render(pos);
-  };
-};
+  render(pos: any) {
+    return this.mapRender.render(pos);
+  }
+}

@@ -4,7 +4,11 @@
 import { mat4 } from 'gl-matrix';
 // import * as glMatrix from '../lib/gl-matrix';
 // const mat4 = glMatrix.mat4;
-export const GameInfo: any = {
+import { Map } from './Map';
+
+export type GameInfoType = { gl: any, player: any, map: Map, mvMatrix: mat4, pMatrix: mat4 };
+
+export const GameInfo: GameInfoType = {
   gl: null,
   player: null,
   map: null,

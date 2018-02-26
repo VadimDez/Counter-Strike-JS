@@ -164,13 +164,13 @@ let parseEntity = function (entityHeader: any) {
     entityLump[i] = map;
   }
   return entityLump;
-}
+};
 
 let parsePlanes = function(planeHeader) {
   let offset = planeHeader[0];
   let length = planeHeader[1];
 
-  let planesLump = Array(length /20);
+  let planesLump = Array(length / 20);
   let normals = new Float32Array((length / 20) * 3);
 
   let end = offset + length;
