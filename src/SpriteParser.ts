@@ -111,17 +111,21 @@ let parseFrames = function(palette) {
   return frames;
 };
 
-export const SpriteParser = {
-  parse: function(input) {
+export class SpriteParser {
+  static parse(input) {
     data = input;
 
     let header = parseHeader();
-    if (!header) return;
+    if (!header) {
+      return;
+    }
+
     let palette = parsePalette();
     let frames = parseFrames(palette);
+
     return {
       header: header,
       frames: frames
     };
   }
-};
+}
