@@ -2,8 +2,7 @@
  * Created by Vadym Yatsyuk on 25.02.18
  */
 import { mat4 } from 'gl-matrix';
-// import * as glMatrix from '../lib/gl-matrix';
-// const mat4 = glMatrix.mat4;
+
 import { Map } from './Map';
 import { Player } from './Player';
 

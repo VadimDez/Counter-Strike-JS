@@ -3,9 +3,8 @@
  */
 
 import { mat4 } from 'gl-matrix';
-// import * as glMatrix from '../lib/gl-matrix';
-// const mat4 = glMatrix.mat4;
-import { download } from "./util/download";
+
+import { download } from './util/download';
 import { GameInfo } from './GameInfo';
 import { Player } from './Player';
 import { Map } from './Map';
@@ -21,7 +20,7 @@ export class Main {
 
   static initGL(canvas: HTMLCanvasElement) {
     try {
-      GameInfo.gl = canvas.getContext('experimental-webgl');
+      GameInfo.gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
       GameInfo.gl.viewportWidth = canvas.width;
       GameInfo.gl.viewportHeight = canvas.height;
 

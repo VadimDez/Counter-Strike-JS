@@ -8,7 +8,6 @@
 **/
 
 import * as KeyboardJS from 'keyboardjs/dist/keyboard.min.js';
-console.log(KeyboardJS);
 import { vec3 } from 'gl-matrix';
 // import * as glMatrix from '../lib/gl-matrix';
 // const vec3 = glMatrix.vec3;

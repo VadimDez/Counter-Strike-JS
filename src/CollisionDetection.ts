@@ -3,8 +3,7 @@
   The logic has been ported from the Quake 1 engine
 **/
 import { vec3 } from 'gl-matrix';
-// import * as glMatrix from '../lib/gl-matrix';
-// const vec3 = glMatrix.vec3;
+
 import { MapParser } from './MapParser';
 import { GameInfo } from './GameInfo';
 
