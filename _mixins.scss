@@ -1,0 +1,17 @@
+@mixin border() {
+  border-width: $modal-border-width;
+  border-style: solid;
+  border-top-color: $modal-border-shadow-light;
+  border-left-color: $modal-border-shadow-light;
+  border-bottom-color: $modal-border-shadow-dark;
+  border-right-color: $modal-border-shadow-dark;
+}
+
+@mixin border-reversed() {
+  border-width: $modal-border-width;
+  border-style: solid;
+  border-top-color: $modal-border-shadow-dark;
+  border-left-color: $modal-border-shadow-dark;
+  border-bottom-color: $modal-border-shadow-light;
+  border-right-color: $modal-border-shadow-light;
+}

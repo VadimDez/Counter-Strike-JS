@@ -1,7 +1,7 @@
 ## Suspected copyrighted data
 data/
 peerJSApiKey.js
-
+.DS_Store
 node_modules/
 
 .idea/

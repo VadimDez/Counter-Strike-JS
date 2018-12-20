@@ -17,8 +17,8 @@ let mouseMoveCallbackWrapper = function(callback) {
 export class PointerLock {
   static requestPointerLock(elem) {
     let _requestPointerLock =
-      elem.requestPointerLock    ||
-      elem.mozRequestPointerLock  ||
+      elem.requestPointerLock ||
+      elem.mozRequestPointerLock ||
       elem.webkitRequestPointerLock;
     if (!!_requestPointerLock) {
       _requestPointerLock.call(elem);
@@ -26,9 +26,11 @@ export class PointerLock {
   }
 
   static pointerLockElement() {
-    return document.pointerLockElement  ||
-      (document as any).mozPointerLockElement  ||
-      (document as any).webkitPointerLockElement;
+    return (
+      (document as any).pointerLockElement ||
+      (document as any).mozPointerLockElement ||
+      (document as any).webkitPointerLockElement
+    );
   }
 
   static addPointerLockExchangeEventListener(target, callback, useCapture) {
@@ -44,11 +46,18 @@ export class PointerLock {
     callback.__MouseLockWrapper = [] || callback.__MouseLockWrapper;
     callback.__MouseLockWrapper[target] = mouseMoveCallbackWrapper(callback);
 
-    return target.addEventListener('mousemove', callback.__MouseLockWrapper[target], useCapture);
+    return target.addEventListener(
+      'mousemove',
+      callback.__MouseLockWrapper[target],
+      useCapture
+    );
   }
 
   static removeMouseMoveEventListener(target, callback) {
-    let result = target.removeEventListener('mousemove', callback.__MouseLockWrapper[target]);
+    let result = target.removeEventListener(
+      'mousemove',
+      callback.__MouseLockWrapper[target]
+    );
 
     // Delete the wrapper property element
     delete callback.__MouseLockWrapper[target];

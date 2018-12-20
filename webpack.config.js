@@ -27,6 +27,14 @@ var config = {
       //   }
       // },
       {
+        test: /\.scss$/,
+        use: [
+          "style-loader", // creates style nodes from JS strings
+          "css-loader", // translates CSS into CommonJS
+          "sass-loader" // compiles Sass to CSS, using Node Sass by default
+        ]
+      },
+      {
         test: /\.tsx?$/,
         loader: 'ts-loader',
         exclude: /node_modules/
@@ -34,9 +42,9 @@ var config = {
     ]
   },
   plugins: [
-  //   new HtmlWebpackPlugin({
-  //     template: './index.html'
-  //   })
+    //   new HtmlWebpackPlugin({
+    //     template: './index.html'
+    //   })
   ],
   resolve: {
     extensions: [".tsx", ".ts", ".js"]

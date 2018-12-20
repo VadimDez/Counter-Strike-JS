@@ -2,9 +2,10 @@
  * Created by Vadym Yatsyuk on 25.02.18
  */
 import { Menu } from './menu';
+import '../styles.scss';
+import '../stylesmenu.scss';
 
-(function () {
-
+(function() {
   function init() {
     let $newGame = document.querySelector('.new-game');
     let $joinServer = document.querySelector('.join-server');
@@ -25,7 +26,6 @@ import { Menu } from './menu';
   function startGameMenu() {
     const MENU = 'newGameMenu';
     Menu.openMenu(MENU);
-
 
     let $startGame = document.querySelector('.menu-start-game');
     let $cancel = document.querySelector('.menu-cancel');
@@ -48,7 +48,6 @@ import { Menu } from './menu';
     const MENU = 'joinGameMenu';
     Menu.openMenu(MENU);
 
-
     let $joinGame = document.querySelector('.join-game-button');
     let $cancel = document.querySelector('.cancel-join-button');
 
@@ -63,6 +62,5 @@ import { Menu } from './menu';
 
   init();
 
-
   Menu.startGame();
-}());
+})();

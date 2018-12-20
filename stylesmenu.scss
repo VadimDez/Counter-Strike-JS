@@ -1,0 +1,132 @@
+@import "./colors";
+@import "./mixins";
+
+* {
+	margin: 0;
+	padding: 0;
+}
+
+*:link {
+	color: $grey;
+	text-decoration: none;
+}
+
+*:visited {
+	color: $grey;
+	text-decoration: none;
+}
+
+*:hover {
+	color: $white;
+	text-decoration: none;
+}
+
+*:active {
+	color: $white;
+	text-decoration: none;
+}
+
+html,
+body {
+	width: 100%;
+	height: 100%;
+	// background-image:url(data/background/loading.png);
+	background-color: $main-green;
+	background-size: 100% 100%;
+}
+
+
+.PopupMenu {
+	background-color: $main-green;
+	@include border();
+
+	width: 348px;
+	height: 400px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	color: #C4B550;
+
+	button {
+		width: 100px;
+		height: 40px;
+		text-align: left;
+		padding: 8px;
+		font-size: 16px;
+		color: $grey;
+		@include border();
+		background-color: $main-green;
+	}
+}
+
+#menu {
+	bottom: 0px;
+	position: fixed;
+	padding-bottom: 10px;
+	color: $white;
+	font-size: 16px;
+}
+
+#newGameMenu {
+	display: flex;
+	flex-direction: column;
+
+	>header {
+		h3 {
+			padding: 8px 8px 0 8px;
+			color: $grey;
+			font-weight: 100;
+		}
+	}
+
+	>section {
+		flex: 1;
+		padding: 24px;
+		margin: 50px 8px 8px 8px;
+		position: relative;
+		@include border();
+
+		.tab {
+			@include border();
+			display: inline-block;
+			border-bottom: none;
+			background-color: $main-green;
+			width: 60px;
+			padding: 8px;
+			position: absolute;
+			top: -37px;
+			left: -2px;
+		}
+
+		hr {
+			border-width: 2px;
+			border-style: solid;
+			border-top-color: $modal-border-shadow-dark;
+			border-bottom-color: $modal-border-shadow-light;
+			border-left: none;
+			border-right: none;
+			margin-top: 16px;
+		}
+	}
+
+	>footer {
+		padding: 0 8px 8px 8px;
+		text-align: right;
+	}
+}
+
+
+.selector-container {
+	display: flex;
+
+	.label {
+		color: $grey;
+		line-height: 29px;
+		margin-right: 16px;
+		;
+	}
+
+	.styled-select {
+		display: inline-block;
+	}
+}
