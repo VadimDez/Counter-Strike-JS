@@ -34,7 +34,7 @@ let constants = {
 // Raw data array of the .blp file format version 30
 let data: any;
 
-let parseHeader = function () {
+let parseHeader = function() {
   let magic = DataReader.readInteger(data, 0);
   if (magic != constants.BSP_VERSION) {
     console.log('Invalid magic number. Expected: 30, but was: ' + magic);
@@ -43,24 +43,63 @@ let parseHeader = function () {
   return parseLumps();
 };
 
-let parseLumps = function () {
+let parseLumps = function() {
   // Read the 15 predefined lumps
   return {
-    entities: [DataReader.readInteger(data, 4), DataReader.readInteger(data, 8)],
-    planes: [DataReader.readInteger(data, 12), DataReader.readInteger(data, 16)],
-    textures: [DataReader.readInteger(data, 20), DataReader.readInteger(data, 24)],
-    vertices: [DataReader.readInteger(data, 28), DataReader.readInteger(data, 32)],
-    visibility: [DataReader.readInteger(data, 36), DataReader.readInteger(data, 40)],
+    entities: [
+      DataReader.readInteger(data, 4),
+      DataReader.readInteger(data, 8)
+    ],
+    planes: [
+      DataReader.readInteger(data, 12),
+      DataReader.readInteger(data, 16)
+    ],
+    textures: [
+      DataReader.readInteger(data, 20),
+      DataReader.readInteger(data, 24)
+    ],
+    vertices: [
+      DataReader.readInteger(data, 28),
+      DataReader.readInteger(data, 32)
+    ],
+    visibility: [
+      DataReader.readInteger(data, 36),
+      DataReader.readInteger(data, 40)
+    ],
     nodes: [DataReader.readInteger(data, 44), DataReader.readInteger(data, 48)],
-    texinfo: [DataReader.readInteger(data, 52), DataReader.readInteger(data, 56)],
+    texinfo: [
+      DataReader.readInteger(data, 52),
+      DataReader.readInteger(data, 56)
+    ],
     faces: [DataReader.readInteger(data, 60), DataReader.readInteger(data, 64)],
-    lighting: [DataReader.readInteger(data, 68), DataReader.readInteger(data, 72)],
-    clipnodes: [DataReader.readInteger(data, 76), DataReader.readInteger(data, 80)],
-    leaves: [DataReader.readInteger(data, 84), DataReader.readInteger(data, 88)],
-    marksurfaces: [DataReader.readInteger(data, 92), DataReader.readInteger(data, 96)],
-    edges: [DataReader.readInteger(data, 100), DataReader.readInteger(data, 104)],
-    surfedges: [DataReader.readInteger(data, 108), DataReader.readInteger(data, 112)],
-    models: [DataReader.readInteger(data, 116), DataReader.readInteger(data, 120)]
+    lighting: [
+      DataReader.readInteger(data, 68),
+      DataReader.readInteger(data, 72)
+    ],
+    clipnodes: [
+      DataReader.readInteger(data, 76),
+      DataReader.readInteger(data, 80)
+    ],
+    leaves: [
+      DataReader.readInteger(data, 84),
+      DataReader.readInteger(data, 88)
+    ],
+    marksurfaces: [
+      DataReader.readInteger(data, 92),
+      DataReader.readInteger(data, 96)
+    ],
+    edges: [
+      DataReader.readInteger(data, 100),
+      DataReader.readInteger(data, 104)
+    ],
+    surfedges: [
+      DataReader.readInteger(data, 108),
+      DataReader.readInteger(data, 112)
+    ],
+    models: [
+      DataReader.readInteger(data, 116),
+      DataReader.readInteger(data, 120)
+    ]
   };
 };
 
@@ -69,7 +108,7 @@ let uintToString = function(uintArray: any) {
   return decodeURIComponent(escape(encodedString));
 };
 
-let parseEntity = function (entityHeader: any) {
+let parseEntity = function(entityHeader: any) {
   // Skip past first "
   let offset = entityHeader[0] + 1;
   // Remove last }
@@ -83,7 +122,9 @@ let parseEntity = function (entityHeader: any) {
   let entitiesArray = sEntities.split('}\n{');
 
   // Helper formatters
-  let identity = function(x: any) { return x; };
+  let identity = function(x: any) {
+    return x;
+  };
   let parseList = function(formatter: any) {
     return function(x) {
       let list = [];
@@ -101,13 +142,16 @@ let parseEntity = function (entityHeader: any) {
     message: identity,
     skyname: identity,
     sounds: parseInt,
-    wad: function(x) { return x.split(';'); },
+    wad: function(x) {
+      return x.split(';');
+    },
     model: function(x) {
       // Most entities have a value of the form *N where N is an integer
       // But some entities have a string value instead,
       // (i.e path to models in case of hostages)
-      if (x[0] === '*')
+      if (x[0] === '*') {
         return parseInt(x.substr(1));
+      }
       return identity;
     },
     renderamt: parseInt,
@@ -158,8 +202,9 @@ let parseEntity = function (entityHeader: any) {
       let key = sKeyVal[j];
       let value = sKeyVal[j + 2];
       let formatter = formatters[key];
-      if (!formatter) console.log('Unknown entity name: ' + key);
-      else map[key] = formatter(value);
+      if (!formatter) {
+        console.log('Unknown entity name: ' + key);
+      } else map[key] = formatter(value);
     }
     entityLump[i] = map;
   }
@@ -212,7 +257,7 @@ let parseTextures = function(textureHeader) {
   // Read offsets
   let n = 0;
   let offsets = Array(n);
-  let endOfOffsets = (offset + 4) + (count * 4);
+  let endOfOffsets = offset + 4 + count * 4;
   for (let i = offset + 4; i < endOfOffsets; i += 4) {
     offsets[n++] = DataReader.readInteger(data, i);
   }
@@ -270,12 +315,11 @@ let getVisibilityList = function(offset, nLeafs, nVisLeaves) {
     if (byt === 0) {
       ++i;
       iVis += 8 * data[offset + i];
-    }
-    else {
+    } else {
       // Loop through each bit in the byte
       for (let bit = 1; bit < 256; ++iVis, bit <<= 1) {
         // If the bit is 1 and we're still in a valid leaf
-        if (((byt & bit) > 0) && (iVis < nLeafs)) {
+        if ((byt & bit) > 0 && iVis < nLeafs) {
           visibilityList[iVis] = true;
         }
       }
@@ -293,15 +337,20 @@ let parseVisibility = function(visibilityHeader, nodes, leaves) {
   // Count the number of visibility leaves
   // A visivility leaf is a non solid leaf that has a valid offset
   // into the visibility lump
-  let count = leaves.filter(function(leaf) {
-    // Not a solid and has visibility
-    return leaf.nContents != constants.CONTENTS_SOLID && leaf.nVisOffset >= 0;
-  }).length - 1;
+  let count =
+    leaves.filter(function(leaf) {
+      // Not a solid and has visibility
+      return leaf.nContents != constants.CONTENTS_SOLID && leaf.nVisOffset >= 0;
+    }).length - 1;
 
   let visibility = Array(count);
   for (let i = 0; i < count; ++i) {
     if (leaves[i + 1].nVisOffset >= 0) {
-      visibility[i] = getVisibilityList(offset + leaves[i + 1].nVisOffset, leaves.length, count);
+      visibility[i] = getVisibilityList(
+        offset + leaves[i + 1].nVisOffset,
+        leaves.length,
+        count
+      );
     }
   }
   return visibility;
@@ -393,12 +442,7 @@ let parseFaces = function(faceHeader) {
     let iFirstEdge = DataReader.readInteger(data, i + 4);
     let nEdges = DataReader.readShort(data, i + 8);
     let iTextureInfo = DataReader.readShort(data, i + 10);
-    let nStyles = [
-      data[i + 12],
-      data[i + 13],
-      data[i + 14],
-      data[i + 15]
-    ];
+    let nStyles = [data[i + 12], data[i + 13], data[i + 14], data[i + 15]];
     let nLightmapoffset = DataReader.readInteger(data, i + 16);
 
     faceLump[n++] = {
@@ -412,9 +456,15 @@ let parseFaces = function(faceHeader) {
     };
   }
   return faceLump;
-}
+};
 
-let parseLighting = function(lightingHeader, faces, surfedges, edges, vertices) {
+let parseLighting = function(
+  lightingHeader,
+  faces,
+  surfedges,
+  edges,
+  vertices
+) {
   let offset = lightingHeader[0];
   let length = lightingHeader[1];
   let end = offset + length;
@@ -434,8 +484,7 @@ let parseLighting = function(lightingHeader, faces, surfedges, edges, vertices) 
       if (iEdge > 0) {
         let edge = edges[iEdge];
         index = edge[0];
-      }
-      else {
+      } else {
         let edge = edges[-iEdge];
         index = edge[1];
       }
@@ -466,8 +515,7 @@ let parseLighting = function(lightingHeader, faces, surfedges, edges, vertices) 
         // Write the new index into the edges lump
         if (iEdge > 0) {
           edges[iEdge][0] = vertexOffset;
-        }
-        else {
+        } else {
           edges[-iEdge][1] = vertexOffset;
         }
       }
@@ -613,13 +661,13 @@ let parseModels = function(modelsHeader) {
     let vOrigin = [
       DataReader.readFloat(data, i + 24),
       DataReader.readFloat(data, i + 18),
-      DataReader.readFloat(data, i + 32),
+      DataReader.readFloat(data, i + 32)
     ];
     let iHeadNodes = [
       DataReader.readInteger(data, i + 36),
       DataReader.readInteger(data, i + 40),
       DataReader.readInteger(data, i + 44),
-      DataReader.readInteger(data, i + 48),
+      DataReader.readInteger(data, i + 48)
     ];
     let nVisLeafs = DataReader.readInteger(data, i + 52);
     let iFirstFace = DataReader.readInteger(data, i + 56);
@@ -644,7 +692,7 @@ export const MapParser = {
   /**
    Uint8array -> JSON
    **/
-  parse: function (input) {
+  parse: function(input) {
     data = input;
     let header = parseHeader();
 
@@ -661,7 +709,13 @@ export const MapParser = {
     let markSurfaces = parseMarkSurfaces(header.marksurfaces);
     let edges = parseEdges(header.edges);
     let surfedges = parseSurfedges(header.surfedges);
-    let lighting = parseLighting(header.lighting, faces, surfedges, edges, vertices);
+    let lighting = parseLighting(
+      header.lighting,
+      faces,
+      surfedges,
+      edges,
+      vertices
+    );
     let models = parseModels(header.models);
 
     return {

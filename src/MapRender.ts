@@ -11,26 +11,22 @@ import { GameInfo } from './GameInfo';
 export const MapRender = function(gl, map) {
   // Shaders
   let fragmentShader =
-  '	precision mediump float;' +
-  '	varying vec3 forFragColor;' +
-
-  '	void main(void) {' +
-  '		gl_FragColor = vec4(forFragColor, 1.0);' +
-  '	}';
+    '	precision mediump float;' +
+    '	varying vec3 forFragColor;' +
+    '	void main(void) {' +
+    '		gl_FragColor = vec4(forFragColor, 1.0);' +
+    '	}';
 
   let vertexShader =
-  '	attribute vec3 aVertexPosition;' +
-  '	attribute vec3 aVertexColor;' +
-
-  '	varying vec3 forFragColor;' +
-
-  '	uniform mat4 uMVMatrix;' +
-  '	uniform mat4 uPMatrix;' +
-
-  '	void main(void) {' +
-  '		gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);' +
-  '		forFragColor = aVertexColor;' +
-  '	}';
+    '	attribute vec3 aVertexPosition;' +
+    '	attribute vec3 aVertexColor;' +
+    '	varying vec3 forFragColor;' +
+    '	uniform mat4 uMVMatrix;' +
+    '	uniform mat4 uPMatrix;' +
+    '	void main(void) {' +
+    '		gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);' +
+    '		forFragColor = aVertexColor;' +
+    '	}';
 
   this.map = map;
   this.gl = gl;
@@ -63,8 +59,14 @@ export const MapRender = function(gl, map) {
     }
 
     gl.useProgram(program);
-    program.vertexPositionAttribute = gl.getAttribLocation(program, 'aVertexPosition');
-    program.vertexColorAttribute = gl.getAttribLocation(program, 'aVertexColor');
+    program.vertexPositionAttribute = gl.getAttribLocation(
+      program,
+      'aVertexPosition'
+    );
+    program.vertexColorAttribute = gl.getAttribLocation(
+      program,
+      'aVertexColor'
+    );
 
     program.pMatrixUniform = gl.getUniformLocation(program, 'uPMatrix');
     program.mvMatrixUniform = gl.getUniformLocation(program, 'uMVMatrix');
@@ -86,9 +88,14 @@ export const MapRender = function(gl, map) {
       y = point[1],
       z = point[2];
 
-    return (min[0] <= x && x <= max[0] &&
-        min[1] <= y && y <= max[1] &&
-        min[2] <= z && z <= max[2]);
+    return (
+      min[0] <= x &&
+      x <= max[0] &&
+      min[1] <= y &&
+      y <= max[1] &&
+      min[2] <= z &&
+      z <= max[2]
+    );
   };
 
   // Search for which leaf the vector "pos" is in. i is the i'th
@@ -121,10 +128,9 @@ export const MapRender = function(gl, map) {
     if (first != -1) {
       // Yep! Return that leaf
       return first;
-    } else {
-      // Nope. Check the other child
-      return getLeafForPositionHelper(pos, iNode, 1);
     }
+    // Nope. Check the other child
+    return getLeafForPositionHelper(pos, iNode, 1);
   };
 
   let getIndex = function(i, face) {
@@ -150,7 +156,9 @@ export const MapRender = function(gl, map) {
     let face = map.faces[iFace];
 
     // No need to render it if it has no light
-    if (face.nStyles[0] == 0xFF) return;
+    if (face.nStyles[0] == 0xff) {
+      return;
+    }
 
     // We need to convert from triangle fans to triangles to allow
     // for a single draw call
@@ -196,8 +204,10 @@ export const MapRender = function(gl, map) {
       if (iNode == -1) return;
 
       // If this node is not visible, don't draw it
-      if (iLeaf > 0 && (map.visibility[iLeaf - 1] &&
-        !map.visibility[iLeaf - 1][~iNode - 1])) {
+      if (
+        iLeaf > 0 &&
+        (map.visibility[iLeaf - 1] && !map.visibility[iLeaf - 1][~iNode - 1])
+      ) {
         return;
       }
 
@@ -220,9 +230,11 @@ export const MapRender = function(gl, map) {
         // Not perpendicular. Calculate the location the hard way using:
         // location = dot(normal, pos) - distance
         // (from http://en.wikipedia.org/wiki/Hesse_normal_form)
-        location = (map.planes.normals[3 * plane_index] * pos[0] +
+        location =
+          map.planes.normals[3 * plane_index] * pos[0] +
           map.planes.normals[3 * plane_index + 1] * pos[1] +
-          map.planes.normals[3 * plane_index + 2] * pos[2]) - plane.distance;
+          map.planes.normals[3 * plane_index + 2] * pos[2] -
+          plane.distance;
     }
 
     // Is the player behind this node or in front?
@@ -246,17 +258,33 @@ export const MapRender = function(gl, map) {
     mat4.rotateX(GameInfo.mvMatrix, GameInfo.mvMatrix, -Math.PI / 2);
     mat4.rotateZ(GameInfo.mvMatrix, GameInfo.mvMatrix, Math.PI / 2);
     gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, GameInfo.pMatrix);
-    gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, GameInfo.mvMatrix);
+    gl.uniformMatrix4fv(
+      shaderProgram.mvMatrixUniform,
+      false,
+      GameInfo.mvMatrix
+    );
 
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, map.vertices, gl.STATIC_DRAW);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 3,
-      gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(
+      shaderProgram.vertexPositionAttribute,
+      3,
+      gl.FLOAT,
+      false,
+      0,
+      0
+    );
 
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, map.lighting, gl.STATIC_DRAW);
-    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, 3,
-      gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(
+      shaderProgram.vertexColorAttribute,
+      3,
+      gl.FLOAT,
+      false,
+      0,
+      0
+    );
 
     // Clear the array that tells us which faces we've already drawn
     renderedFaces.length = 0;

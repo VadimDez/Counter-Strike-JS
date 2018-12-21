@@ -26,7 +26,9 @@ let downListener = function(e) {
 };
 
 let upListener = function(e) {
-  if (!PointerLock.pointerLockElement()) return;
+  if (!PointerLock.pointerLockElement()) {
+    return;
+  }
   upListeners[e.which - 1].forEach(function(element) {
     // If we're doing a continuous call from a setInterval
     if (intervalIds[element.id] !== 'undefined') {
@@ -48,7 +50,7 @@ let stringToWhich = {
 
 let id = 0;
 export const Mouse = {
-  on: function(which, down, up, cont?: any) {
+  on: (which, down, up, cont?: any) => {
     downListeners[stringToWhich[which]].push({
       callback: down,
       interval: cont,

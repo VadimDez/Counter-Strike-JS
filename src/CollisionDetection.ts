@@ -8,9 +8,9 @@ import { MapParser } from './MapParser';
 import { GameInfo } from './GameInfo';
 
 let samePosition = function(vStart, vEnd) {
-  return vStart[0] === vEnd[0] &&
-    vStart[1] === vEnd[1] &&
-    vStart[2] === vEnd[2];
+  return (
+    vStart[0] === vEnd[0] && vStart[1] === vEnd[1] && vStart[2] === vEnd[2]
+  );
 };
 
 let trace = function(vStart, vEnd, shouldSlide) {
@@ -26,8 +26,14 @@ let trace = function(vStart, vEnd, shouldSlide) {
     ratio: 1.0 // How far we got before colliding with anything
   };
   // models[0] is the geometry of the entire map
-  recursiveHullCheck(mapData.models[0].iHeadNodes[0], 0, 1,
-    vStart, vEnd, traceObj);
+  recursiveHullCheck(
+    mapData.models[0].iHeadNodes[0],
+    0,
+    1,
+    vStart,
+    vEnd,
+    traceObj
+  );
 
   // If ratio is still 1 we never collided with anything
   if (traceObj.ratio === 1.0) {
@@ -133,7 +139,14 @@ let recursiveHullCheck = function(iNode, p1f, p2f, p1, p2, traceObj) {
 
   let otherSide = side ^ 1;
   if (!hullPointContentIsSolid(node.iChildren[otherSide], vMid)) {
-    return recursiveHullCheck(node.iChildren[otherSide], mid, p2f, vMid, p2, traceObj);
+    return recursiveHullCheck(
+      node.iChildren[otherSide],
+      mid,
+      p2f,
+      vMid,
+      p2,
+      traceObj
+    );
   }
 
   // Check if we ever got out of the solid area
@@ -203,7 +216,7 @@ let hullPointContentIsSolid = function(iNode, p) {
 };
 
 export const CollisionDetection = {
-  move: function(vStart, vEnd) {
+  move: (vStart, vEnd) => {
     return trace(vStart, vEnd, true);
   },
 
