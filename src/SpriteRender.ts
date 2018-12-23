@@ -5,30 +5,74 @@
 import { GameInfo } from './GameInfo';
 
 let fragmentShader =
-'	precision mediump float;' +
-'	varying vec2 vTexCoord;' +
-'	uniform sampler2D uSampler;' +
-
-'	void main(void) {' +
-'		gl_FragColor = texture2D(uSampler, vec2(vTexCoord.s, vTexCoord.t));' +
-'	}';
+  '	precision mediump float;' +
+  '	varying vec2 vTexCoord;' +
+  '	uniform sampler2D uSampler;' +
+  '	void main(void) {' +
+  '		gl_FragColor = texture2D(uSampler, vec2(vTexCoord.s, vTexCoord.t));' +
+  '	}';
 
 let vertexShader =
-'	attribute vec3 aVertexPosition;' +
-'	attribute vec2 aTexCoord;' +
+  '	attribute vec3 aVertexPosition;' +
+  '	attribute vec2 aTexCoord;' +
+  '	varying vec2 vTexCoord;' +
+  '	uniform mat4 uMVMatrix;' +
+  '	uniform mat4 uPMatrix;' +
+  '	void main(void) {' +
+  '		gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);' +
+  '		vTexCoord = aTexCoord;' +
+  '	}';
 
-'	varying vec2 vTexCoord;' +
+export class SpriteRender {
+  shaderProgram: any;
+  gl: any;
+  buffer: any;
+  texture: any;
 
-'	uniform mat4 uMVMatrix;' +
-'	uniform mat4 uPMatrix;' +
+  constructor(gl, sprite) {
+    this.gl = gl;
+    this.shaderProgram = this.getShaderProgram();
 
-'	void main(void) {' +
-'		gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);' +
-'		vTexCoord = aTexCoord;' +
-'	}';
+    this.buffer = this.gl.createBuffer();
+    this.texture = this.gl.createTexture();
 
-export const SpriteRender = function(gl, sprite) {
-  function getShader(gl, shaderCode, shaderType) {
+    this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+    this.gl.texImage2D(
+      this.gl.TEXTURE_2D,
+      0,
+      this.gl.RGBA,
+      sprite.frames[0].width,
+      sprite.frames[0].height,
+      0,
+      this.gl.RGBA,
+      this.gl.UNSIGNED_BYTE,
+      sprite.frames[0].imageData
+    );
+    this.gl.texParameterf(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_MIN_FILTER,
+      this.gl.LINEAR
+    );
+    this.gl.texParameterf(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_MAG_FILTER,
+      this.gl.LINEAR
+    );
+    // Subsprites are not guaranteed to be of size 2^n for some n,
+    // so we disable this restriction
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_WRAP_S,
+      this.gl.CLAMP_TO_EDGE
+    );
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_WRAP_T,
+      this.gl.CLAMP_TO_EDGE
+    );
+  }
+
+  getShader(gl, shaderCode, shaderType) {
     let shader = gl.createShader(shaderType);
 
     gl.shaderSource(shader, shaderCode);
@@ -42,73 +86,114 @@ export const SpriteRender = function(gl, sprite) {
     return shader;
   }
 
-  let shaderProgram = (function() {
-    let sFragmentShader = getShader(gl, fragmentShader, gl.FRAGMENT_SHADER);
-    let sVertexShader = getShader(gl, vertexShader, gl.VERTEX_SHADER);
+  getShaderProgram() {
+    let sFragmentShader = this.getShader(
+      this.gl,
+      fragmentShader,
+      this.gl.FRAGMENT_SHADER
+    );
+    let sVertexShader = this.getShader(
+      this.gl,
+      vertexShader,
+      this.gl.VERTEX_SHADER
+    );
 
-    let program = gl.createProgram();
-    gl.attachShader(program, sVertexShader);
-    gl.attachShader(program, sFragmentShader);
-    gl.linkProgram(program);
+    let program = this.gl.createProgram();
+    this.gl.attachShader(program, sVertexShader);
+    this.gl.attachShader(program, sFragmentShader);
+    this.gl.linkProgram(program);
 
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
       alert('Could not initialise shaders');
     }
 
-    gl.useProgram(program);
-    program.vertexPositionAttribute = gl.getAttribLocation(program, 'aVertexPosition');
-    program.texCoordAttribute = gl.getAttribLocation(program, 'aTexCoord');
+    this.gl.useProgram(program);
+    program.vertexPositionAttribute = this.gl.getAttribLocation(
+      program,
+      'aVertexPosition'
+    );
+    program.texCoordAttribute = this.gl.getAttribLocation(program, 'aTexCoord');
 
-    program.pMatrixUniform = gl.getUniformLocation(program, 'uPMatrix');
-    program.mvMatrixUniform = gl.getUniformLocation(program, 'uMVMatrix');
-    program.samplerUniform = gl.getUniformLocation(program, 'uSampler');
+    program.pMatrixUniform = this.gl.getUniformLocation(program, 'uPMatrix');
+    program.mvMatrixUniform = this.gl.getUniformLocation(program, 'uMVMatrix');
+    program.samplerUniform = this.gl.getUniformLocation(program, 'uSampler');
 
     return program;
-  })();
+  }
 
-  let buffer = gl.createBuffer();
+  render() {
+    this.gl.useProgram(this.shaderProgram);
+    this.gl.enableVertexAttribArray(this.shaderProgram.vertexPositionAttribute);
+    this.gl.enableVertexAttribArray(this.shaderProgram.texCoordAttribute);
+    this.gl.enable(this.gl.BLEND);
+    this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+    this.gl.disable(this.gl.DEPTH_TEST);
 
-  let texture = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, sprite.frames[0].width, sprite.frames[0].height, 0, gl.RGBA, gl.UNSIGNED_BYTE, sprite.frames[0].imageData);
-  gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-  // Subsprites are not guaranteed to be of size 2^n for some n,
-  // so we disable this restriction
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-
-  this.render = function() {
-    gl.useProgram(shaderProgram);
-    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-    gl.enableVertexAttribArray(shaderProgram.texCoordAttribute);
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    gl.disable(gl.DEPTH_TEST);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffer);
     let vertices = [
-      1.0,  1.0,  0.0,  1.0, 0.0,
-      -1.0,  1.0,  0.0,  0.0, 0.0,
-      1.0, -1.0,  0.0,  1.0, 1.0,
-      -1.0, -1.0,  0.0,  0.0, 1.0
+      1.0,
+      1.0,
+      0.0,
+      1.0,
+      0.0,
+      -1.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      -1.0,
+      0.0,
+      1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      0.0,
+      0.0,
+      1.0
     ];
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
+      new Float32Array(vertices),
+      this.gl.STATIC_DRAW
+    );
 
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.uniform1i(shaderProgram.samplerUniform, 0);
+    this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+    this.gl.uniform1i(this.shaderProgram.samplerUniform, 0);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 20, 0);
-    gl.vertexAttribPointer(shaderProgram.texCoordAttribute, 2, gl.FLOAT, false, 20, 12);
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffer);
+    this.gl.vertexAttribPointer(
+      this.shaderProgram.vertexPositionAttribute,
+      3,
+      this.gl.FLOAT,
+      false,
+      20,
+      0
+    );
+    this.gl.vertexAttribPointer(
+      this.shaderProgram.texCoordAttribute,
+      2,
+      this.gl.FLOAT,
+      false,
+      20,
+      12
+    );
 
     // mat4.scale(cs.mvMatrix, cs.mvMatrix, [1/sprite.header.maxWidth, 1/sprite.header.maxHeight, 1]);
 
-    gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, GameInfo.pMatrix);
-    gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, GameInfo.mvMatrix);
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    this.gl.uniformMatrix4fv(
+      this.shaderProgram.pMatrixUniform,
+      false,
+      GameInfo.pMatrix
+    );
+    this.gl.uniformMatrix4fv(
+      this.shaderProgram.mvMatrixUniform,
+      false,
+      GameInfo.mvMatrix
+    );
+    this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
 
-    gl.enable(gl.DEPTH_TEST);
-    gl.disable(gl.BLEND);
-  };
-};
+    this.gl.enable(this.gl.DEPTH_TEST);
+    this.gl.disable(this.gl.BLEND);
+  }
+}
