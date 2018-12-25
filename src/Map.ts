@@ -10,15 +10,28 @@ import { MapRender } from './MapRender';
  class that performs both actions.
  **/
 
-
 export class Map {
   mapData: any;
   mapRender: any;
 
-  constructor(public gl: any, public data: any) {
-    let mapData = MapParser.parse(data);
-    this.mapRender = new MapRender(gl, mapData);
-    this.mapData = mapData;
+  constructor(public gl: any, public bspData: any) {
+    this.mapData = MapParser.parse(bspData);
+    this.mapRender = new MapRender(gl, this.mapData);
+  }
+
+  getSpawn() {
+    const r = Math.floor(Math.random() * 2);
+
+    if (r) {
+      const ctSpawn = this.mapData.entities.filter(
+        o => o.classname === 'info_player_start'
+      );
+      return ctSpawn[Math.floor(Math.random() * (ctSpawn.length + 1))];
+    }
+    const tSpawn = this.mapData.entities.filter(
+      o => o.classname === 'info_player_deathmatch'
+    );
+    return tSpawn[Math.floor(Math.random() * (tSpawn.length + 1))];
   }
 
   /**
