@@ -27,4 +27,4 @@ npm start
 Open [http://localhost:9000](http://localhost:9000)
 
 
-![Screenshot](http://i.imgur.com/9kMVte7.png)
+![Screenshot](https://user-images.githubusercontent.com/3748453/50407004-1dbc1180-07cf-11e9-8976-7472bc17183d.jpg)
