@@ -36,6 +36,7 @@ export class Main {
   static render() {
     let player = GameInfo.player;
     let gl = GameInfo.gl;
+
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -74,82 +75,97 @@ export class Main {
   }
 
   getMap() {
-    return sessionStorage.getItem('map') || 'cs_assault.bsp';
+    return sessionStorage.getItem('map') || config.MAP;
   }
 
-  webGLStart() {
-    let canvas = document.getElementById('canvas') as HTMLCanvasElement;
-    const mapName = this.getMap();
+  async webGLStart() {
+    const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
     Main.initGL(canvas);
 
-    let gl = GameInfo.gl;
+    GameInfo.gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
-    download(`data/maps/${mapName}`, 'arraybuffer', data => {
-      gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    const map = await this.loadMap();
+    // Parse map
+    GameInfo.map = new Map(GameInfo.gl, map);
 
-      // Parse map
-      GameInfo.map = new Map(gl, data);
-      GameInfo.player = new Player(gl, -496, 2352, 176);
-      GameInfo.player.switchWeapon(config.PLAYER_DEFAULT_WEAPON);
-      // Set event handler for resizing the screen every time
-      // the window changes size
-      let resizeCallback = () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        gl.viewportWidth = window.innerWidth;
-        gl.viewportHeight = window.innerHeight;
-      };
+    this.preparePlayer();
 
-      resizeCallback();
-      window.addEventListener('resize', resizeCallback, false);
+    // Set event handler for resizing the screen every time
+    // the window changes size
+    let resizeCallback = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      GameInfo.gl.viewportWidth = window.innerWidth;
+      GameInfo.gl.viewportHeight = window.innerHeight;
+    };
 
-      // Listen for clicks on the canvas
-      canvas.addEventListener(
-        'click',
-        () => {
-          // is the mouse not currently locked?
-          if (!PointerLock.pointerLockElement()) {
-            // Nope. Request locking
-            PointerLock.requestPointerLock(canvas);
-          }
-        },
-        false
-      );
+    resizeCallback();
+    window.addEventListener('resize', resizeCallback, false);
 
-      // Listen for pointer locking
-      PointerLock.addPointerLockExchangeEventListener(
-        document,
-        e => {
-          // Did the pointer just go from unlocked to locked?
-          if (!!PointerLock.pointerLockElement()) {
-            console.log('add mouse move');
-            // Yep! Add mousemove listener
-            PointerLock.addMouseMoveEventListener(
-              document,
-              Main.rotatePlayer,
-              false
-            );
-          } else {
-            // Nope. Remove mouse move listener
-            console.log('remove mouse move');
-            PointerLock.removeMouseMoveEventListener(
-              document,
-              Main.rotatePlayer
-            );
-          }
-        },
-        false
-      );
+    // Listen for clicks on the canvas
+    canvas.addEventListener(
+      'click',
+      () => {
+        // is the mouse not currently locked?
+        if (!PointerLock.pointerLockElement()) {
+          // Nope. Request locking
+          PointerLock.requestPointerLock(canvas);
+        }
+      },
+      false
+    );
 
-      this.mainLoop();
-    });
+    // Listen for pointer locking
+    PointerLock.addPointerLockExchangeEventListener(
+      document,
+      e => {
+        // Did the pointer just go from unlocked to locked?
+        if (!!PointerLock.pointerLockElement()) {
+          console.log('add mouse move');
+          // Yep! Add mousemove listener
+          PointerLock.addMouseMoveEventListener(
+            document,
+            Main.rotatePlayer,
+            false
+          );
+        } else {
+          // Nope. Remove mouse move listener
+          console.log('remove mouse move');
+          PointerLock.removeMouseMoveEventListener(document, Main.rotatePlayer);
+        }
+      },
+      false
+    );
+
+    this.mainLoop();
+  }
+
+  preparePlayer() {
+    const spawn = GameInfo.map.getSpawn();
+
+    GameInfo.player = new Player(
+      GameInfo.gl,
+      spawn.origin[0],
+      spawn.origin[1],
+      spawn.origin[2]
+    );
+    GameInfo.player.xAngle = spawn.angles[2];
+    GameInfo.player.yAngle = spawn.angles[1];
+
+    GameInfo.player.switchWeapon(config.PLAYER_DEFAULT_WEAPON);
   }
 
   // Rotate the player when the mouse is moved
   static rotatePlayer(e) {
     let player = GameInfo.player;
     player.rotate(e.movementX, e.movementY);
+  }
+
+  async loadMap() {
+    const mapName = this.getMap();
+
+    return await download(`data/maps/${mapName}`, 'arraybuffer');
   }
 
   start() {

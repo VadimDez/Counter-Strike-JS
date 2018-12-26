@@ -1,3 +1,7 @@
+import { WeaponStateManagerInterface } from './WeaponStateManagers/WeaponStateManager.interface';
+import { KnifeStateManager } from './WeaponStateManagers/KnifeStateManager';
+import { PistolStateManager } from './WeaponStateManagers/PistolStateManager';
+import { SubMachineGunStateManager } from './WeaponStateManagers/SubMachineGunStateManager';
 /**
  * Created by Vadym Yatsyuk on 25.02.18
  */
@@ -7,9 +11,8 @@ import { mat4 } from 'gl-matrix';
 import { GameInfo } from './GameInfo';
 import { Sprite } from './Sprite';
 import { download } from './util/download';
-import { WeaponStateManager } from './WeaponStateManager';
-import { ModelParser } from './ModelParser';
-import { ModelRender } from './ModelRender';
+import { ModelParser } from './parsers/ModelParser';
+import { ModelRender } from './renderers/ModelRender';
 
 /**
   This file defines the representation of a weapon.
@@ -18,60 +21,82 @@ import { ModelRender } from './ModelRender';
 **/
 
 export class Weapon {
-  sprite = {};
+  sprite: any = {};
   renderer = null;
   name: string;
   crosshair: Sprite = null;
   gl = GameInfo.gl;
-  stateManager = WeaponStateManager.shotgunManager;
+  stateManager: WeaponStateManagerInterface;
 
   constructor(private weaponName: string) {
     this.name = weaponName;
+    this.stateManager = this.getStateManager();
 
     this.loadWeaponInformation();
   }
 
-  // Download weapon information
-  loadWeaponInformation() {
-    download(`data/sprites/weapon_${ this.weaponName }.txt`, 'text', (txt) => {
-      let lines = txt.split('\n');
-      // The last line is an empty string
-      let length = lines.length - 1;
-
-      for (let i = 1; i < length; ++i) {
-        let tokens = lines[i]
-          .split(/ |\t/g)
-          .filter((str) => str.length !== 0);
-
-        // Note: The 640 res sprites are stored last in the file,
-        // so if there exists a 640 res version of the sprite then
-        // that's the one that will end up in the sprite object
-        this.sprite[tokens[0]] = {
-          res: tokens[1],
-          file: tokens[2],
-          x: tokens[3],
-          y: tokens[4],
-          w: tokens[5],
-          h: tokens[6],
-        };
-      }
-
-      if (this.sprite['crosshair'] !== undefined) {
-        // Dwonload crosshair spritesheet
-        download(`data/sprites/${ this.sprite['crosshair'].file }.spr`, 'arraybuffer', (data: any) => {
-          let crosshairInfo = this.sprite['crosshair'];
-          this.crosshair = new Sprite(this.gl, data).subSprite(crosshairInfo.x, crosshairInfo.y, crosshairInfo.w, crosshairInfo.h);
-        });
-      }
-    });
-
-    // Download weapon model
-    download(`data/models/v_${ this.weaponName }.mdl`, 'arraybuffer', (data) => {
-      let weaponData = ModelParser.parse(this.gl, data);
-      this.renderer = new ModelRender(this.gl, weaponData);
-    });
+  getStateManager() {
+    switch (this.name) {
+      case 'knife':
+        return new KnifeStateManager();
+      case 'ak47':
+        return new SubMachineGunStateManager();
+      case 'deagle':
+        return new PistolStateManager();
+    }
   }
 
+  // Download weapon information
+  async loadWeaponInformation() {
+    const txt = await download<string>(
+      `data/sprites/weapon_${this.weaponName}.txt`,
+      'text'
+    );
+    const lines = txt.split('\n');
+    // The last line is an empty string
+    let length = lines.length - 1;
+
+    for (let i = 1; i < length; ++i) {
+      let tokens = lines[i].split(/ |\t/g).filter(str => str.length !== 0);
+
+      // Note: The 640 res sprites are stored last in the file,
+      // so if there exists a 640 res version of the sprite then
+      // that's the one that will end up in the sprite object
+      this.sprite[tokens[0]] = {
+        res: tokens[1],
+        file: tokens[2],
+        x: tokens[3],
+        y: tokens[4],
+        w: tokens[5],
+        h: tokens[6]
+      };
+    }
+
+    if (this.sprite['crosshair']) {
+      // Dwonload crosshair spritesheet
+      const crosshair = await download(
+        `data/sprites/${this.sprite['crosshair'].file}.spr`,
+        'arraybuffer'
+      );
+
+      let crosshairInfo = this.sprite.crosshair;
+
+      this.crosshair = new Sprite(this.gl, crosshair).subSprite(
+        crosshairInfo.x,
+        crosshairInfo.y,
+        crosshairInfo.w,
+        crosshairInfo.h
+      );
+    }
+
+    // Download weapon model
+    const mdl = await download(
+      `data/models/v_${this.weaponName}.mdl`,
+      'arraybuffer'
+    );
+    let weaponData = ModelParser.parse(this.gl, mdl);
+    this.renderer = new ModelRender(this.gl, weaponData);
+  }
 
   render() {
     if (this.renderer !== null) {
@@ -79,7 +104,7 @@ export class Weapon {
       this.renderer.render();
     }
 
-    if (this.crosshair !== null) {
+    if (this.crosshair) {
       // Render the crosshair
       mat4.identity(GameInfo.mvMatrix);
       mat4.translate(GameInfo.mvMatrix, GameInfo.mvMatrix, [0.0, 0.0, -50]);
@@ -101,5 +126,9 @@ export class Weapon {
 
   special() {
     this.stateManager.onSpecial(this);
+  }
+
+  draw() {
+    this.stateManager.onDraw(this);
   }
 }

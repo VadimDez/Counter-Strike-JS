@@ -9,10 +9,10 @@ export class Menu {
     let menuHeight = screen.height / 2;
     let menuWidth = screen.width / 4.2;
 
-    menu.style.height = `${ menuHeight }px`;
-    menu.style.width = `${ menuWidth }px`;
-    menu.style.marginTop = `-${ (menuHeight / 2).toString() }px`;
-    menu.style.marginLeft = `-${ (menuWidth / 2).toString() }px`;
+    menu.style.height = `${menuHeight}px`;
+    menu.style.width = `${menuWidth}px`;
+    menu.style.marginTop = `-${(menuHeight / 2).toString()}px`;
+    menu.style.marginLeft = `-${(menuWidth / 2).toString()}px`;
     menu.style.visibility = 'visible';
   }
 
@@ -26,7 +26,6 @@ export class Menu {
     let map = e.options[e.selectedIndex].value;
 
     sessionStorage.setItem('map', map);
-    console.log(sessionStorage.getItem('map'));
     let main = new Main();
     main.start();
   }

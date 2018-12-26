@@ -7,6 +7,7 @@
 
 export const config = {
   MAP_PATH: 'data/maps/cs_assault.bsp',
+  MAP: 'de_dust2.bsp',
   PLAYER_PATH: 'data/models/player/arctic/arctic.mdl',
   PLAYER_DEFAULT_WEAPON: 'ak47',
   NEAR_CLIPPING: 0.1,
