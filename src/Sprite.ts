@@ -1,8 +1,8 @@
 /**
   The sprite abstraction class for parsing and rendering a sprite.
 **/
-import { SpriteParser } from './SpriteParser';
-import { SpriteRender } from './SpriteRender';
+import { SpriteParser } from './parsers/SpriteParser';
+import { SpriteRender } from './renderers/SpriteRender';
 
 export class Sprite {
   sprite: any;
@@ -23,9 +23,10 @@ export class Sprite {
   }
 
   subSprite(x, y, w, h) {
-    let subsprite: any = {};
-    subsprite.header = this.sprite.header;
-    subsprite.frames = Array(this.sprite.frames.length);
+    const subsprite: any = {
+      header: this.sprite.header,
+      frames: Array(this.sprite.frames.length)
+    };
     let width = this.sprite.header.maxWidth;
 
     for (let i = 0; i < this.sprite.frames.length; ++i) {
@@ -44,6 +45,7 @@ export class Sprite {
         // Advance to the next row in the image
         n += 4 * width;
       }
+
       // Create a new frame in the subsprite
       subsprite.frames[i] = {
         group: frame.group,

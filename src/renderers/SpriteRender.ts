@@ -2,7 +2,7 @@
 	This file contains all the code needed to render a .spr file (Version 2)
 	by converting the sprite into a texture.
 **/
-import { GameInfo } from './GameInfo';
+import { GameInfo } from '../GameInfo';
 
 let fragmentShader =
   '	precision mediump float;' +
