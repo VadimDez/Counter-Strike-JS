@@ -12,7 +12,7 @@
  A few changes has been made to the JSON layout for performance reasons
  **/
 
-import { DataReader } from './util/DataReader';
+import { DataReader } from '../util/DataReader';
 
 /**
  Provides easy-to-use functions for reading binary data
@@ -41,7 +41,7 @@ export class MapParser {
 
   /**
    Uint8array -> JSON
-   input - Raw data array of the .blp file format version 30
+   input - Raw data array of the .bsp file format version 30
    **/
   static parse(input: any) {
     let header = MapParser.parseHeader(input);
@@ -97,7 +97,7 @@ export class MapParser {
 
   static parseHeader(data) {
     let magic = DataReader.readInteger(data, 0);
-    if (magic != constants.BSP_VERSION) {
+    if (magic !== constants.BSP_VERSION) {
       console.log('Invalid magic number. Expected: 30, but was: ' + magic);
       return;
     }
@@ -122,14 +122,14 @@ export class MapParser {
       return x;
     };
     let parseList = function(formatter: any) {
-      return function(x) {
-        let list = [];
-        for (let o in x.split(' ')) {
-          list.push(formatter(o));
-        }
-        return list;
-      };
+      return str =>
+        str.split(' ').map(v => {
+          return formatter(v);
+        });
     };
+
+    const parseNumber = str => parseInt(str, 10);
+
     // A map from key to value formatters.
     let formatters = {
       MaxRange: parseInt,
@@ -138,9 +138,7 @@ export class MapParser {
       message: identity,
       skyname: identity,
       sounds: parseInt,
-      wad: function(x) {
-        return x.split(';');
-      },
+      wad: wadStr => wadStr.split(';'),
       model: function(x) {
         // Most entities have a value of the form *N where N is an integer
         // But some entities have a string value instead,
@@ -154,7 +152,7 @@ export class MapParser {
       rendercolor: parseList(parseInt),
       rendermode: parseInt,
       skin: parseInt,
-      angles: parseList(parseInt),
+      angles: parseList(parseNumber), // "Z Y X"
       delay: parseInt,
       distance: parseInt,
       dmg: parseInt,
@@ -163,7 +161,7 @@ export class MapParser {
       locked_sentence: parseInt,
       locked_sound: parseInt,
       movesnd: parseInt,
-      origin: parseList(parseInt),
+      origin: parseList(parseNumber),
       renderfx: parseInt,
       speed: parseInt,
       stopsnd: parseInt,
@@ -200,7 +198,9 @@ export class MapParser {
         let formatter = formatters[key];
         if (!formatter) {
           console.log('Unknown entity name: ' + key);
-        } else map[key] = formatter(value);
+        } else {
+          map[key] = formatter(value);
+        }
       }
       entityLump[i] = map;
     }
@@ -390,7 +390,8 @@ export class MapParser {
         name: name,
         width: width,
         height: height,
-        offsets: [offset1, offset2, offset3, offset4]
+        offsets: [offset1, offset2, offset3, offset4],
+        data: new Uint8Array([0, 255, 0, 255])
       };
     }
     return textureLumps;
@@ -449,7 +450,7 @@ export class MapParser {
       leaves.filter(function(leaf) {
         // Not a solid and has visibility
         return (
-          leaf.nContents != constants.CONTENTS_SOLID && leaf.nVisOffset >= 0
+          leaf.nContents !== constants.CONTENTS_SOLID && leaf.nVisOffset >= 0
         );
       }).length - 1;
 
@@ -593,6 +594,7 @@ export class MapParser {
       for (let j = 0; j < face.nEdges; ++j) {
         let iEdge = surfedges[face.iFirstEdge + j];
         let index;
+
         if (iEdge > 0) {
           let edge = edges[iEdge];
           index = edge[0];
@@ -651,6 +653,7 @@ export class MapParser {
 
     let clipNodeLump = Array(length / 8);
     let n = 0;
+
     for (let i = offset; i < end; i += 8) {
       let iPlane = DataReader.readInteger(data, i);
       let iChildren = [
