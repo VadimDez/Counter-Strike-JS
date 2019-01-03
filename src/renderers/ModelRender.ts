@@ -2,15 +2,15 @@
 	This file contains all the code needed in order to render a textured
 	.mdl version 10
 **/
-import { DataReader } from './util/DataReader';
+import { DataReader } from '../util/DataReader';
 // import { quat, vec3, mat3, mat4 } from 'gl-matrix';
 import { quat, vec3, mat4 } from 'gl-matrix';
-import * as glMatrix from '../lib/gl-matrix';
+import * as glMatrix from '../../lib/gl-matrix';
 // const quat = glMatrix.quat;
 // const vec3 = glMatrix.vec3;
 const mat3 = glMatrix.mat3;
 // const mat4 = glMatrix.mat4;
-import { GameInfo } from './GameInfo';
+import { GameInfo } from '../GameInfo';
 
 /**
 		Construct quaternion from Euler angles
@@ -38,18 +38,19 @@ let quatFromAngles = function(angles) {
 
 export const ModelRender = function(gl, modelData) {
   let constants = {
-    valid:      0,
-    total:      1,
-    STUDIO_X:    0x0001,
-    STUDIO_Y:    0x0002,
-    STUDIO_Z:    0x0004,
-    STUDIO_XR:    0x0008,
-    STUDIO_YR:    0x0010,
-    STUDIO_ZR:    0x0020,
-    STUDIO_TYPES:   0x7FFF,
-    STUDIO_RLOOP:  0x8000,
-    EVENT_SOUND:  5004,
-    EVENT_FIRE:    5001
+    valid: 0,
+    total: 1,
+    STUDIO_X: 0x0001,
+    STUDIO_Y: 0x0002,
+    STUDIO_Z: 0x0004,
+    STUDIO_XR: 0x0008,
+    STUDIO_YR: 0x0010,
+    STUDIO_ZR: 0x0020,
+    STUDIO_TYPES: 0x7fff,
+    STUDIO_RLOOP: 0x8000,
+    EVENT_SOUND: 5004,
+    EVENT_FIRE: 5001,
+    EVENT_FIRE_SINGLE: 5021
   };
 
   let sequenceIndex = 0;
@@ -60,28 +61,23 @@ export const ModelRender = function(gl, modelData) {
   let previous = new Date().getTime();
 
   let fragmentShader =
-  '	precision mediump float;' +
-  '	varying vec2 vTexCoord;' +
-  '	uniform sampler2D uSampler;' +
-
-  '	void main(void) {' +
-  '		gl_FragColor = texture2D(uSampler, vec2(vTexCoord.s, vTexCoord.t));' +
-  '	}';
+    '	precision mediump float;' +
+    '	varying vec2 vTexCoord;' +
+    '	uniform sampler2D uSampler;' +
+    '	void main(void) {' +
+    '		gl_FragColor = texture2D(uSampler, vec2(vTexCoord.s, vTexCoord.t));' +
+    '	}';
 
   let vertexShader =
-  '	attribute vec3 aVertexPosition;' +
-  '	attribute vec2 aTexCoord;' +
-
-  '	varying vec2 vTexCoord;' +
-
-  '	uniform mat4 uMVMatrix;' +
-  '	uniform mat4 uPMatrix;' +
-
-  '	void main(void) {' +
-  '		gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);' +
-  '		vTexCoord = aTexCoord;' +
-  '	}'
-  ;
+    '	attribute vec3 aVertexPosition;' +
+    '	attribute vec2 aTexCoord;' +
+    '	varying vec2 vTexCoord;' +
+    '	uniform mat4 uMVMatrix;' +
+    '	uniform mat4 uPMatrix;' +
+    '	void main(void) {' +
+    '		gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);' +
+    '		vTexCoord = aTexCoord;' +
+    '	}';
 
   function getShader(gl, shaderCode, shaderType) {
     let shader = gl.createShader(shaderType);
@@ -111,7 +107,10 @@ export const ModelRender = function(gl, modelData) {
     }
 
     gl.useProgram(program);
-    program.vertexPositionAttribute = gl.getAttribLocation(program, 'aVertexPosition');
+    program.vertexPositionAttribute = gl.getAttribLocation(
+      program,
+      'aVertexPosition'
+    );
     program.texCoordAttribute = gl.getAttribLocation(program, 'aTexCoord');
 
     program.pMatrixUniform = gl.getUniformLocation(program, 'uPMatrix');
@@ -132,14 +131,12 @@ export const ModelRender = function(gl, modelData) {
       if (i <= 3) {
         // if(boneController.type & constants.RLOOP) {
         if (boneController.type & (constants as any).RLOOP) {
-        // if(boneController.type & constants.STUDIO_RLOOP) {
+          // if(boneController.type & constants.STUDIO_RLOOP) {
           value = boneController.start;
-        }
-        else {
+        } else {
           value = boneController.start + value * boneController.end;
         }
-      }
-      else {
+      } else {
         value = boneController.start + value * boneController.end;
       }
       // Chrome refuses to optimize the function due to non constant switch labels
@@ -160,7 +157,10 @@ export const ModelRender = function(gl, modelData) {
   };
 
   let value = function(base, index) {
-    return DataReader.readSignedShort([modelData.data[base + 2 * index], modelData.data[base + 2 * index + 1]], 0);
+    return DataReader.readSignedShort(
+      [modelData.data[base + 2 * index], modelData.data[base + 2 * index + 1]],
+      0
+    );
   };
 
   let valid = function(base, index) {
@@ -172,41 +172,66 @@ export const ModelRender = function(gl, modelData) {
   };
 
   let vec3Equal = function(v1, v2, epsilon) {
-    return Math.abs(v1[0] - v2[0]) < epsilon &&
+    return (
+      Math.abs(v1[0] - v2[0]) < epsilon &&
       Math.abs(v1[1] - v2[1]) < epsilon &&
-      Math.abs(v1[1] - v2[2]) < epsilon;
+      Math.abs(v1[1] - v2[2]) < epsilon
+    );
   };
 
   let concatTransforms = function(mat1, mat2) {
-    let out = [
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0]
-    ];
-    out[0][0] = mat1[0][0] * mat2[0][0] + mat1[0][1] * mat2[1][0] +
-          mat1[0][2] * mat2[2][0];
-    out[0][1] = mat1[0][0] * mat2[0][1] + mat1[0][1] * mat2[1][1] +
-          mat1[0][2] * mat2[2][1];
-    out[0][2] = mat1[0][0] * mat2[0][2] + mat1[0][1] * mat2[1][2] +
-          mat1[0][2] * mat2[2][2];
-    out[0][3] = mat1[0][0] * mat2[0][3] + mat1[0][1] * mat2[1][3] +
-          mat1[0][2] * mat2[2][3] + mat1[0][3];
-    out[1][0] = mat1[1][0] * mat2[0][0] + mat1[1][1] * mat2[1][0] +
-          mat1[1][2] * mat2[2][0];
-    out[1][1] = mat1[1][0] * mat2[0][1] + mat1[1][1] * mat2[1][1] +
-          mat1[1][2] * mat2[2][1];
-    out[1][2] = mat1[1][0] * mat2[0][2] + mat1[1][1] * mat2[1][2] +
-          mat1[1][2] * mat2[2][2];
-    out[1][3] = mat1[1][0] * mat2[0][3] + mat1[1][1] * mat2[1][3] +
-          mat1[1][2] * mat2[2][3] + mat1[1][3];
-    out[2][0] = mat1[2][0] * mat2[0][0] + mat1[2][1] * mat2[1][0] +
-          mat1[2][2] * mat2[2][0];
-    out[2][1] = mat1[2][0] * mat2[0][1] + mat1[2][1] * mat2[1][1] +
-          mat1[2][2] * mat2[2][1];
-    out[2][2] = mat1[2][0] * mat2[0][2] + mat1[2][1] * mat2[1][2] +
-          mat1[2][2] * mat2[2][2];
-    out[2][3] = mat1[2][0] * mat2[0][3] + mat1[2][1] * mat2[1][3] +
-          mat1[2][2] * mat2[2][3] + mat1[2][3];
+    let out = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
+    out[0][0] =
+      mat1[0][0] * mat2[0][0] +
+      mat1[0][1] * mat2[1][0] +
+      mat1[0][2] * mat2[2][0];
+    out[0][1] =
+      mat1[0][0] * mat2[0][1] +
+      mat1[0][1] * mat2[1][1] +
+      mat1[0][2] * mat2[2][1];
+    out[0][2] =
+      mat1[0][0] * mat2[0][2] +
+      mat1[0][1] * mat2[1][2] +
+      mat1[0][2] * mat2[2][2];
+    out[0][3] =
+      mat1[0][0] * mat2[0][3] +
+      mat1[0][1] * mat2[1][3] +
+      mat1[0][2] * mat2[2][3] +
+      mat1[0][3];
+    out[1][0] =
+      mat1[1][0] * mat2[0][0] +
+      mat1[1][1] * mat2[1][0] +
+      mat1[1][2] * mat2[2][0];
+    out[1][1] =
+      mat1[1][0] * mat2[0][1] +
+      mat1[1][1] * mat2[1][1] +
+      mat1[1][2] * mat2[2][1];
+    out[1][2] =
+      mat1[1][0] * mat2[0][2] +
+      mat1[1][1] * mat2[1][2] +
+      mat1[1][2] * mat2[2][2];
+    out[1][3] =
+      mat1[1][0] * mat2[0][3] +
+      mat1[1][1] * mat2[1][3] +
+      mat1[1][2] * mat2[2][3] +
+      mat1[1][3];
+    out[2][0] =
+      mat1[2][0] * mat2[0][0] +
+      mat1[2][1] * mat2[1][0] +
+      mat1[2][2] * mat2[2][0];
+    out[2][1] =
+      mat1[2][0] * mat2[0][1] +
+      mat1[2][1] * mat2[1][1] +
+      mat1[2][2] * mat2[2][1];
+    out[2][2] =
+      mat1[2][0] * mat2[0][2] +
+      mat1[2][1] * mat2[1][2] +
+      mat1[2][2] * mat2[2][2];
+    out[2][3] =
+      mat1[2][0] * mat2[0][3] +
+      mat1[2][1] * mat2[1][3] +
+      mat1[2][2] * mat2[2][3] +
+      mat1[2][3];
 
     return out;
   };
@@ -255,7 +280,7 @@ export const ModelRender = function(gl, modelData) {
         angle2[j] = bone.value[j + 3] + angle2[j] * bone.scale[j + 3];
       }
 
-      if (bone.boneController[j + 3] != -1) {
+      if (bone.boneController[j + 3] !== -1) {
         angle1[j] += adj[bone.boneController[j + 3]];
         angle2[j] += adj[bone.boneController[j + 3]];
       }
@@ -279,7 +304,7 @@ export const ModelRender = function(gl, modelData) {
     for (let j = 0; j < 3; ++j) {
       pos[j] = bone.value[j]; // default value
 
-      if (animation.offset[j] != 0) {
+      if (animation.offset[j] !== 0) {
         let animIndex = animation.base + animation.offset[j];
 
         let k = Math.floor(frame);
@@ -292,7 +317,10 @@ export const ModelRender = function(gl, modelData) {
         if (valid(animIndex, 0) > k) {
           // Is there more data in the span?
           if (valid(animIndex, 0) > k + 1) {
-            pos[j] += ((1.0 - s) * value(animIndex, k + 1) + s * value(animIndex, k + 2)) * bone.scale[j];
+            pos[j] +=
+              ((1.0 - s) * value(animIndex, k + 1) +
+                s * value(animIndex, k + 2)) *
+              bone.scale[j];
           } else {
             pos[j] += value(animIndex, k + 1) * bone.scale[j];
           }
@@ -300,15 +328,18 @@ export const ModelRender = function(gl, modelData) {
           // We are at the end of the span.
           // Do we have another section with data?
           if (total(animIndex, 0) <= k + 1) {
-            pos[j] += (value(animIndex, valid(animIndex, 0)) * (1.0 - s) +
-              s * value(animIndex, valid(animIndex, 0) + 2)) * bone.scale[j];
-
-          } else { // No more sections
+            pos[j] +=
+              (value(animIndex, valid(animIndex, 0)) * (1.0 - s) +
+                s * value(animIndex, valid(animIndex, 0) + 2)) *
+              bone.scale[j];
+          } else {
+            // No more sections
             pos[j] += value(animIndex, valid(animIndex, 0)) * bone.scale[j];
           }
         }
       }
-      if (bone.boneController[j] != -1) {
+
+      if (bone.boneController[j] !== -1) {
         pos[j] += adj[bone.boneController[j]];
       }
     }
@@ -369,7 +400,7 @@ export const ModelRender = function(gl, modelData) {
     };
   };
 
-    (window as any).asdqwe = 0;
+  // (window as any).asdqwe = 0;
   let setupBones = function(frame, sequence) {
     let qv = calcRotations(frame, sequence);
     let transformations = Array(modelData.header.numBones);
@@ -379,12 +410,11 @@ export const ModelRender = function(gl, modelData) {
       let mat = mat3.create();
       mat3.fromQuat(mat, qv.quaternions[i]);
 
-
-      (window as any).asdqwe++;
-
-      if ((window as any).asdqwe <= 10) {
-        console.log(mat);
-      }
+      // (window as any).asdqwe++;
+      //
+      // if ((window as any).asdqwe <= 10) {
+      //   console.log(mat);
+      // }
 
       let transformation = [
         [mat[0], mat[1], mat[2], qv.vectors[i][0]],
@@ -392,7 +422,10 @@ export const ModelRender = function(gl, modelData) {
         [mat[6], mat[7], mat[8], qv.vectors[i][2]]
       ];
       if (bones[i].parent !== -1) {
-        transformation = concatTransforms(transformations[bones[i].parent], transformation);
+        transformation = concatTransforms(
+          transformations[bones[i].parent],
+          transformation
+        );
       }
       transformations[i] = transformation;
     }
@@ -419,21 +452,34 @@ export const ModelRender = function(gl, modelData) {
     );
   };
 
-
   let performEvent = function(event) {
+    console.log(modelData);
+
+    const path = getFireSoundPath(event, modelData);
+
+    if (path) {
+      createjs.Sound.registerSound(path, path);
+      createjs.Sound.play(path, {
+        interrupt: createjs.Sound.INTERRUPT_ANY,
+        volume: 0.1
+      });
+    }
+  };
+
+  const getFireSoundPath = (event, modelData) => {
     console.log(event);
-    let path: string;
 
     switch (event.event) {
       case constants.EVENT_SOUND:
-        path = 'data/sounds/' + event.options;
-        createjs.Sound.play(path, { interrupt: createjs.Sound.INTERRUPT_ANY, volume: 0.1 });
-        break;
+        return 'data/sound/' + event.options;
       case constants.EVENT_FIRE:
         let weapon = modelData.header.name;
-        path = 'data/sounds/weapons/' + weapon.substr(2, weapon.length - 6) + '-1.wav';
-        createjs.Sound.play(path, { interrupt: createjs.Sound.INTERRUPT_ANY, volume: 0.1 });
+        return (
+          'data/sound/weapons/' + weapon.substr(2, weapon.length - 6) + '-1.wav'
+        );
     }
+
+    return null;
   };
 
   let resetEvents = function() {
@@ -444,22 +490,28 @@ export const ModelRender = function(gl, modelData) {
   };
 
   let preloadEvents = function() {
-    let path: string;
     let events = modelData.sequences[sequenceIndex].events;
 
     for (let i = 0; i < events.length; ++i) {
-      let event = events[i];
-      switch (event.type) {
-        case constants.EVENT_SOUND:
-          path = 'data/sounds/' + event.filename;
-          createjs.Sound.registerSound(path);
-          break;
-        case constants.EVENT_FIRE:
-          path = 'data/sounds/weapons/' + event.sound;
-          createjs.Sound.registerSound(path);
+      let path = getSoundPath(events[i]);
+
+      if (path) {
+        createjs.Sound.registerSound(path);
       }
     }
   };
+
+  function getSoundPath(event) {
+    switch (event.type) {
+      case constants.EVENT_SOUND:
+        return 'data/sound/' + event.filename;
+      case constants.EVENT_FIRE_SINGLE:
+      case constants.EVENT_FIRE:
+        return 'data/sound/weapons/' + event.sound;
+    }
+
+    return null;
+  }
 
   let advanceFrame = function(dt, sequence, frame) {
     if (dt > 0.1) {
@@ -471,7 +523,9 @@ export const ModelRender = function(gl, modelData) {
     if (sequence.numFrames <= 1) {
       frame = 0;
     } else {
-      let newFrame = frame - Math.floor(frame / (sequence.numFrames - 1)) * (sequence.numFrames - 1);
+      let newFrame =
+        frame -
+        Math.floor(frame / (sequence.numFrames - 1)) * (sequence.numFrames - 1);
 
       // Check for events
       for (let i = 0; i < events.length; ++i) {
@@ -488,7 +542,7 @@ export const ModelRender = function(gl, modelData) {
         resetEvents();
 
         // Do we have an animation queued up?
-        if (animationQueue.length != 0) {
+        if (animationQueue.length) {
           // Yep. Set index and requested fps
           newFrame = 0;
           let anim = animationQueue.shift();
@@ -503,20 +557,28 @@ export const ModelRender = function(gl, modelData) {
   };
 
   let drawPoints = function(model, transformations) {
-    let normBones = model.normInfoIndex;
-    let mesh = model.meshIndex;
-
-    let vertices = model.vertices;
+    const normBones = model.normInfoIndex;
+    const mesh = model.meshIndex;
+    const vertices = model.vertices;
 
     let transforms = Array(model.numVerts);
     let n = 0;
     for (let i = 0; n < model.numVerts; i += 3, ++n) {
-      transforms[n] = vectorTransform([vertices[i], vertices[i + 1], vertices[i + 2]], transformations[model.transformIndices[n]]);
+      transforms[n] = vectorTransform(
+        [vertices[i], vertices[i + 1], vertices[i + 2]],
+        transformations[model.transformIndices[n]]
+      );
     }
 
     for (let i = 0; i < model.numMesh; ++i) {
       let mesh = model.mesh[i];
-      let texture = modelData.textures[DataReader.readSignedShort(modelData.data, modelData.header.skinIndex + 2 * mesh.skinRef)];
+      let texture =
+        modelData.textures[
+          DataReader.readSignedShort(
+            modelData.data,
+            modelData.header.skinIndex + 2 * mesh.skinRef
+          )
+        ];
 
       let s = 1.0 / texture.width;
       let t = 1.0 / texture.height;
@@ -562,9 +624,27 @@ export const ModelRender = function(gl, modelData) {
         }
 
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(buffer), gl.STREAM_DRAW);
-        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 20, 0);
-        gl.vertexAttribPointer(shaderProgram.texCoordAttribute, 2, gl.FLOAT, false, 20, 12);
+        gl.bufferData(
+          gl.ARRAY_BUFFER,
+          new Float32Array(buffer),
+          gl.STREAM_DRAW
+        );
+        gl.vertexAttribPointer(
+          shaderProgram.vertexPositionAttribute,
+          3,
+          gl.FLOAT,
+          false,
+          20,
+          0
+        );
+        gl.vertexAttribPointer(
+          shaderProgram.texCoordAttribute,
+          2,
+          gl.FLOAT,
+          false,
+          20,
+          12
+        );
 
         if (fanMode) {
           gl.drawArrays(gl.TRIANGLE_FAN, 0, buffer.length / 5);
@@ -581,11 +661,14 @@ export const ModelRender = function(gl, modelData) {
     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
     gl.enableVertexAttribArray(shaderProgram.texCoordAttribute);
 
-
     mat4.rotateX(GameInfo.mvMatrix, GameInfo.mvMatrix, -Math.PI / 2);
     mat4.rotateZ(GameInfo.mvMatrix, GameInfo.mvMatrix, Math.PI / 2);
     gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, GameInfo.pMatrix);
-    gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, GameInfo.mvMatrix);
+    gl.uniformMatrix4fv(
+      shaderProgram.mvMatrixUniform,
+      false,
+      GameInfo.mvMatrix
+    );
 
     let sequence = modelData.sequences[sequenceIndex];
     let transformations = setupBones(frame, sequence);
@@ -607,7 +690,7 @@ export const ModelRender = function(gl, modelData) {
   this.queueAnimation = function(id, fps) {
     // If no fps was provided, use the default
     fps = fps || modelData.sequences[id].fps;
-    animationQueue.push({index: id, fps: fps});
+    animationQueue.push({ index: id, fps: fps });
   };
 
   this.forceAnimation = function(id, fps) {
