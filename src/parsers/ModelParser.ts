@@ -2,7 +2,7 @@
   This file contains all the code needed to parse a .mdl file (Version 10)
   into a JSON datastructure.
 **/
-import { DataReader } from './util/DataReader';
+import { DataReader } from '../util/DataReader';
 
 let constants = {
   MDL_MAGIC: 0x54534449,
@@ -13,15 +13,20 @@ let data;
 let gl;
 
 let parseHeader = function() {
-  let magic = DataReader.readInteger(data, 0);
-  if (magic != constants.MDL_MAGIC) {
+  const magic = DataReader.readInteger(data, 0);
+  if (magic !== constants.MDL_MAGIC) {
     console.log('Invalid magic number');
     return;
   }
 
-  let version = DataReader.readInteger(data, 4);
-  if (version != constants.MDL_VERSION) {
-    console.log('Invalid version number. Expected: ' + constants.MDL_VERSION + ', but was: ' + version);
+  const version = DataReader.readInteger(data, 4);
+  if (version !== constants.MDL_VERSION) {
+    console.log(
+      'Invalid version number. Expected: ' +
+        constants.MDL_VERSION +
+        ', but was: ' +
+        version
+    );
     return;
   }
 
@@ -149,7 +154,7 @@ let parseBones = function(offset, num) {
 
   let n = 0;
   let bones = Array(num);
-  for (let i = offset; i != end; i += 112) {
+  for (let i = offset; i !== end; i += 112) {
     let name = DataReader.readBinaryString(data, i, 32);
     let parent = DataReader.readInteger(data, i + 32);
     let flags = DataReader.readInteger(data, i + 36);
@@ -195,7 +200,7 @@ let parseBoneControllers = function(offset, num) {
   let index_end = offset + num * 24;
   let n = 0;
   let controllers = Array(num);
-  for (let i = offset; i != index_end; i += 24) {
+  for (let i = offset; i !== index_end; i += 24) {
     let bone = DataReader.readInteger(data, i);
     let type = DataReader.readInteger(data, i + 4);
     let start = DataReader.readFloat(data, i + 8);
@@ -220,7 +225,7 @@ let parseSequences = function(offset, num, name) {
   let n = 0;
   let sequences = Array(num);
 
-  for (let i = offset; i != end; i += 176) {
+  for (let i = offset; i !== end; i += 176) {
     let label = DataReader.readBinaryString(data, i, 32);
 
     let fps = DataReader.readFloat(data, i + 32);
@@ -306,45 +311,45 @@ let parseSequences = function(offset, num, name) {
     let nextSeq = DataReader.readInteger(data, i + 172);
 
     sequences[n++] = {
-       label: label,
+      label: label,
 
-       fps: fps,
-       flags: flags,
+      fps: fps,
+      flags: flags,
 
-       activity: activity,
-       actWeight: actWeight,
+      activity: activity,
+      actWeight: actWeight,
 
-       events: events,
+      events: events,
 
-       numFrames: numFrames,
+      numFrames: numFrames,
 
-       numPivotes: numPivotes,
-       pivotIndex: pivotIndex,
+      numPivotes: numPivotes,
+      pivotIndex: pivotIndex,
 
-       motionType: motionType,
-       motionBone: motionBone,
-       linearMovement: linearMovement,
-       autoMovePosIndex: autoMovePosIndex,
-       autoMoveAngleIndex: autoMoveAngleIndex,
+      motionType: motionType,
+      motionBone: motionBone,
+      linearMovement: linearMovement,
+      autoMovePosIndex: autoMovePosIndex,
+      autoMoveAngleIndex: autoMoveAngleIndex,
 
-       bbMin: bbMin,
-       bbMax: bbMax,
+      bbMin: bbMin,
+      bbMax: bbMax,
 
-       numBlends: numBlends,
-       animIndex: animIndex,
+      numBlends: numBlends,
+      animIndex: animIndex,
 
-       blendType: blendType,
-       blendStart: blendStart,
-       blendEnd: blendEnd,
-       blendParent: blendParent,
+      blendType: blendType,
+      blendStart: blendStart,
+      blendEnd: blendEnd,
+      blendParent: blendParent,
 
-       seqGroup: seqGroup,
+      seqGroup: seqGroup,
 
-       entryNode: entryNode,
-       exitNode: exitNode,
-       nodeFlags: nodeFlags,
+      entryNode: entryNode,
+      exitNode: exitNode,
+      nodeFlags: nodeFlags,
 
-       nextSeq: nextSeq
+      nextSeq: nextSeq
     };
   }
   return sequences;
@@ -355,7 +360,7 @@ let parseSequenceGroups = function(offset, num) {
   let n = 0;
   let groups = Array(num);
 
-  for (let i = offset; i != end; i += 104) {
+  for (let i = offset; i !== end; i += 104) {
     let label = DataReader.readBinaryString(data, i, 32);
     let name = DataReader.readBinaryString(data, i + 32, 64);
     let dummy = DataReader.readBinaryString(data, i + 96, 4);
@@ -374,7 +379,7 @@ let parseSequenceGroups = function(offset, num) {
 
 let uploadTextures = function(texture) {
   // Base 2 logarithm using base conversion formula
-  let lg = function(n) {
+  const lg = n => {
     return Math.log(n) / Math.LN2;
   };
 
@@ -390,13 +395,15 @@ let uploadTextures = function(texture) {
   let col2 = Array(512);
 
   for (let i = 0; i < width; i++) {
-    col1[i] = Math.floor((i + 0.25) * texture.width / width);
-    col2[i] = Math.floor((i + 0.75) * texture.width / width);
+    col1[i] = Math.floor(((i + 0.25) * texture.width) / width);
+    col2[i] = Math.floor(((i + 0.75) * texture.width) / width);
   }
 
   for (let i = 0; i < height; i++) {
-    row1[i] = Math.floor((i + 0.25) * (texture.height / height)) * texture.width;
-    row2[i] = Math.floor((i + 0.75) * (texture.height / height)) * texture.width;
+    row1[i] =
+      Math.floor((i + 0.25) * (texture.height / height)) * texture.width;
+    row2[i] =
+      Math.floor((i + 0.75) * (texture.height / height)) * texture.width;
   }
 
   let pal = texture.index + texture.width * texture.height;
@@ -428,30 +435,40 @@ let uploadTextures = function(texture) {
       tex[n++] = (pix1[0] + pix2[0] + pix3[0] + pix4[0]) / 4;
       tex[n++] = (pix1[1] + pix2[1] + pix3[1] + pix4[1]) / 4;
       tex[n++] = (pix1[2] + pix2[2] + pix3[2] + pix4[2]) / 4;
-      tex[n++] = 0xFF;
+      tex[n++] = 0xff;
     }
   }
 
   gl.bindTexture(gl.TEXTURE_2D, texture.id);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, tex);
+  gl.texImage2D(
+    gl.TEXTURE_2D,
+    0,
+    gl.RGBA,
+    width,
+    height,
+    0,
+    gl.RGBA,
+    gl.UNSIGNED_BYTE,
+    tex
+  );
   gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
   gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 };
 
 let parseTextures = function(offset, num) {
-  let end = offset + num * 80;
+  const end = offset + num * 80;
   let n = 0;
-  let textures = Array(num);
+  const textures = Array(num);
 
-  for (let i = offset; i != end; i += 80) {
-    let name = DataReader.readBinaryString(data, i, 64);
-    let flags = DataReader.readInteger(data, i + 64);
-    let width = DataReader.readInteger(data, i + 68);
-    let height = DataReader.readInteger(data, i + 72);
-    let index = DataReader.readInteger(data, i + 76);
-    let id = gl.createTexture();
+  for (let i = offset; i !== end; i += 80) {
+    const name = DataReader.readBinaryString(data, i, 64);
+    const flags = DataReader.readInteger(data, i + 64);
+    const width = DataReader.readInteger(data, i + 68);
+    const height = DataReader.readInteger(data, i + 72);
+    const index = DataReader.readInteger(data, i + 76);
+    const id = gl.createTexture();
 
-    let texture = {
+    const texture = {
       name: name,
       flags: flags,
       width: width,
@@ -472,19 +489,20 @@ let parseBodyParts = function(offset, num) {
   let n = 0;
   let bodyParts = Array(num);
 
-  for (let i = offset; i != end; i += 76) {
-    let name = DataReader.readBinaryString(data, i, 64);
-    let numModels = DataReader.readInteger(data, i + 64);
-    let base = DataReader.readInteger(data, i + 68);
-    let modelIndex = DataReader.readInteger(data, i + 72);
+  for (let i = offset; i !== end; i += 76) {
+    const name = DataReader.readBinaryString(data, i, 64);
+    const numModels = DataReader.readInteger(data, i + 64);
+    const base = DataReader.readInteger(data, i + 68);
+    const modelIndex = DataReader.readInteger(data, i + 72);
 
     bodyParts[n++] = {
-      name: name,
-      numModels: numModels,
-      base: base,
-      modelIndex: modelIndex
+      name,
+      numModels,
+      base,
+      modelIndex
     };
   }
+
   return bodyParts;
 };
 
@@ -495,9 +513,9 @@ let parseModels = function(offset, num) {
 
   let parseVec3s = function(offset, count) {
     let vecs = new Float32Array(count);
-    let end = offset + 12 * count;
+    const end = offset + 12 * count;
     let n = 0;
-    for (let i = offset; i != end; i += 12) {
+    for (let i = offset; i !== end; i += 12) {
       vecs[n++] = DataReader.readFloat(data, i);
       vecs[n++] = DataReader.readFloat(data, i + 4);
       vecs[n++] = DataReader.readFloat(data, i + 8);
@@ -506,11 +524,11 @@ let parseModels = function(offset, num) {
   };
 
   let parseMesh = function(offset, count) {
-    let end = offset + 20 * count;
+    const end = offset + 20 * count;
     let mesh = Array(count);
     let n = 0;
 
-    for (let i = offset; i != end; i += 20) {
+    for (let i = offset; i !== end; i += 20) {
       let numTris = DataReader.readInteger(data, i);
       let triIndex = DataReader.readInteger(data, i + 4);
       let skinRef = DataReader.readInteger(data, i + 8);
@@ -529,7 +547,7 @@ let parseModels = function(offset, num) {
     return mesh;
   };
 
-  for (let i = offset; i != end; i += 112) {
+  for (let i = offset; i !== end; i += 112) {
     let name = DataReader.readBinaryString(data, i, 64);
     let type = DataReader.readInteger(data, i + 64);
     let bRadius = DataReader.readFloat(data, i + 68);
@@ -548,7 +566,10 @@ let parseModels = function(offset, num) {
     let vertices = parseVec3s(vertIndex, 3 * numVerts);
     let norms = parseVec3s(normIndex, 3 * numNorms);
 
-    let transformIndices = data.subarray(vertInfoIndex, vertInfoIndex + numVerts);
+    let transformIndices = data.subarray(
+      vertInfoIndex,
+      vertInfoIndex + numVerts
+    );
     let mesh = parseMesh(meshIndex, numMesh);
 
     models[n++] = {
@@ -583,10 +604,19 @@ export const ModelParser = {
 
     let header = parseHeader();
     let bones = parseBones(header.boneIndex, header.numBones);
-    let boneControllers = parseBoneControllers(header.boneControllerIndex, header.numBoneControllers);
-    let sequences = parseSequences(header.seqIndex, header.numSeq,
-      header.name.substr(2, header.name.lastIndexOf('.') - 2));
-    let seqGroups = parseSequenceGroups(header.seqGroupIndex, header.numSeqGroups);
+    let boneControllers = parseBoneControllers(
+      header.boneControllerIndex,
+      header.numBoneControllers
+    );
+    let sequences = parseSequences(
+      header.seqIndex,
+      header.numSeq,
+      header.name.substr(2, header.name.lastIndexOf('.') - 2)
+    );
+    let seqGroups = parseSequenceGroups(
+      header.seqGroupIndex,
+      header.numSeqGroups
+    );
     let textures = parseTextures(header.textureIndex, header.numTextures);
     let bodyParts = parseBodyParts(header.bodyPartIndex, header.numBodyParts);
     let models = Array(header.numBodyParts);
