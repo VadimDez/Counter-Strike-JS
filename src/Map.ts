@@ -2,8 +2,8 @@
  * Created by Vadym Yatsyuk on 25.02.18
  */
 
-import { MapParser } from './MapParser';
-import { MapRender } from './MapRender';
+import { MapParser } from './parsers/MapParser';
+import { MapRender } from './renderers/MapRender';
 
 /**
  This file abstracts the call to cs.MapParser and cs.MapRender into a single
