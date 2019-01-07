@@ -4,7 +4,7 @@
 **/
 import { vec3 } from 'gl-matrix';
 
-import { MapParser } from './MapParser';
+import { MapParser } from './parsers/MapParser';
 import { GameInfo } from './GameInfo';
 
 let samePosition = function(vStart, vEnd) {
@@ -25,6 +25,7 @@ let trace = function(vStart, vEnd, shouldSlide) {
     allSolid: true,
     ratio: 1.0 // How far we got before colliding with anything
   };
+
   // models[0] is the geometry of the entire map
   recursiveHullCheck(
     mapData.models[0].iHeadNodes[0],

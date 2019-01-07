@@ -5,7 +5,7 @@
  * This file defines the representation of a Player
  * A player is responsible for its own movement by
  * providing keyboard listeners
-**/
+ **/
 
 import * as KeyboardJS from 'keyboardjs/dist/keyboard.min.js';
 import { vec3 } from 'gl-matrix';
@@ -61,7 +61,10 @@ export class Player {
       this.dir[2] = Math.max(0, this.dir[2] - 0.1);
     }
 
-    let newPosition = CollisionDetection.move([this.x, this.y, this.z + config.MAX_Z_CHANGE], [newX, newY, newZ]);
+    let newPosition = CollisionDetection.move(
+      [this.x, this.y, this.z + config.MAX_Z_CHANGE],
+      [newX, newY, newZ]
+    );
 
     this.x = newPosition[0];
     this.y = newPosition[1];
@@ -72,7 +75,7 @@ export class Player {
     let PI_HALF = Math.PI / 2.0;
     let PI_TWO = Math.PI * 2.0;
 
-    this.yAngle += (xDelta * config.MOUSE_SENSITIVITY) || 0;
+    this.yAngle += xDelta * config.MOUSE_SENSITIVITY || 0;
 
     // Make sure we're in the interval [0, 2*pi]
     while (this.yAngle < 0) {
@@ -82,7 +85,7 @@ export class Player {
       this.yAngle -= PI_TWO;
     }
 
-    this.xAngle += (yDelta * config.MOUSE_SENSITIVITY) || 0;
+    this.xAngle += yDelta * config.MOUSE_SENSITIVITY || 0;
 
     // Make sure we're in the interval [-pi/2, pi/2]
     if (this.xAngle < -PI_HALF) {
@@ -102,53 +105,108 @@ export class Player {
   }
 
   setupKey() {
-    MouseJS.on('left', () => {
-      this.weapon.shoot();
-    }, () => {
-      this.weapon.idle();
-    });
+    MouseJS.on(
+      'left',
+      () => {
+        this.weapon.shoot();
+      },
+      () => {
+        this.weapon.idle();
+      }
+    );
 
-    MouseJS.on('right', () => {
-      this.weapon.special();
-    }, () => {
-      this.weapon.idle();
-    });
+    MouseJS.on(
+      'right',
+      () => {
+        this.weapon.special();
+      },
+      () => {
+        this.weapon.idle();
+      }
+    );
 
-    KeyboardJS.on('r', (event, keys, combo) => {
-      this.weapon.reload();
-    }, (event, keys, combo) => {
-    });
+    KeyboardJS.on(
+      '1',
+      () => {
+        this.switchWeapon('ak47');
+      },
+      () => {
+        this.weapon.draw();
+      }
+    );
 
+    KeyboardJS.on(
+      '2',
+      () => {
+        this.switchWeapon('deagle');
+      },
+      () => {
+        this.weapon.draw();
+      }
+    );
 
-    KeyboardJS.on('w', (event: KeyboardEvent) => {
-      this.dir[0] = 1;
-    }, (event) => {
-      this.dir[0] = 0;
-    });
+    KeyboardJS.on(
+      '3',
+      () => {
+        this.switchWeapon('knife');
+      },
+      () => {
+        this.weapon.draw();
+      }
+    );
 
-    KeyboardJS.on('s', (event: KeyboardEvent) => {
-      this.dir[0] = -1;
-    }, (event) => {
-      this.dir[0] = 0;
-    });
+    KeyboardJS.on(
+      'r',
+      (event, keys, combo) => {
+        this.weapon.reload();
+      },
+      (event, keys, combo) => {}
+    );
+
+    KeyboardJS.on(
+      'w',
+      (event: KeyboardEvent) => {
+        this.dir[0] = 1;
+      },
+      event => {
+        this.dir[0] = 0;
+      }
+    );
+
+    KeyboardJS.on(
+      's',
+      (event: KeyboardEvent) => {
+        this.dir[0] = -1;
+      },
+      event => {
+        this.dir[0] = 0;
+      }
+    );
 
     // Handle w and s keys
     KeyboardJS.on('w + s', (event: KeyboardEvent) => {
       this.dir[0] = 0;
     });
 
+    KeyboardJS.on(
+      'a',
+      (event: KeyboardEvent) => {
+        this.dir[1] = 1;
+      },
+      event => {
+        this.dir[1] = 0;
+      }
+    );
 
-    KeyboardJS.on('a', (event: KeyboardEvent) => {
-      this.dir[1] = 1;
-    }, (event) => {
-      this.dir[1] = 0;
-    });
-
-    KeyboardJS.on('d', (event: KeyboardEvent) => {
-      this.dir[1] = -1;
-    }, (event) => {
-      this.dir[1] = 0;
-    });
+    KeyboardJS.on(
+      'd',
+      (event: KeyboardEvent) => {
+        this.dir[1] = -1;
+      },
+      event => {
+        this.dir[1] = 0;
+      }
+    );
 
     // Handle a and d keys
     // Symmetric to the handling of w and s
@@ -156,12 +214,15 @@ export class Player {
       this.dir[1] = 0;
     });
 
-    KeyboardJS.on('space', (event) => {
-      let d = this.dir[2];
-      if (d < 0.0001 && d > -0.0001) {
-        this.dir[2] = 1;
-      }
-    }, function (event) {
-    });
+    KeyboardJS.on(
+      'space',
+      event => {
+        let d = this.dir[2];
+        if (d < 0.0001 && d > -0.0001) {
+          this.dir[2] = 1;
+        }
+      },
+      function(event) {}
+    );
   }
 }
