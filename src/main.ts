@@ -85,9 +85,11 @@ export class Main {
 
     GameInfo.gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
-    const map = await this.loadMap();
+    const map: any = await this.loadMap();
     // Parse map
     GameInfo.map = new Map(GameInfo.gl, map);
+
+    this.renderSky();
 
     this.preparePlayer();
 
@@ -166,6 +168,23 @@ export class Main {
     const mapName = this.getMap();
 
     return await download(`data/maps/${mapName}`, 'arraybuffer');
+  }
+
+  renderSky() {
+    let skyname = GameInfo.map.mapData.entities[0].skyname;
+
+    if (!skyname) {
+      return;
+    }
+
+    if (skyname === 'des') {
+      skyname = 'Des';
+    }
+    const sides = ['bk', 'dn', 'ft', 'lf', 'rt', 'up'];
+    sides
+      .map(a => `${skyname}${a}`)
+      .forEach(async a => {
+      });
   }
 
   start() {
