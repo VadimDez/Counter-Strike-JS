@@ -4,6 +4,15 @@
 import { Main } from './main';
 
 export class Menu {
+  static maps = [
+    'cs_assault.bsp',
+    'cs_italy.bsp',
+    'de_aztec.bsp',
+    'de_dust2.bsp',
+    'de_nuke.bsp',
+    'de_inferno.bsp'
+  ];
+
   static openMenu(element: string) {
     let menu = document.getElementById(element);
     let menuHeight = screen.height / 2;
@@ -21,11 +30,21 @@ export class Menu {
     menu.style.visibility = 'hidden';
   }
 
-  static startGame() {
-    let e: any = document.getElementById('dropDownMapMenu');
-    let map = e.options[e.selectedIndex].value;
+  static getRandomMap() {
+    const index = Math.floor(Math.random() * (Menu.maps.length + 1));
 
-    sessionStorage.setItem('map', map);
+    return Menu.maps[index];
+  }
+
+  static getMap(): string {
+    let $dropdown: any = document.getElementById('dropDownMapMenu');
+    let mapValue = $dropdown.options[$dropdown.selectedIndex].value;
+
+    return mapValue || Menu.getRandomMap();
+  }
+
+  static startGame() {
+    sessionStorage.setItem('map', Menu.getMap());
     let main = new Main();
     main.start();
   }
