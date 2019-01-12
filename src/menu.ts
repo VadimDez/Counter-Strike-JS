@@ -44,15 +44,14 @@ export class Menu {
   }
 
   static startGame() {
-    sessionStorage.setItem('map', Menu.getMap());
     let main = new Main();
-    main.start();
+    main.start(Menu.getMap());
   }
 
   static joinGame() {
     let server = (document.getElementById('server') as any).value;
     sessionStorage.setItem('server', server);
     let main = new Main();
-    main.start();
+    main.start(Menu.getRandomMap());
   }
 }

@@ -12,6 +12,8 @@ import { config } from './config';
 import { PointerLock } from './util/PointerLock';
 
 export class Main {
+  private map: string;
+
   constructor() {
     (window as any).cs = (window as any).cs || {};
   }
@@ -75,7 +77,7 @@ export class Main {
   }
 
   getMap() {
-    return sessionStorage.getItem('map') || config.MAP;
+    return this.map || config.MAP;
   }
 
   async webGLStart() {
@@ -187,7 +189,7 @@ export class Main {
       });
   }
 
-  start() {
+  start(map: string) {
     // var peer = new Peer({key: (window as any).cs.peerJSApiKey});
     // var server = sessionStorage.getItem("server");
     // //Should we connect to a server?
@@ -217,6 +219,7 @@ export class Main {
     //   });
     // }
 
+    this.map = map;
     this.webGLStart();
   }
 }
