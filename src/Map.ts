@@ -12,7 +12,7 @@ import { MapRender } from './renderers/MapRender';
 
 export class Map {
   mapData: any;
-  mapRender: any;
+  mapRender: MapRender;
 
   constructor(public gl: any, public bspData: any) {
     this.mapData = MapParser.parse(bspData);

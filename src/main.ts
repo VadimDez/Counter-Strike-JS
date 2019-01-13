@@ -85,7 +85,7 @@ export class Main {
 
     Main.initGL(canvas);
 
-    GameInfo.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    GameInfo.gl.clearColor(201 / 255, 236 / 255, 252 / 255, 1.0);
 
     const map: any = await this.loadMap();
     // Parse map
