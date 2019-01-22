@@ -14,12 +14,16 @@ Counter-Strike 1.6 implementation in TypeScript utilizing state of the art brows
 ### Develop
 ***Please note: No actual data (maps, models, textures, etc.) is included in the project, due to copyright reasons!***
 
-Install dependencies
+* Copy `cstrike` folder from your `Counter-Strike` into root folder of this project
+
+* Then rename `cstrike` to `data`
+
+* Install dependencies
 ```
 npm install
 ```
 
-Then start webpack
+* Then start webpack
 ```
 npm start
 ```
