@@ -2,19 +2,15 @@
 	This file contains all the code needed in order to render a textured
 	.mdl version 10
 **/
+import { quat, vec3, mat3, mat4 } from 'gl-matrix';
+
 import { DataReader } from '../util/DataReader';
-// import { quat, vec3, mat3, mat4 } from 'gl-matrix';
-import { quat, vec3, mat4 } from 'gl-matrix';
-import * as glMatrix from '../../lib/gl-matrix';
-// const quat = glMatrix.quat;
-// const vec3 = glMatrix.vec3;
-const mat3 = glMatrix.mat3;
-// const mat4 = glMatrix.mat4;
 import { GameInfo } from '../GameInfo';
 
 /**
-		Construct quaternion from Euler angles
-	**/
+ * Construct quaternion from Euler angles
+ * @param angles
+ */
 let quatFromAngles = function(angles) {
   let angle0 = angles[0] * 0.5;
   let sr = Math.sin(angle0);
@@ -408,7 +404,16 @@ export const ModelRender = function(gl, modelData) {
 
     for (let i = 0; i < modelData.header.numBones; ++i) {
       let mat = mat3.create();
-      mat3.fromQuat(mat, qv.quaternions[i]);
+
+      mat3.fromQuat(
+        mat,
+        quat.fromValues(
+          qv.quaternions[i][0] * -1,
+          qv.quaternions[i][1] * -1,
+          qv.quaternions[i][2] * -1,
+          qv.quaternions[i][3]
+        )
+      );
 
       // (window as any).asdqwe++;
       //
