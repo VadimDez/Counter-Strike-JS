@@ -156,6 +156,16 @@ export class Player {
     );
 
     KeyboardJS.on(
+      '4',
+      () => {
+        this.switchWeapon('hegranade');
+      },
+      () => {
+        this.weapon.draw();
+      }
+    );
+
+    KeyboardJS.on(
       'r',
       (event, keys, combo) => {
         this.weapon.reload();
