@@ -234,5 +234,11 @@ export class Player {
       },
       function(event) {}
     );
+
+    // buy menu
+    KeyboardJS.on('b', (event: KeyboardEvent) => {});
+
+    // night vision
+    KeyboardJS.on('n', (event: KeyboardEvent) => {});
   }
 }
