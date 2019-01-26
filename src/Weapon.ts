@@ -1,3 +1,4 @@
+import { C4StateManager } from './WeaponStateManagers/C4StateManager';
 import { WeaponStateManagerInterface } from './WeaponStateManagers/WeaponStateManager.interface';
 import { KnifeStateManager } from './WeaponStateManagers/KnifeStateManager';
 import { PistolStateManager } from './WeaponStateManagers/PistolStateManager';
@@ -46,6 +47,8 @@ export class Weapon {
         return new PistolStateManager();
       case 'hegrenade':
         return new GrenadeStateManager();
+      case 'c4':
+        return new C4StateManager();
     }
   }
 

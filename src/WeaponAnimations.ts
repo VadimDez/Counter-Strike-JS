@@ -226,7 +226,16 @@ export const WeaponAnimations = {
     {
       idle: 0,
       shoot: 1,
+      afterShoot: 4,
       draw: 3
+    }
+  ],
+  c4: [
+    {
+      idle: 0,
+      shoot: 3,
+      afterShoot: 2,
+      draw: 1
     }
   ]
 };
