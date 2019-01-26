@@ -221,5 +221,12 @@ export const WeaponAnimations = {
       reload: [3],
       draw: [4]
     }
+  ],
+  hegrenade: [
+    {
+      idle: 0,
+      shoot: 1,
+      draw: 3
+    }
   ]
 };

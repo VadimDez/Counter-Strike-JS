@@ -2,7 +2,7 @@ import { WeaponStateManagerInterface } from './WeaponStateManagers/WeaponStateMa
 import { KnifeStateManager } from './WeaponStateManagers/KnifeStateManager';
 import { PistolStateManager } from './WeaponStateManagers/PistolStateManager';
 import { SubMachineGunStateManager } from './WeaponStateManagers/SubMachineGunStateManager';
-import { GranadeStateManager } from './WeaponStateManagers/GranadeStateManager';
+import { GrenadeStateManager } from './WeaponStateManagers/GrenadeStateManager';
 /**
  * Created by Vadym Yatsyuk on 25.02.18
  */
@@ -44,8 +44,8 @@ export class Weapon {
         return new SubMachineGunStateManager();
       case 'deagle':
         return new PistolStateManager();
-      case 'hegranade':
-        return new GranadeStateManager();
+      case 'hegrenade':
+        return new GrenadeStateManager();
     }
   }
 

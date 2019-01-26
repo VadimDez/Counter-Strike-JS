@@ -2,7 +2,7 @@ import { Weapon } from './../Weapon';
 import { WeaponStateManager } from './WeaponStateManager';
 import { WeaponAnimations } from '../WeaponAnimations';
 
-export class GranadeStateManager extends WeaponStateManager {
+export class GrenadeStateManager extends WeaponStateManager {
   getWeaponData(weaponName) {
     return WeaponAnimations[weaponName][0];
   }

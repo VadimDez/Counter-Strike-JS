@@ -158,7 +158,7 @@ export class Player {
     KeyboardJS.on(
       '4',
       () => {
-        this.switchWeapon('hegranade');
+        this.switchWeapon('hegrenade');
       },
       () => {
         this.weapon.draw();
