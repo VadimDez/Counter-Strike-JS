@@ -1,3 +1,4 @@
+import { BuyMenu } from './BuyMenu';
 /**
  * Created by Vadym Yatsyuk on 25.02.18
  */
@@ -26,6 +27,12 @@ export class Player {
   speed = 5;
   dir: vec3;
   weapon: Weapon = null;
+  isBuyMenuShown = false;
+  selectedBuyMenu = [];
+  weapons = {
+    pistol: 'deagle'
+  };
+  buyMenu: BuyMenu;
 
   constructor(public gl, x, y, z) {
     this.x = x;
@@ -35,6 +42,18 @@ export class Player {
     // X and Y direction. Not necessarily normalized
     this.dir = vec3.fromValues(0, 0, 0);
     this.setupKey();
+
+    this.buyMenu = new BuyMenu(this.onSelectMenuItem.bind(this));
+  }
+
+  private onSelectMenuItem(item: { code: string; type: string }) {
+    console.log(item);
+    this.isBuyMenuShown = false;
+
+    if (item.type === 'pistol') {
+      this.weapons.pistol = item.code;
+    }
+    this.switchWeapon(item.code);
   }
 
   position() {
@@ -128,52 +147,123 @@ export class Player {
     KeyboardJS.on(
       '1',
       () => {
-        this.switchWeapon('ak47');
+        if (this.isBuyMenuShown) {
+          this.selectedBuyMenu.push(0);
+          this.buyMenu.selectMenu(this.selectedBuyMenu);
+        } else {
+          this.switchWeapon('ak47');
+        }
       },
       () => {
-        this.weapon.draw();
+        if (!this.isBuyMenuShown) {
+          this.weapon.draw();
+        }
       }
     );
 
     KeyboardJS.on(
       '2',
       () => {
-        this.switchWeapon('deagle');
+        if (this.isBuyMenuShown) {
+          this.selectedBuyMenu.push(1);
+          this.buyMenu.selectMenu(this.selectedBuyMenu);
+        } else {
+          this.switchWeapon(this.weapons.pistol);
+        }
       },
       () => {
-        this.weapon.draw();
+        if (!this.isBuyMenuShown) {
+          this.weapon.draw();
+        }
       }
     );
 
     KeyboardJS.on(
       '3',
       () => {
-        this.switchWeapon('knife');
+        if (this.isBuyMenuShown) {
+          this.selectedBuyMenu.push(2);
+          this.buyMenu.selectMenu(this.selectedBuyMenu);
+        } else {
+          this.switchWeapon('knife');
+        }
       },
       () => {
-        this.weapon.draw();
+        if (!this.isBuyMenuShown) {
+          this.weapon.draw();
+        }
       }
     );
 
     KeyboardJS.on(
       '4',
       () => {
-        this.switchWeapon('hegrenade');
+        if (this.isBuyMenuShown) {
+          this.selectedBuyMenu.push(3);
+          this.buyMenu.selectMenu(this.selectedBuyMenu);
+        } else {
+          this.switchWeapon('hegrenade');
+        }
       },
       () => {
-        this.weapon.draw();
+        if (!this.isBuyMenuShown) {
+          this.weapon.draw();
+        }
       }
     );
 
     KeyboardJS.on(
       '5',
       () => {
-        this.switchWeapon('c4');
+        if (this.isBuyMenuShown) {
+          this.selectedBuyMenu.push(4);
+          this.buyMenu.selectMenu(this.selectedBuyMenu);
+        } else {
+          this.switchWeapon('c4');
+        }
       },
       () => {
-        this.weapon.draw();
+        if (!this.isBuyMenuShown) {
+          this.weapon.draw();
+        }
       }
     );
+
+    KeyboardJS.on('6', () => {
+      if (this.isBuyMenuShown) {
+        this.selectedBuyMenu.push(5);
+        this.buyMenu.selectMenu(this.selectedBuyMenu);
+      }
+    });
+
+    KeyboardJS.on('7', () => {
+      if (this.isBuyMenuShown) {
+        this.selectedBuyMenu.push(6);
+        this.buyMenu.selectMenu(this.selectedBuyMenu);
+      }
+    });
+
+    KeyboardJS.on('8', () => {
+      if (this.isBuyMenuShown) {
+        this.selectedBuyMenu.push(7);
+        this.buyMenu.selectMenu(this.selectedBuyMenu);
+      }
+    });
+
+    KeyboardJS.on('9', () => {
+      if (this.isBuyMenuShown) {
+        this.selectedBuyMenu.push(8);
+        this.buyMenu.selectMenu(this.selectedBuyMenu);
+      }
+    });
+
+    KeyboardJS.on('0', () => {
+      if (this.isBuyMenuShown) {
+        this.isBuyMenuShown = false;
+        this.selectedBuyMenu = [];
+        BuyMenu.hideMenu();
+      }
+    });
 
     KeyboardJS.on(
       'r',
@@ -246,7 +336,11 @@ export class Player {
     );
 
     // buy menu
-    KeyboardJS.on('b', (event: KeyboardEvent) => {});
+    KeyboardJS.on('b', (event: KeyboardEvent) => {
+      this.selectedBuyMenu = [];
+      BuyMenu.showBuyMenu();
+      this.isBuyMenuShown = true;
+    });
 
     // night vision
     KeyboardJS.on('n', (event: KeyboardEvent) => {});

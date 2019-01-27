@@ -2,7 +2,7 @@ import { Weapon } from '../Weapon';
 import { WeaponStateManager } from './WeaponStateManager';
 import { WeaponAnimations } from '../WeaponAnimations';
 
-export class GlockStateManager extends WeaponStateManager {
+export class UspStateManager extends WeaponStateManager {
   state = 0;
 
   onShoot(weapon: Weapon) {

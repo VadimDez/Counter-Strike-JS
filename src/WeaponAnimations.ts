@@ -68,22 +68,22 @@ export const WeaponAnimations = {
   glock18: [
     {
       idle: 0,
-      shoot: [3, 4, 5],
-      reload: [7],
+      shoot: 5,
+      reload: 7,
       draw: [8]
     },
     {
       idle: 0,
-      shoot: [],
-      reload: [12],
+      shoot: 4,
+      reload: 12,
       draw: [11]
     }
   ],
   usp: [
     {
       idle: 8,
-      shoot: [9, 10, 11],
-      reload: [13],
+      shoot: 9,
+      reload: 13,
       draw: [14],
       special: [7]
     },

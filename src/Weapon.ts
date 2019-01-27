@@ -1,3 +1,5 @@
+import { UspStateManager } from './WeaponStateManagers/UspStateManager';
+import { GlockStateManager } from './WeaponStateManagers/GlockStateManager';
 import { C4StateManager } from './WeaponStateManagers/C4StateManager';
 import { WeaponStateManagerInterface } from './WeaponStateManagers/WeaponStateManager.interface';
 import { KnifeStateManager } from './WeaponStateManagers/KnifeStateManager';
@@ -15,6 +17,7 @@ import { Sprite } from './Sprite';
 import { download } from './util/download';
 import { ModelParser } from './parsers/ModelParser';
 import { ModelRender } from './renderers/ModelRender';
+import { WeaponStateManager } from './WeaponStateManagers/WeaponStateManager';
 
 /**
   This file defines the representation of a weapon.
@@ -49,6 +52,12 @@ export class Weapon {
         return new GrenadeStateManager();
       case 'c4':
         return new C4StateManager();
+      case 'glock18':
+        return new GlockStateManager();
+      case 'usp':
+        return new UspStateManager();
+      default:
+        return new WeaponStateManager();
     }
   }
 
