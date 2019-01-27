@@ -1,0 +1,49 @@
+import { Weapon } from '../../Weapon';
+import { WeaponStateManager } from '../WeaponStateManager';
+import { WeaponAnimations } from '../../WeaponAnimations';
+
+export class P228StateManager extends WeaponStateManager {
+  state = 0;
+  shootIndex = 0;
+
+  onShoot(weapon: Weapon) {
+    let render = weapon.renderer;
+    let weaponData = WeaponAnimations[weapon.name][this.state];
+
+    if (weaponData.reload === render.currentSequence()) {
+      return;
+    }
+
+    render.forceAnimation(weaponData.shoot[this.shootIndex]);
+
+    if (++this.shootIndex === weaponData.shoot.length) {
+      this.shootIndex = 0;
+    }
+
+    render.queueAnimation(weaponData.idle);
+  }
+
+  onReload(weapon: Weapon) {
+    let render = weapon.renderer;
+    let weaponData = WeaponAnimations[weapon.name][this.state];
+
+    if (render.currentSequence() === weaponData.reload) {
+      return;
+    }
+    render.forceAnimation(weaponData.reload);
+    render.queueAnimation(0);
+  }
+
+  onIdle(weapon: Weapon) {
+    let render = weapon.renderer;
+    let weaponData = WeaponAnimations[weapon.name][this.state];
+    render.queueAnimation(weaponData.idle);
+  }
+
+  onDraw(weapon: Weapon) {
+    const render = weapon.renderer;
+    const weaponData = WeaponAnimations[weapon.name][this.state];
+    render.forceAnimation(weaponData.draw);
+    render.queueAnimation(weaponData.idle);
+  }
+}

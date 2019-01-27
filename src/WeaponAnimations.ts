@@ -70,13 +70,15 @@ export const WeaponAnimations = {
       idle: 0,
       shoot: 5,
       reload: 7,
-      draw: [8]
+      draw: [8],
+      special: 1
     },
     {
       idle: 0,
       shoot: 4,
       reload: 12,
-      draw: [11]
+      draw: [11],
+      special: 2
     }
   ],
   usp: [
@@ -85,14 +87,14 @@ export const WeaponAnimations = {
       shoot: 9,
       reload: 13,
       draw: [14],
-      special: [7]
+      special: [7, 0]
     },
     {
       idle: 0,
-      shoot: [1, 2, 3],
+      shoot: 1,
       reload: [5],
       draw: [6],
-      special: [15]
+      special: [15, 8]
     }
   ],
   p228: [

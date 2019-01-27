@@ -6,10 +6,10 @@ export class BuyMenu {
       child: [
         { name: 'Glock-18', code: 'glock18', price: 400 },
         { name: 'H&K USP .45', code: 'usp', price: 500 },
-        { name: '228 Compact', price: 600 },
-        { name: 'Desert Eagle', price: 650 },
-        { name: 'Five-SeveN', price: 750 },
-        { name: 'Dual Berettas', price: 800 }
+        { name: '228 Compact', code: 'p228', price: 600 },
+        { name: 'Desert Eagle', code: 'deagle', price: 650 },
+        { name: 'Five-SeveN', code: 'fiveseven', price: 750 },
+        { name: 'Dual Berettas', code: 'elite', price: 800 }
       ]
     },
     { name: 'Shotguns', child: {} },

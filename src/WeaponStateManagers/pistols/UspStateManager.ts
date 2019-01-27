@@ -1,6 +1,6 @@
-import { Weapon } from '../Weapon';
-import { WeaponStateManager } from './WeaponStateManager';
-import { WeaponAnimations } from '../WeaponAnimations';
+import { Weapon } from '../../Weapon';
+import { WeaponStateManager } from '../WeaponStateManager';
+import { WeaponAnimations } from '../../WeaponAnimations';
 
 export class UspStateManager extends WeaponStateManager {
   state = 0;
@@ -31,9 +31,10 @@ export class UspStateManager extends WeaponStateManager {
 
   onSpecial(weapon: Weapon) {
     let render = weapon.renderer;
-    this.state ^= 1; //  Swap between state 0 and 1
     let weaponData = WeaponAnimations[weapon.name][this.state];
-    render.forceAnimation(weaponData.draw[0]);
+    this.state ^= 1; //  Swap between state 0 and 1
+    render.forceAnimation(weaponData.special[0]);
+    render.queueAnimation(weaponData.special[1]);
   }
 
   onIdle(weapon: Weapon) {

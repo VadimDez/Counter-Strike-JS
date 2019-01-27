@@ -1,6 +1,6 @@
-import { Weapon } from '../Weapon';
-import { WeaponStateManager } from './WeaponStateManager';
-import { WeaponAnimations } from '../WeaponAnimations';
+import { Weapon } from '../../Weapon';
+import { WeaponStateManager } from '../WeaponStateManager';
+import { WeaponAnimations } from '../../WeaponAnimations';
 
 export class EliteStateManager extends WeaponStateManager {
   state = 0;
@@ -17,7 +17,7 @@ export class EliteStateManager extends WeaponStateManager {
       this.shootIndex = 0;
     }
 
-    this.state = this.state === 0 ? 1 : 0;
+    this.state ^= 1;
     render.queueAnimation(weaponData.idle);
   }
 

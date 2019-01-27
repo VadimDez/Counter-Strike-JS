@@ -1,9 +1,12 @@
-import { UspStateManager } from './WeaponStateManagers/UspStateManager';
-import { GlockStateManager } from './WeaponStateManagers/GlockStateManager';
+import { EliteStateManager } from './WeaponStateManagers/pistols/EliteStateManager';
+import { FiveSevenStateManager } from './WeaponStateManagers/pistols/FiveSevenStateManager';
+import { P228StateManager } from './WeaponStateManagers/pistols/P228StateManager';
+import { UspStateManager } from './WeaponStateManagers/pistols/UspStateManager';
+import { GlockStateManager } from './WeaponStateManagers/pistols/GlockStateManager';
 import { C4StateManager } from './WeaponStateManagers/C4StateManager';
 import { WeaponStateManagerInterface } from './WeaponStateManagers/WeaponStateManager.interface';
 import { KnifeStateManager } from './WeaponStateManagers/KnifeStateManager';
-import { PistolStateManager } from './WeaponStateManagers/PistolStateManager';
+import { DeagleStateManager } from './WeaponStateManagers/pistols/DeagleStateManager';
 import { SubMachineGunStateManager } from './WeaponStateManagers/SubMachineGunStateManager';
 import { GrenadeStateManager } from './WeaponStateManagers/GrenadeStateManager';
 /**
@@ -46,16 +49,25 @@ export class Weapon {
         return new KnifeStateManager();
       case 'ak47':
         return new SubMachineGunStateManager();
-      case 'deagle':
-        return new PistolStateManager();
       case 'hegrenade':
         return new GrenadeStateManager();
       case 'c4':
         return new C4StateManager();
+
+      // pistols
       case 'glock18':
         return new GlockStateManager();
       case 'usp':
         return new UspStateManager();
+      case 'p228':
+        return new P228StateManager();
+      case 'deagle':
+        return new DeagleStateManager();
+      case 'fiveseven':
+        return new FiveSevenStateManager();
+      case 'elite':
+        return new EliteStateManager();
+
       default:
         return new WeaponStateManager();
     }

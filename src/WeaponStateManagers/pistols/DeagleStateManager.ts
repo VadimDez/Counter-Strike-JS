@@ -1,7 +1,8 @@
-import { Weapon } from './../Weapon';
-import { WeaponStateManager } from './WeaponStateManager';
-import { WeaponAnimations } from '../WeaponAnimations';
-export class PistolStateManager extends WeaponStateManager {
+import { Weapon } from '../../Weapon';
+import { WeaponStateManager } from '../WeaponStateManager';
+import { WeaponAnimations } from '../../WeaponAnimations';
+
+export class DeagleStateManager extends WeaponStateManager {
   onShoot(weapon: Weapon) {
     let render = weapon.renderer;
     let weaponData = WeaponAnimations[weapon.name][0];
