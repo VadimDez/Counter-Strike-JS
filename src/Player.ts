@@ -30,6 +30,7 @@ export class Player {
   isBuyMenuShown = false;
   selectedBuyMenu = [];
   weapons = {
+    primary: 'ak47',
     pistol: 'deagle'
   };
   buyMenu: BuyMenu;
@@ -50,7 +51,9 @@ export class Player {
     console.log(item);
     this.isBuyMenuShown = false;
 
-    if (item.type === 'pistol') {
+    if (item.type === 'primary') {
+      this.weapons.primary = item.code;
+    } else if (item.type === 'pistol') {
       this.weapons.pistol = item.code;
     }
     this.switchWeapon(item.code);
@@ -151,7 +154,7 @@ export class Player {
           this.selectedBuyMenu.push(0);
           this.buyMenu.selectMenu(this.selectedBuyMenu);
         } else {
-          this.switchWeapon('ak47');
+          this.switchWeapon(this.weapons.primary);
         }
       },
       () => {

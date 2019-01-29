@@ -1,3 +1,5 @@
+// https://counterstrike.fandom.com/wiki/Counter-Strike
+
 export class BuyMenu {
   static menu = [
     {
@@ -12,10 +14,46 @@ export class BuyMenu {
         { name: 'Dual Berettas', code: 'elite', price: 800 }
       ]
     },
-    { name: 'Shotguns', child: {} },
-    { name: 'Sub-Machine Guns', child: {} },
-    { name: 'Rifles', child: {} },
-    { name: 'Machine Gun', child: {} },
+    {
+      name: 'Shotguns',
+      type: 'primary',
+      child: [
+        { name: 'Benelli M3 Super90', code: 'm3', price: 1700 },
+        { name: 'Benelli XM1014', code: 'xm1014', price: 3000 }
+      ]
+    },
+    {
+      name: 'Sub-Machine Guns',
+      type: 'primary',
+      child: [
+        { name: 'Steyr Tactical Machine Pistol', code: 'tmp', price: 1250 },
+        { name: 'Ingram MAC-10', code: 'mac10', price: 1400 },
+        { name: 'H&K MP5-Navy', code: 'mp5', price: 1500 },
+        { name: 'H&K UMP45', code: 'ump45', price: 1700 },
+        { name: 'FN P90', code: 'p90', price: 2350 }
+      ]
+    },
+    {
+      name: 'Rifles',
+      type: 'primary',
+      child: [
+        { name: 'Galil', code: 'galil', price: 2000 },
+        { name: 'FAMAS', code: 'famas', price: 2250 },
+        { name: 'AK-47', code: 'ak47', price: 2500 },
+        { name: 'Maverick M4A1 Carbine', code: 'm4a1', price: 3100 },
+        { name: 'Sig SG-552 Commando', code: 'sg552', price: 3500 },
+        { name: 'Steyr Aug', code: 'aug', price: 3500 },
+        { name: 'Steyr Scout', code: 'scout', price: 2750 },
+        { name: 'Sig SG-550 Sniper', code: 'sg550', price: 4200 },
+        { name: 'Magnum Sniper Rifle', code: 'awp', price: 4750 },
+        { name: 'H&K G3/SG-1 Sniper Rifle', code: 'g3sg1', price: 5000 }
+      ]
+    },
+    {
+      name: 'Machine Gun',
+      type: 'primary',
+      child: [{ name: 'FN M249 Para', code: 'm249', price: 5750 }]
+    },
     { name: 'Primary Ammo', child: {} },
     { name: 'Secondary Ammo', child: {} },
     { name: 'Equipments', child: {} }

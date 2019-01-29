@@ -1,14 +1,15 @@
+import { ShotgunStateManager } from './WeaponStateManagers/shotguns/ShotgunStateManager';
 import { EliteStateManager } from './WeaponStateManagers/pistols/EliteStateManager';
 import { FiveSevenStateManager } from './WeaponStateManagers/pistols/FiveSevenStateManager';
 import { P228StateManager } from './WeaponStateManagers/pistols/P228StateManager';
 import { UspStateManager } from './WeaponStateManagers/pistols/UspStateManager';
 import { GlockStateManager } from './WeaponStateManagers/pistols/GlockStateManager';
-import { C4StateManager } from './WeaponStateManagers/C4StateManager';
+import { C4StateManager } from './WeaponStateManagers/equipment/C4StateManager';
 import { WeaponStateManagerInterface } from './WeaponStateManagers/WeaponStateManager.interface';
 import { KnifeStateManager } from './WeaponStateManagers/KnifeStateManager';
 import { DeagleStateManager } from './WeaponStateManagers/pistols/DeagleStateManager';
-import { SubMachineGunStateManager } from './WeaponStateManagers/SubMachineGunStateManager';
-import { GrenadeStateManager } from './WeaponStateManagers/GrenadeStateManager';
+import { SubMachineGunStateManager } from './WeaponStateManagers/sub-machine-guns/SubMachineGunStateManager';
+import { GrenadeStateManager } from './WeaponStateManagers/equipment/GrenadeStateManager';
 /**
  * Created by Vadym Yatsyuk on 25.02.18
  */
@@ -47,7 +48,22 @@ export class Weapon {
     switch (this.name) {
       case 'knife':
         return new KnifeStateManager();
+      case 'tmp':
+      case 'mac10':
+      case 'mp5':
+      case 'ump45':
+      case 'p90':
+      case 'm249':
+      case 'galil':
+      case 'famas':
       case 'ak47':
+      case 'm4a1':
+      case 'sg552':
+      case 'aug':
+      case 'scout':
+      case 'sg550':
+      case 'awp':
+      case 'g3sg1':
         return new SubMachineGunStateManager();
       case 'hegrenade':
         return new GrenadeStateManager();
@@ -68,6 +84,10 @@ export class Weapon {
       case 'elite':
         return new EliteStateManager();
 
+      case 'm3':
+      case 'xm1014':
+        return new ShotgunStateManager();
+
       default:
         return new WeaponStateManager();
     }
@@ -75,8 +95,10 @@ export class Weapon {
 
   // Download weapon information
   async loadWeaponInformation() {
+    const spriteName = this.weaponName === 'mp5' ? 'mp5navy' : this.weaponName;
+
     const txt = await download<string>(
-      `data/sprites/weapon_${this.weaponName}.txt`,
+      `data/sprites/weapon_${spriteName}.txt`,
       'text'
     );
     const lines = txt.split('\n');

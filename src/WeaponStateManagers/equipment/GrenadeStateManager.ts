@@ -1,8 +1,8 @@
-import { Weapon } from './../Weapon';
-import { WeaponStateManager } from './WeaponStateManager';
-import { WeaponAnimations } from '../WeaponAnimations';
+import { Weapon } from '../../Weapon';
+import { WeaponStateManager } from '../WeaponStateManager';
+import { WeaponAnimations } from '../../WeaponAnimations';
 
-export class C4StateManager extends WeaponStateManager {
+export class GrenadeStateManager extends WeaponStateManager {
   getWeaponData(weaponName) {
     return WeaponAnimations[weaponName][0];
   }
@@ -12,7 +12,7 @@ export class C4StateManager extends WeaponStateManager {
     const weaponData = this.getWeaponData(weapon.name);
 
     render.forceAnimation(weaponData.shoot);
-    render.queueAnimation(weaponData.afterShoot);
+    render.forceAnimation(weaponData.afterShoot);
   }
 
   onIdle(weapon: Weapon) {
