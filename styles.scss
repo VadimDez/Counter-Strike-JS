@@ -14,24 +14,36 @@ body {
 }
 
 canvas {
-    // display: block;
-    display: none;
+    display: block;
+    // display: none;
     margin: 0;
     padding: 0;
 }
 
 .main-menu {
+    display: none;
+    // display: block;
 }
 
 #buy-menu {
     position: absolute;
     top: 0;
-    left: 0;
+    left: 6px;
     bottom: 0;
     display: flex;
     align-items: center;
     color: #fff;
     display: none;
+
+    #buy-menu-container>div {
+        display: flex;
+    }
+
+    .price {
+        flex: 1;
+        padding-left: 24px;
+        text-align: right;
+    }
 }
 
 .styled-select {

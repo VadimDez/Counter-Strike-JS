@@ -123,9 +123,21 @@ export class BuyMenu {
 
     menu.forEach(item => {
       const $div = document.createElement('div');
+      const $name = document.createElement('span');
+      $name.classList.add('name');
+
       let str = `${i}. ${item.name}`;
-      $div.innerText = str;
+      $name.innerText = str;
       i++;
+
+      $div.appendChild($name);
+
+      if (item.price) {
+        const $price = document.createElement('span');
+        $price.classList.add('price');
+        $price.innerText = item.price;
+        $div.appendChild($price);
+      }
 
       $elem.appendChild($div);
     });
