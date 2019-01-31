@@ -4,7 +4,7 @@
 **/
 import { DataReader } from '../util/DataReader';
 
-let constants = {
+const constants = {
   MDL_MAGIC: 0x54534449,
   MDL_VERSION: 10
 };

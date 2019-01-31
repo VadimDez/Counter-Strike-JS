@@ -18,7 +18,7 @@ import { DataReader } from '../util/DataReader';
  Provides easy-to-use functions for reading binary data
  **/
 
-let constants = {
+const constants = {
   BSP_VERSION: 30,
 
   PLANE_X: 0,

@@ -5,7 +5,7 @@
 **/
 import { DataReader } from '../util/DataReader';
 
-let constants = {
+const constants = {
   SPR_MAGIC: 0x50534449,
   SPR_VERSION: 2
 };
