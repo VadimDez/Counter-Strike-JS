@@ -39,6 +39,10 @@ export class PistolStateManager extends WeaponStateManager {
     render.forceAnimation(weaponData.shoot[this.shootIndex]);
     this.ammo--;
 
+    if (this.ammo <= 0) {
+      render.queueAnimation(weaponData.reload);
+    }
+
     if (++this.shootIndex === weaponData.shoot.length) {
       this.shootIndex = 0;
     }
