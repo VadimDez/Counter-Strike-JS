@@ -2,7 +2,7 @@
 
 Counter-Strike 1.6 implementation in TypeScript utilizing state of the art browser APIs.
 
-*Uses https://github.com/MathiasVP/CS as the base.*
+*Used https://github.com/MathiasVP/CS as the base.*
 
 ### Current state
 * Parses and renders .bsp files (version 30) containing map data
