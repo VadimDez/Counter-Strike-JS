@@ -172,21 +172,38 @@ export class Main {
     return await download(`data/maps/${mapName}`, 'arraybuffer');
   }
 
-  renderSky() {
+  async renderSky() {
     let skyname = GameInfo.map.mapData.entities[0].skyname;
 
     if (!skyname) {
       return;
     }
 
+    const coords: { [name: string]: number[] } = {
+      up: [0, 0],
+      rt: [0, 256],
+      dn: [0, 512],
+      ft: [256, 0],
+      lf: [256, 256],
+      bk: [256, 512]
+    };
+
     if (skyname === 'des') {
       skyname = 'Des';
     }
-    const sides = ['bk', 'dn', 'ft', 'lf', 'rt', 'up'];
-    sides
-      .map(a => `${skyname}${a}`)
-      .forEach(async a => {
-      });
+
+    const sides = ['bk', 'dn', 'ft', 'lf', 'rt', 'up'].map(
+      a => `${skyname}${a}`
+    );
+
+    for (let a of sides) {
+      // `gfx/env/${a}.tga`
+      const data: any = await download(
+        `data/gfx/env/${a}.tga`,
+        'arraybuffer',
+        true
+      );
+    }
   }
 
   start(map: string) {
