@@ -1,3 +1,4 @@
+import { TgaParser } from './parsers/TgaParser';
 /**
  * Created by Vadym Yatsyuk on 25.02.18
  */
@@ -203,6 +204,8 @@ export class Main {
         'arraybuffer',
         true
       );
+
+      TgaParser.parse(data);
     }
   }
 
