@@ -102,7 +102,9 @@ export class BuyMenu {
     } else {
       const item = this.getItem(selected);
 
-      this.onSelectItem({ code: item.code, type: primaryMenu.type });
+      if (item) {
+        this.onSelectItem({ code: item.code, type: primaryMenu.type });
+      }
     }
   }
 
@@ -122,24 +124,39 @@ export class BuyMenu {
     let i = 1;
 
     menu.forEach(item => {
-      const $div = document.createElement('div');
-      const $name = document.createElement('span');
-      $name.classList.add('name');
-
-      let str = `${i}. ${item.name}`;
-      $name.innerText = str;
-      i++;
-
-      $div.appendChild($name);
-
-      if (item.price) {
-        const $price = document.createElement('span');
-        $price.classList.add('price');
-        $price.innerText = item.price;
-        $div.appendChild($price);
-      }
-
-      $elem.appendChild($div);
+      $elem.appendChild(BuyMenu.createMenuRow(item, i++));
     });
+
+    $elem.appendChild(BuyMenu.createCancelRow());
+  }
+
+  static createMenuRow(item: any, i: number) {
+    const $div = document.createElement('div');
+    const $name = document.createElement('span');
+    $name.classList.add('name');
+
+    let str = `${i}. ${item.name}`;
+    $name.innerText = str;
+
+    $div.appendChild($name);
+
+    if (item.price) {
+      const $price = document.createElement('span');
+      $price.classList.add('price');
+      $price.innerText = item.price;
+      $div.appendChild($price);
+    }
+
+    return $div;
+  }
+
+  static createCancelRow() {
+    const $div = document.createElement('div');
+    const $name = document.createElement('span');
+    $name.classList.add('name');
+    $name.innerText = '0. Cancel';
+    $div.appendChild($name);
+
+    return $div;
   }
 }
