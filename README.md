@@ -2,7 +2,7 @@
 
 Counter-Strike 1.6 implementation in TypeScript utilizing state of the art browser APIs.
 
-*Used https://github.com/MathiasVP/CS as the base.*
+> *Used https://github.com/MathiasVP/CS as the base.*
 
 ### Current state
 * Parses and renders .bsp files (version 30) containing map data
@@ -28,7 +28,7 @@ npm install
 npm start
 ```
 
-Open [http://localhost:9000](http://localhost:9000)
+* Open [http://localhost:9000](http://localhost:9000)
 
 
 ![Screenshot](https://user-images.githubusercontent.com/3748453/50407004-1dbc1180-07cf-11e9-8976-7472bc17183d.jpg)
