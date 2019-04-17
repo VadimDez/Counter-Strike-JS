@@ -1,3 +1,4 @@
+import { GalilStateManager } from './WeaponStateManagers/sub-machine-guns/GalilStateManager';
 import { ShotgunStateManager } from './WeaponStateManagers/shotguns/ShotgunStateManager';
 import { EliteStateManager } from './WeaponStateManagers/pistols/EliteStateManager';
 import { FiveSevenStateManager } from './WeaponStateManagers/pistols/FiveSevenStateManager';
@@ -54,7 +55,6 @@ export class Weapon {
       case 'ump45':
       case 'p90':
       case 'm249':
-      case 'galil':
       case 'famas':
       case 'ak47':
       case 'm4a1':
@@ -65,6 +65,8 @@ export class Weapon {
       case 'awp':
       case 'g3sg1':
         return new SubMachineGunStateManager();
+      case 'galil':
+        return new GalilStateManager();
       case 'hegrenade':
         return new GrenadeStateManager();
       case 'c4':
