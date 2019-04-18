@@ -123,6 +123,16 @@ export class Weapon {
       };
     }
 
+    await this.renderCrosshair();
+    // Download weapon model
+    const mdl = await download(
+      `data/models/v_${this.weaponName}.mdl`,
+      'arraybuffer'
+    );
+    let weaponData = ModelParser.parse(this.gl, mdl);
+    this.renderer = new ModelRender(this.gl, weaponData);
+  }
+  async renderCrosshair() {
     if (this.sprite['crosshair']) {
       // Dwonload crosshair spritesheet
       const crosshair = await download(
@@ -139,14 +149,6 @@ export class Weapon {
         crosshairInfo.h
       );
     }
-
-    // Download weapon model
-    const mdl = await download(
-      `data/models/v_${this.weaponName}.mdl`,
-      'arraybuffer'
-    );
-    let weaponData = ModelParser.parse(this.gl, mdl);
-    this.renderer = new ModelRender(this.gl, weaponData);
   }
 
   render() {
