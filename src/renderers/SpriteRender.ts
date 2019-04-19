@@ -135,18 +135,22 @@ export class SpriteRender {
       1.0,
       0.0,
       1.0,
+
       0.0,
       -1.0,
       1.0,
       0.0,
+
       0.0,
       0.0,
       1.0,
       -1.0,
+
       0.0,
       1.0,
       1.0,
       -1.0,
+
       -1.0,
       0.0,
       0.0,
@@ -179,7 +183,7 @@ export class SpriteRender {
       12
     );
 
-    // mat4.scale(cs.mvMatrix, cs.mvMatrix, [1/sprite.header.maxWidth, 1/sprite.header.maxHeight, 1]);
+    // mat4.scale(GameInfo.mvMatrix, GameInfo.mvMatrix, [1/sprite.header.maxWidth, 1/sprite.header.maxHeight, 1]);
 
     this.gl.uniformMatrix4fv(
       this.shaderProgram.pMatrixUniform,

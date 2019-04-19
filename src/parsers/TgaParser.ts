@@ -1,6 +1,5 @@
 export class TgaParser {
   static parse(data) {
-    console.log(data);
     this.parseHeader(data);
   }
 
@@ -25,7 +24,5 @@ export class TgaParser {
         descriptor: tga.getUint8(17)
       }
     };
-
-    console.log(header);
   }
 }

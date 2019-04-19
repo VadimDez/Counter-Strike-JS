@@ -35,6 +35,7 @@ export class Weapon {
   renderer = null;
   name: string;
   crosshair: Sprite = null;
+  weapon: Sprite = null;
   gl = GameInfo.gl;
   stateManager: WeaponStateManagerInterface;
 
@@ -123,6 +124,7 @@ export class Weapon {
       };
     }
 
+    await this.renderHud();
     await this.renderCrosshair();
     // Download weapon model
     const mdl = await download(
@@ -132,6 +134,26 @@ export class Weapon {
     let weaponData = ModelParser.parse(this.gl, mdl);
     this.renderer = new ModelRender(this.gl, weaponData);
   }
+
+  async renderHud() {
+    if (this.sprite['weapon']) {
+      // Dwonload crosshair spritesheet
+      const weapon = await download(
+        `data/sprites/${this.sprite['weapon'].file}.spr`,
+        'arraybuffer'
+      );
+
+      const weaponInfo = this.sprite.weapon;
+
+      this.weapon = new Sprite(this.gl, weapon).subSprite(
+        weaponInfo.x,
+        weaponInfo.y,
+        weaponInfo.w,
+        weaponInfo.h
+      );
+    }
+  }
+
   async renderCrosshair() {
     if (this.sprite['crosshair']) {
       // Dwonload crosshair spritesheet
@@ -140,7 +162,7 @@ export class Weapon {
         'arraybuffer'
       );
 
-      let crosshairInfo = this.sprite.crosshair;
+      const crosshairInfo = this.sprite.crosshair;
 
       this.crosshair = new Sprite(this.gl, crosshair).subSprite(
         crosshairInfo.x,
@@ -162,6 +184,12 @@ export class Weapon {
       mat4.identity(GameInfo.mvMatrix);
       mat4.translate(GameInfo.mvMatrix, GameInfo.mvMatrix, [0.0, 0.0, -50]);
       this.crosshair.render();
+    }
+
+    if (this.weapon) {
+      mat4.identity(GameInfo.mvMatrix);
+      mat4.translate(GameInfo.mvMatrix, GameInfo.mvMatrix, [-50.0, 15.0, -50]);
+      this.weapon.render();
     }
   }
 
