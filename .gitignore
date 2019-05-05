@@ -1,7 +1,5 @@
 ## Suspected copyrighted data
-data/
-peerJSApiKey.js
+cstrike/
 .DS_Store
 node_modules/
-
 .idea/
