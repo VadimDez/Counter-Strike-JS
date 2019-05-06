@@ -170,7 +170,7 @@ export class Main {
   async loadMap() {
     const mapName = this.getMap();
 
-    return await download(`data/maps/${mapName}`, 'arraybuffer');
+    return await download(`cstrike/maps/${mapName}`, 'arraybuffer');
   }
 
   async renderSky() {
@@ -200,7 +200,7 @@ export class Main {
     for (let a of sides) {
       // `gfx/env/${a}.tga`
       const data: any = await download(
-        `data/gfx/env/${a}.tga`,
+        `cstrike/gfx/env/${a}.tga`,
         'arraybuffer',
         true
       );

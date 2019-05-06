@@ -101,7 +101,7 @@ export class Weapon {
     const spriteName = this.weaponName === 'mp5' ? 'mp5navy' : this.weaponName;
 
     const txt = await download<string>(
-      `data/sprites/weapon_${spriteName}.txt`,
+      `cstrike/sprites/weapon_${spriteName}.txt`,
       'text'
     );
     const lines = txt.split('\n');
@@ -128,7 +128,7 @@ export class Weapon {
     await this.renderCrosshair();
     // Download weapon model
     const mdl = await download(
-      `data/models/v_${this.weaponName}.mdl`,
+      `cstrike/models/v_${this.weaponName}.mdl`,
       'arraybuffer'
     );
     let weaponData = ModelParser.parse(this.gl, mdl);
@@ -139,7 +139,7 @@ export class Weapon {
     if (this.sprite['weapon']) {
       // Dwonload crosshair spritesheet
       const weapon = await download(
-        `data/sprites/${this.sprite['weapon'].file}.spr`,
+        `cstrike/sprites/${this.sprite['weapon'].file}.spr`,
         'arraybuffer'
       );
 
@@ -158,7 +158,7 @@ export class Weapon {
     if (this.sprite['crosshair']) {
       // Dwonload crosshair spritesheet
       const crosshair = await download(
-        `data/sprites/${this.sprite['crosshair'].file}.spr`,
+        `cstrike/sprites/${this.sprite['crosshair'].file}.spr`,
         'arraybuffer'
       );
 

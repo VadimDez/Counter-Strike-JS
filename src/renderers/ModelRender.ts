@@ -476,11 +476,11 @@ export const ModelRender = function(gl, modelData) {
 
     switch (event.event) {
       case constants.EVENT_SOUND:
-        return 'data/sound/' + event.options;
+        return 'cstrike/sound/' + event.options;
       case constants.EVENT_FIRE:
         let weapon = modelData.header.name;
         return (
-          'data/sound/weapons/' + weapon.substr(2, weapon.length - 6) + '-1.wav'
+          'cstrike/sound/weapons/' + weapon.substr(2, weapon.length - 6) + '-1.wav'
         );
     }
 
@@ -509,10 +509,10 @@ export const ModelRender = function(gl, modelData) {
   function getSoundPath(event) {
     switch (event.type) {
       case constants.EVENT_SOUND:
-        return 'data/sound/' + event.filename;
+        return 'cstrike/sound/' + event.filename;
       case constants.EVENT_FIRE_SINGLE:
       case constants.EVENT_FIRE:
-        return 'data/sound/weapons/' + event.sound;
+        return 'cstrike/sound/weapons/' + event.sound;
     }
 
     return null;
