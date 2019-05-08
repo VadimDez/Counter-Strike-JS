@@ -104,6 +104,8 @@ export class Weapon {
       `cstrike/sprites/weapon_${spriteName}.txt`,
       'text'
     );
+    console.log(txt);
+
     const lines = txt.split('\n');
     // The last line is an empty string
     let length = lines.length - 1;
@@ -124,8 +126,12 @@ export class Weapon {
       };
     }
 
+    console.log(this.sprite);
+
     await this.renderHud();
     await this.renderCrosshair();
+    console.log(this.crosshair);
+
     // Download weapon model
     const mdl = await download(
       `cstrike/models/v_${this.weaponName}.mdl`,

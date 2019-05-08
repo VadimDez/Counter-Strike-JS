@@ -45,7 +45,7 @@ export class Menu {
 
   static startGame() {
     let main = new Main();
-    main.start(Menu.getMap());
+    main.start('de_dust2.bsp' || Menu.getMap());
   }
 
   static joinGame() {
