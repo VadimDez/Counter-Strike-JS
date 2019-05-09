@@ -91,13 +91,13 @@ let parseHeader = function() {
   let numAttachments = DataReader.readInteger(data, 212);
   let attachmentIndex = DataReader.readInteger(data, 216);
 
-  let soundTable = DataReader.readInteger(data, 220);
-  let soundIndex = DataReader.readInteger(data, 224);
-  let soundGroups = DataReader.readInteger(data, 228);
-  let soundGroupIndex = DataReader.readInteger(data, 232);
+  const soundTable = DataReader.readInteger(data, 220);
+  const soundIndex = DataReader.readInteger(data, 224);
+  const soundGroups = DataReader.readInteger(data, 228);
+  const soundGroupIndex = DataReader.readInteger(data, 232);
 
-  let numTransitions = DataReader.readInteger(data, 236);
-  let transitionIndex = DataReader.readInteger(data, 240);
+  const numTransitions = DataReader.readInteger(data, 236);
+  const transitionIndex = DataReader.readInteger(data, 240);
 
   return {
     name: name,

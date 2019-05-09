@@ -480,7 +480,9 @@ export const ModelRender = function(gl, modelData) {
       case constants.EVENT_FIRE:
         let weapon = modelData.header.name;
         return (
-          'cstrike/sound/weapons/' + weapon.substr(2, weapon.length - 6) + '-1.wav'
+          'cstrike/sound/weapons/' +
+          weapon.substr(2, weapon.length - 6) +
+          '-1.wav'
         );
     }
 
@@ -525,40 +527,40 @@ export const ModelRender = function(gl, modelData) {
     frame += dt * (customFPS || sequence.fps);
 
     let events = sequence.events;
+
     if (sequence.numFrames <= 1) {
-      frame = 0;
-    } else {
-      let newFrame =
-        frame -
-        Math.floor(frame / (sequence.numFrames - 1)) * (sequence.numFrames - 1);
-
-      // Check for events
-      for (let i = 0; i < events.length; ++i) {
-        let event = events[i];
-
-        if (newFrame >= event.frame && !event.started) {
-          performEvent(event);
-          event.started = true;
-        }
-      }
-
-      // Did we just restart our animation?
-      if (newFrame < frame) {
-        resetEvents();
-
-        // Do we have an animation queued up?
-        if (animationQueue.length) {
-          // Yep. Set index and requested fps
-          newFrame = 0;
-          let anim = animationQueue.shift();
-          sequenceIndex = anim.index;
-          customFPS = anim.fps;
-          preloadEvents();
-        }
-      }
-      frame = newFrame;
+      return 0;
     }
-    return frame;
+
+    let newFrame =
+      frame -
+      Math.floor(frame / (sequence.numFrames - 1)) * (sequence.numFrames - 1);
+
+    // Check for events
+    for (let i = 0; i < events.length; ++i) {
+      const event = events[i];
+
+      if (newFrame >= event.frame && !event.started) {
+        performEvent(event);
+        event.started = true;
+      }
+    }
+
+    // Did we just restart our animation?
+    if (newFrame < frame) {
+      resetEvents();
+
+      // Do we have an animation queued up?
+      if (animationQueue.length) {
+        // Yep. Set index and requested fps
+        newFrame = 0;
+        let anim = animationQueue.shift();
+        sequenceIndex = anim.index;
+        customFPS = anim.fps;
+        preloadEvents();
+      }
+    }
+    return newFrame;
   };
 
   let drawPoints = function(model, transformations) {
