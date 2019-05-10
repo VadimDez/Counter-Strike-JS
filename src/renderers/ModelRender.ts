@@ -458,8 +458,6 @@ export const ModelRender = function(gl, modelData) {
   };
 
   let performEvent = function(event) {
-    console.log(modelData);
-
     const path = getFireSoundPath(event, modelData);
 
     if (path) {
@@ -472,21 +470,19 @@ export const ModelRender = function(gl, modelData) {
   };
 
   const getFireSoundPath = (event, modelData) => {
-    console.log(event);
-
     switch (event.event) {
       case constants.EVENT_SOUND:
         return 'cstrike/sound/' + event.options;
       case constants.EVENT_FIRE:
-        let weapon = modelData.header.name;
+        const weapon = modelData.header.name;
         return (
           'cstrike/sound/weapons/' +
           weapon.substr(2, weapon.length - 6) +
           '-1.wav'
         );
+      default:
+        return null;
     }
-
-    return null;
   };
 
   let resetEvents = function() {
@@ -515,9 +511,9 @@ export const ModelRender = function(gl, modelData) {
       case constants.EVENT_FIRE_SINGLE:
       case constants.EVENT_FIRE:
         return 'cstrike/sound/weapons/' + event.sound;
+      default:
+        return null;
     }
-
-    return null;
   }
 
   let advanceFrame = function(dt, sequence, frame) {
@@ -554,7 +550,7 @@ export const ModelRender = function(gl, modelData) {
       if (animationQueue.length) {
         // Yep. Set index and requested fps
         newFrame = 0;
-        let anim = animationQueue.shift();
+        const anim = animationQueue.shift();
         sequenceIndex = anim.index;
         customFPS = anim.fps;
         preloadEvents();
