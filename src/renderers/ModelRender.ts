@@ -396,7 +396,6 @@ export const ModelRender = function(gl, modelData) {
     };
   };
 
-  // (window as any).asdqwe = 0;
   let setupBones = function(frame, sequence) {
     let qv = calcRotations(frame, sequence);
     let transformations = Array(modelData.header.numBones);
@@ -414,12 +413,6 @@ export const ModelRender = function(gl, modelData) {
           qv.quaternions[i][3]
         )
       );
-
-      // (window as any).asdqwe++;
-      //
-      // if ((window as any).asdqwe <= 10) {
-      //   console.log(mat);
-      // }
 
       let transformation = [
         [mat[0], mat[1], mat[2], qv.vectors[i][0]],
@@ -493,10 +486,10 @@ export const ModelRender = function(gl, modelData) {
   };
 
   let preloadEvents = function() {
-    let events = modelData.sequences[sequenceIndex].events;
+    const events = modelData.sequences[sequenceIndex].events;
 
     for (let i = 0; i < events.length; ++i) {
-      let path = getSoundPath(events[i]);
+      const path = getSoundPath(events[i]);
 
       if (path) {
         createjs.Sound.registerSound(path);

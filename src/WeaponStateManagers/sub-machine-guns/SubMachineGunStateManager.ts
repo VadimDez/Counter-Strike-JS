@@ -10,6 +10,7 @@ export class SubMachineGunStateManager extends WeaponStateManager {
     let weaponData = WeaponAnimations[weapon.name][0];
     if (render.currentSequence() === 1) {
       // reloading
+      this.ammo = this.maxAmmo;
       return;
     }
 
@@ -28,7 +29,7 @@ export class SubMachineGunStateManager extends WeaponStateManager {
     if (++this.shootIndex === weaponData.shoot.length) {
       this.shootIndex = 0;
     }
-    render.queueAnimation(0);
+    render.queueAnimation(weaponData.idle);
   }
 
   onReload(weapon: Weapon) {
