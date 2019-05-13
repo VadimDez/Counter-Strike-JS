@@ -13,13 +13,11 @@ export const download = <T>(
     req.responseType = type as any;
 
     req.onreadystatechange = function() {
-      if (req.readyState === 4) {
-        if (req.status === 200 || req.status === 0) {
-          if (type === 'arraybuffer') {
-            resolve(!plain ? new Uint8Array(req.response) : req.response);
-          } else {
-            resolve(req.response);
-          }
+      if (req.readyState === 4 && (req.status === 200 || req.status === 0)) {
+        if (type === 'arraybuffer') {
+          resolve(!plain ? new Uint8Array(req.response) : req.response);
+        } else {
+          resolve(req.response);
         }
       }
     };
