@@ -36,6 +36,7 @@ export class Weapon {
   name: string;
   crosshair: Sprite = null;
   weapon: Sprite = null;
+  ammo: Sprite = null;
   gl = GameInfo.gl;
   stateManager: WeaponStateManagerInterface;
 
@@ -130,7 +131,6 @@ export class Weapon {
 
     await this.renderHud();
     await this.renderCrosshair();
-    console.log(this.crosshair);
 
     // Download weapon model
     const mdl = await download(
@@ -141,15 +141,15 @@ export class Weapon {
     this.renderer = new ModelRender(this.gl, weaponData);
   }
 
-  async renderHud() {
-    if (this.sprite['weapon']) {
-      // Dwonload crosshair spritesheet
-      const weapon = await download(
-        `cstrike/sprites/${this.sprite['weapon'].file}.spr`,
-        'arraybuffer'
-      );
+  getSprite(fileName) {
+    return download(`cstrike/sprites/${fileName}.spr`, 'arraybuffer');
+  }
 
+  async renderHud() {
+    if (this.sprite.weapon) {
       const weaponInfo = this.sprite.weapon;
+      // Dwonload weapon spritesheet
+      const weapon = await this.getSprite(weaponInfo.file);
 
       this.weapon = new Sprite(this.gl, weapon).subSprite(
         weaponInfo.x,
@@ -158,17 +158,25 @@ export class Weapon {
         weaponInfo.h
       );
     }
+
+    if (this.sprite.ammo) {
+      const ammoInfo = this.sprite.ammo;
+      const ammo = await this.getSprite(ammoInfo.file);
+
+      this.ammo = new Sprite(this.gl, ammo).subSprite(
+        ammoInfo.x,
+        ammoInfo.y,
+        ammoInfo.w,
+        ammoInfo.h
+      );
+    }
   }
 
   async renderCrosshair() {
-    if (this.sprite['crosshair']) {
+    if (this.sprite.crosshair) {
       // Dwonload crosshair spritesheet
-      const crosshair = await download(
-        `cstrike/sprites/${this.sprite['crosshair'].file}.spr`,
-        'arraybuffer'
-      );
-
       const crosshairInfo = this.sprite.crosshair;
+      const crosshair = await this.getSprite(crosshairInfo.file);
 
       this.crosshair = new Sprite(this.gl, crosshair).subSprite(
         crosshairInfo.x,
@@ -196,6 +204,12 @@ export class Weapon {
       mat4.identity(GameInfo.mvMatrix);
       mat4.translate(GameInfo.mvMatrix, GameInfo.mvMatrix, [-50.0, 15.0, -50]);
       this.weapon.render();
+    }
+
+    if (this.ammo) {
+      mat4.identity(GameInfo.mvMatrix);
+      mat4.translate(GameInfo.mvMatrix, GameInfo.mvMatrix, [0.0, 0.0, -50]);
+      this.ammo.render();
     }
   }
 
