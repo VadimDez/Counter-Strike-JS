@@ -48,8 +48,8 @@ import '../stylesmenu.scss';
     const MENU = 'joinGameMenu';
     Menu.openMenu(MENU);
 
-    let $joinGame = document.querySelector('.join-game-button');
-    let $cancel = document.querySelector('.cancel-join-button');
+    const $joinGame = document.querySelector('.join-game-button');
+    const $cancel = document.querySelector('.cancel-join-button');
 
     $joinGame.addEventListener('click', () => {
       Menu.joinGame();

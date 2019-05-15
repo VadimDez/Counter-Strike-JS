@@ -103,15 +103,15 @@ export class SpriteParser {
   }
 
   static parseSingleFrame(palette, offset, data) {
-    let group = DataReader.readInteger(data, offset);
-    let originX = DataReader.readInteger(data, offset + 4);
-    let originY = DataReader.readInteger(data, offset + 8);
-    let width = DataReader.readInteger(data, offset + 12);
-    let height = DataReader.readInteger(data, offset + 16);
-    let end = width * height + offset + 20;
+    const group = DataReader.readInteger(data, offset);
+    const originX = DataReader.readInteger(data, offset + 4);
+    const originY = DataReader.readInteger(data, offset + 8);
+    const width = DataReader.readInteger(data, offset + 12);
+    const height = DataReader.readInteger(data, offset + 16);
+    const end = width * height + offset + 20;
 
     // The transparent colour is the last colour in the palette
-    let transparentColor = palette[palette.length - 1];
+    const transparentColor = palette[palette.length - 1];
     let isTransparent = function(rgb) {
       return (
         rgb[0] === transparentColor[0] &&
