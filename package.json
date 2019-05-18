@@ -1,7 +1,7 @@
 {
-  "name": "csjs",
+  "name": "counter-strike-js",
   "version": "1.0.0",
-  "description": "Counter-Strike 1.6 implementation in JavaScript utilizing state of the art browser APIs.",
+  "description": "Counter-Strike 1.6 implementation in JavaScript/Typescript utilizing state of the art browser APIs.",
   "main": "main.js",
   "directories": {
     "lib": "lib"
