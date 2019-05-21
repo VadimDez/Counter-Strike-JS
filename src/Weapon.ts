@@ -1,3 +1,5 @@
+import { XM1014StateManager } from './WeaponStateManagers/shotguns/XM1014StateManager';
+import { M3StateManager } from './WeaponStateManagers/shotguns/M3StateManager';
 import { GalilStateManager } from './WeaponStateManagers/sub-machine-guns/GalilStateManager';
 import { ShotgunStateManager } from './WeaponStateManagers/shotguns/ShotgunStateManager';
 import { EliteStateManager } from './WeaponStateManagers/pistols/EliteStateManager';
@@ -89,8 +91,9 @@ export class Weapon {
         return new EliteStateManager();
 
       case 'm3':
+        return new M3StateManager();
       case 'xm1014':
-        return new ShotgunStateManager();
+        return new XM1014StateManager();
 
       default:
         return new WeaponStateManager();

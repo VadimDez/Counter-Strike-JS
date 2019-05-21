@@ -6,9 +6,13 @@ export class ShotgunStateManager extends WeaponStateManager {
   ammo = 8;
   maxAmmo = 8;
 
+  getWeaponData(weapon) {
+    return WeaponAnimations[weapon.name][0];
+  }
+
   onShoot(weapon: Weapon) {
     const render = weapon.renderer;
-    const weaponData = WeaponAnimations[weapon.name][0];
+    const weaponData = this.getWeaponData(weapon);
 
     if (
       weaponData.shoot.includes(render.currentSequence()) ||
@@ -26,7 +30,9 @@ export class ShotgunStateManager extends WeaponStateManager {
     this.ammo--;
 
     if (this.ammo <= 0) {
-      render.queueAnimation(weaponData.reload);
+      for (let i = 0; i < weaponData.reload.length; i++) {
+        render.queueAnimation(weaponData.reload[i]);
+      }
       this.ammo = this.maxAmmo;
     }
 
@@ -34,12 +40,19 @@ export class ShotgunStateManager extends WeaponStateManager {
       this.shootIndex = 0;
     }
 
-    render.queueAnimation(0);
+    render.queueAnimation(weaponData.idle);
   }
 
   onReload(weapon: Weapon) {
-    let render = weapon.renderer;
-    let weaponData = WeaponAnimations[weapon.name][0];
+    const render = weapon.renderer;
+    const weaponData = this.getWeaponData(weapon);
+
+    if (
+      this.ammo === this.maxAmmo ||
+      weaponData.reload.includes(render.currentSequence())
+    ) {
+      return;
+    }
 
     if (weaponData.reload.includes(render.currentSequence())) {
       return;
@@ -50,19 +63,19 @@ export class ShotgunStateManager extends WeaponStateManager {
     for (let i = 1; i < weaponData.reload.length; i++) {
       render.queueAnimation(weaponData.reload[i]);
     }
-
+    this.ammo = this.maxAmmo;
     render.queueAnimation(weaponData.idle);
   }
 
   onIdle(weapon: Weapon) {
-    let render = weapon.renderer;
-    let weaponData = WeaponAnimations[weapon.name][0];
+    const render = weapon.renderer;
+    const weaponData = this.getWeaponData(weapon);
     render.queueAnimation(weaponData.idle);
   }
 
   onDraw(weapon: Weapon) {
     const render = weapon.renderer;
-    const weaponData = WeaponAnimations[weapon.name][0];
+    const weaponData = this.getWeaponData(weapon);
     render.forceAnimation(weaponData.draw);
     render.queueAnimation(weaponData.idle);
   }
