@@ -1,3 +1,6 @@
+import { P90StateManager } from './WeaponStateManagers/sub-machine-guns/P90StateManager';
+import { UMP45StateManager } from './WeaponStateManagers/sub-machine-guns/UMP45StateManager';
+import { TMPStateManager } from './WeaponStateManagers/sub-machine-guns/TMPStateManager';
 import { XM1014StateManager } from './WeaponStateManagers/shotguns/XM1014StateManager';
 import { M3StateManager } from './WeaponStateManagers/shotguns/M3StateManager';
 import { GalilStateManager } from './WeaponStateManagers/sub-machine-guns/GalilStateManager';
@@ -54,10 +57,13 @@ export class Weapon {
       case 'knife':
         return new KnifeStateManager();
       case 'tmp':
+        return new TMPStateManager();
+      case 'ump45':
+        return new UMP45StateManager();
+      case 'p90':
+        return new P90StateManager();
       case 'mac10':
       case 'mp5':
-      case 'ump45':
-      case 'p90':
       case 'm249':
       case 'famas':
       case 'ak47':
