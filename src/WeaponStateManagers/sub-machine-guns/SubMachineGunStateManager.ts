@@ -3,14 +3,15 @@ import { WeaponStateManager } from '../WeaponStateManager';
 import { WeaponAnimations } from '../../WeaponAnimations';
 export class SubMachineGunStateManager extends WeaponStateManager {
   ammo = 30;
-  maxAmmo = 30;
+  magazineCapacity = 30;
+  totalAmmoCapacity = 90;
 
   onShoot(weapon: Weapon) {
     let render = weapon.renderer;
     let weaponData = WeaponAnimations[weapon.name][0];
     if (render.currentSequence() === 1) {
       // reloading
-      this.ammo = this.maxAmmo;
+      this.ammo = this.magazineCapacity;
       return;
     }
 
@@ -33,10 +34,14 @@ export class SubMachineGunStateManager extends WeaponStateManager {
   }
 
   onReload(weapon: Weapon) {
+    if (this.magazineCapacity === this.ammo) {
+      return;
+    }
+
     let render = weapon.renderer;
     let weaponData = WeaponAnimations[weapon.name][0];
     render.forceAnimation(weaponData.reload);
-    this.ammo = this.maxAmmo;
+    this.ammo = this.magazineCapacity;
     render.queueAnimation(weaponData.idle);
   }
 

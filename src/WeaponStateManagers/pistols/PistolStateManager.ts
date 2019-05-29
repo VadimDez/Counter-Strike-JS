@@ -5,7 +5,7 @@ import { WeaponAnimations } from '../../WeaponAnimations';
 export class PistolStateManager extends WeaponStateManager {
   state = 0;
   ammo = 10;
-  maxAmmo = 10;
+  magazineCapacity = 10;
 
   onIdle(weapon: Weapon) {
     const render = weapon.renderer;
@@ -41,7 +41,7 @@ export class PistolStateManager extends WeaponStateManager {
 
     if (this.ammo <= 0) {
       render.queueAnimation(weaponData.reload);
-      this.ammo = this.maxAmmo;
+      this.ammo = this.magazineCapacity;
     }
 
     if (++this.shootIndex === weaponData.shoot.length) {
@@ -60,7 +60,7 @@ export class PistolStateManager extends WeaponStateManager {
     }
 
     render.forceAnimation(weaponData.reload);
-    this.ammo = this.maxAmmo;
+    this.ammo = this.magazineCapacity;
     render.queueAnimation(weaponData.idle);
   }
 

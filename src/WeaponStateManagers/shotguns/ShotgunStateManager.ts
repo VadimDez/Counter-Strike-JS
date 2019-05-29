@@ -4,7 +4,7 @@ import { WeaponAnimations } from '../../WeaponAnimations';
 
 export class ShotgunStateManager extends WeaponStateManager {
   ammo = 8;
-  maxAmmo = 8;
+  magazineCapacity = 8;
 
   getWeaponData(weapon) {
     return WeaponAnimations[weapon.name][0];
@@ -33,7 +33,7 @@ export class ShotgunStateManager extends WeaponStateManager {
       for (let i = 0; i < weaponData.reload.length; i++) {
         render.queueAnimation(weaponData.reload[i]);
       }
-      this.ammo = this.maxAmmo;
+      this.ammo = this.magazineCapacity;
     }
 
     if (++this.shootIndex === weaponData.shoot.length) {
@@ -48,7 +48,7 @@ export class ShotgunStateManager extends WeaponStateManager {
     const weaponData = this.getWeaponData(weapon);
 
     if (
-      this.ammo === this.maxAmmo ||
+      this.ammo === this.magazineCapacity ||
       weaponData.reload.includes(render.currentSequence())
     ) {
       return;
@@ -63,7 +63,7 @@ export class ShotgunStateManager extends WeaponStateManager {
     for (let i = 1; i < weaponData.reload.length; i++) {
       render.queueAnimation(weaponData.reload[i]);
     }
-    this.ammo = this.maxAmmo;
+    this.ammo = this.magazineCapacity;
     render.queueAnimation(weaponData.idle);
   }
 

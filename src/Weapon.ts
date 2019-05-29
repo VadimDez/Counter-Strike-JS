@@ -3,8 +3,7 @@ import { UMP45StateManager } from './WeaponStateManagers/sub-machine-guns/UMP45S
 import { TMPStateManager } from './WeaponStateManagers/sub-machine-guns/TMPStateManager';
 import { XM1014StateManager } from './WeaponStateManagers/shotguns/XM1014StateManager';
 import { M3StateManager } from './WeaponStateManagers/shotguns/M3StateManager';
-import { GalilStateManager } from './WeaponStateManagers/sub-machine-guns/GalilStateManager';
-import { ShotgunStateManager } from './WeaponStateManagers/shotguns/ShotgunStateManager';
+import { GalilStateManager } from './WeaponStateManagers/rifles/GalilStateManager';
 import { EliteStateManager } from './WeaponStateManagers/pistols/EliteStateManager';
 import { FiveSevenStateManager } from './WeaponStateManagers/pistols/FiveSevenStateManager';
 import { P228StateManager } from './WeaponStateManagers/pistols/P228StateManager';
@@ -96,6 +95,7 @@ export class Weapon {
       case 'elite':
         return new EliteStateManager();
 
+      // shotguns
       case 'm3':
         return new M3StateManager();
       case 'xm1014':
