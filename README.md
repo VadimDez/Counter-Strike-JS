@@ -18,7 +18,7 @@ Counter-Strike 1.6 implementation in TypeScript utilizing state of the art brows
 
 **_Please note: No actual data (maps, models, textures, etc.) is included in the project, due to copyright reasons!_**
 
-- Copy `cstrike` folder from your `Counter-Strike` into root folder of this project
+- Copy `cstrike` folder from your `Counter-Strike 1.6` folder into root folder of this project
 
 - Install dependencies
 
