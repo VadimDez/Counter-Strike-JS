@@ -1,4 +1,3 @@
-import { BuyMenu } from './BuyMenu';
 /**
  * Created by Vadym Yatsyuk on 25.02.18
  */
@@ -17,6 +16,7 @@ import { Mouse as MouseJS } from './util/Mouse';
 import { config } from './config';
 import { CollisionDetection } from './CollisionDetection';
 import { Weapon } from './Weapon';
+import { BuyMenu } from './BuyMenu';
 
 export class Player {
   x: number;
@@ -336,6 +336,17 @@ export class Player {
         }
       },
       function(event) {}
+    );
+
+    // walk
+    KeyboardJS.on(
+      'shift',
+      event => {
+        this.speed = 2.5;
+      },
+      event => {
+        this.speed = 5;
+      }
     );
 
     // buy menu
