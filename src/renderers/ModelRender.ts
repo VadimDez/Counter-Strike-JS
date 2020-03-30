@@ -6,6 +6,7 @@ import { quat, vec3, mat3, mat4 } from 'gl-matrix';
 
 import { DataReader } from '../util/DataReader';
 import { GameInfo } from '../GameInfo';
+import { Sound } from './../Sound';
 
 /**
  * Construct quaternion from Euler angles
@@ -31,24 +32,25 @@ let quatFromAngles = function(angles) {
 
   return quat.fromValues(x, y, z, w);
 };
+const constants = {
+  valid: 0,
+  total: 1,
+  STUDIO_X: 0x0001,
+  STUDIO_Y: 0x0002,
+  STUDIO_Z: 0x0004,
+  STUDIO_XR: 0x0008,
+  STUDIO_YR: 0x0010,
+  STUDIO_ZR: 0x0020,
+  STUDIO_TYPES: 0x7fff,
+  STUDIO_RLOOP: 0x8000,
+  EVENT_SOUND: 5004,
+  EVENT_FIRE: 5001,
+  EVENT_FIRE_SINGLE: 5021
+};
+
+export const CONSTANTS = constants;
 
 export const ModelRender = function(gl, modelData) {
-  let constants = {
-    valid: 0,
-    total: 1,
-    STUDIO_X: 0x0001,
-    STUDIO_Y: 0x0002,
-    STUDIO_Z: 0x0004,
-    STUDIO_XR: 0x0008,
-    STUDIO_YR: 0x0010,
-    STUDIO_ZR: 0x0020,
-    STUDIO_TYPES: 0x7fff,
-    STUDIO_RLOOP: 0x8000,
-    EVENT_SOUND: 5004,
-    EVENT_FIRE: 5001,
-    EVENT_FIRE_SINGLE: 5021
-  };
-
   let sequenceIndex = 0;
   let frame = 0;
   let customFPS = null;
@@ -74,6 +76,9 @@ export const ModelRender = function(gl, modelData) {
     '		gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);' +
     '		vTexCoord = aTexCoord;' +
     '	}';
+
+  // preload sounds
+  Sound.preloadSounds(modelData);
 
   function getShader(gl, shaderCode, shaderType) {
     let shader = gl.createShader(shaderType);
@@ -176,7 +181,11 @@ export const ModelRender = function(gl, modelData) {
   };
 
   let concatTransforms = function(mat1, mat2) {
-    let out = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
+    let out = [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0]
+    ];
     out[0][0] =
       mat1[0][0] * mat2[0][0] +
       mat1[0][1] * mat2[1][0] +
@@ -451,7 +460,7 @@ export const ModelRender = function(gl, modelData) {
   };
 
   let performEvent = function(event) {
-    const path = getFireSoundPath(event, modelData);
+    const path = Sound.getSoundPath(event, modelData);
 
     if (path) {
       createjs.Sound.registerSound(path, path);
@@ -462,52 +471,12 @@ export const ModelRender = function(gl, modelData) {
     }
   };
 
-  const getFireSoundPath = (event, modelData) => {
-    switch (event.event) {
-      case constants.EVENT_SOUND:
-        return 'cstrike/sound/' + event.options;
-      case constants.EVENT_FIRE:
-        const weapon = modelData.header.name;
-        return (
-          'cstrike/sound/weapons/' +
-          weapon.substr(2, weapon.length - 6) +
-          '-1.wav'
-        );
-      default:
-        return null;
-    }
-  };
-
   let resetEvents = function() {
     let events = modelData.sequences[sequenceIndex].events;
     for (let i = 0; i < events.length; ++i) {
       events[i].started = false;
     }
   };
-
-  let preloadEvents = function() {
-    const events = modelData.sequences[sequenceIndex].events;
-
-    for (let i = 0; i < events.length; ++i) {
-      const path = getSoundPath(events[i]);
-
-      if (path) {
-        createjs.Sound.registerSound(path);
-      }
-    }
-  };
-
-  function getSoundPath(event) {
-    switch (event.type) {
-      case constants.EVENT_SOUND:
-        return 'cstrike/sound/' + event.filename;
-      case constants.EVENT_FIRE_SINGLE:
-      case constants.EVENT_FIRE:
-        return 'cstrike/sound/weapons/' + event.sound;
-      default:
-        return null;
-    }
-  }
 
   let advanceFrame = function(dt, sequence, frame) {
     if (dt > 0.1) {
@@ -546,7 +515,7 @@ export const ModelRender = function(gl, modelData) {
         const anim = animationQueue.shift();
         sequenceIndex = anim.index;
         customFPS = anim.fps;
-        preloadEvents();
+        // Sound.preloadSounds();
       }
     }
     return newFrame;
@@ -674,8 +643,8 @@ export const ModelRender = function(gl, modelData) {
       drawPoints(model, transformations);
     }
 
-    let now = new Date().getTime();
-    let delta = (now - previous) / 1000.0;
+    const now = new Date().getTime();
+    const delta = (now - previous) / 1000.0;
     frame = advanceFrame(delta, sequence, frame);
     previous = now;
 
@@ -695,7 +664,7 @@ export const ModelRender = function(gl, modelData) {
     resetEvents();
     sequenceIndex = id;
     customFPS = fps;
-    preloadEvents();
+    // Sound.preloadSounds();
 
     frame = 0;
   };
