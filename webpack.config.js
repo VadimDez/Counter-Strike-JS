@@ -15,6 +15,9 @@ var config = {
     filename: 'bundle.js',
     path: __dirname
   },
+  devServer: {
+    open: true
+  },
   module: {
     rules: [
       // commented for now due to issue with webpack 4
@@ -29,9 +32,9 @@ var config = {
       {
         test: /\.scss$/,
         use: [
-          "style-loader", // creates style nodes from JS strings
-          "css-loader", // translates CSS into CommonJS
-          "sass-loader" // compiles Sass to CSS, using Node Sass by default
+          'style-loader', // creates style nodes from JS strings
+          'css-loader', // translates CSS into CommonJS
+          'sass-loader' // compiles Sass to CSS, using Node Sass by default
         ]
       },
       {
@@ -47,9 +50,8 @@ var config = {
     //   })
   ],
   resolve: {
-    extensions: [".tsx", ".ts", ".js"]
+    extensions: ['.tsx', '.ts', '.js']
   }
 };
-
 
 module.exports = config;
