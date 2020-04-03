@@ -17,6 +17,7 @@ import { config } from './config';
 import { CollisionDetection } from './CollisionDetection';
 import { Weapon } from './Weapon';
 import { BuyMenu } from './BuyMenu';
+import { WeaponTypes } from './WeaponTypes';
 
 export class Player {
   x: number;
@@ -34,6 +35,8 @@ export class Player {
     pistol: 'deagle'
   };
   buyMenu: BuyMenu;
+  actualWeaponType: WeaponTypes = WeaponTypes.PRIMARY;
+  previousWeaponType: WeaponTypes = WeaponTypes.PISTOL;
 
   constructor(public gl, x, y, z) {
     this.x = x;
@@ -126,6 +129,11 @@ export class Player {
     this.weapon = new Weapon(weaponName);
   }
 
+  updateWeaponTypes(newType: WeaponTypes) {
+    this.previousWeaponType = this.actualWeaponType;
+    this.actualWeaponType = newType;
+  }
+
   setupKey() {
     MouseJS.on(
       'left',
@@ -155,6 +163,7 @@ export class Player {
           this.buyMenu.selectMenu(this.selectedBuyMenu);
         } else {
           this.switchWeapon(this.weapons.primary);
+          this.updateWeaponTypes(WeaponTypes.PRIMARY);
         }
       },
       () => {
@@ -172,6 +181,7 @@ export class Player {
           this.buyMenu.selectMenu(this.selectedBuyMenu);
         } else {
           this.switchWeapon(this.weapons.pistol);
+          this.updateWeaponTypes(WeaponTypes.PISTOL);
         }
       },
       () => {
@@ -189,6 +199,7 @@ export class Player {
           this.buyMenu.selectMenu(this.selectedBuyMenu);
         } else {
           this.switchWeapon('knife');
+          this.updateWeaponTypes(WeaponTypes.KNIFE);
         }
       },
       () => {
@@ -206,6 +217,7 @@ export class Player {
           this.buyMenu.selectMenu(this.selectedBuyMenu);
         } else {
           this.switchWeapon('hegrenade');
+          this.updateWeaponTypes(WeaponTypes.HEGRANADE);
         }
       },
       () => {
@@ -223,6 +235,7 @@ export class Player {
           this.buyMenu.selectMenu(this.selectedBuyMenu);
         } else {
           this.switchWeapon('c4');
+          this.updateWeaponTypes(WeaponTypes.C4);
         }
       },
       () => {
@@ -267,6 +280,19 @@ export class Player {
         BuyMenu.hideMenu();
       }
     });
+
+    KeyboardJS.on(
+      'q',
+      (event, keys, combo) => {
+        this.switchWeapon(
+          this.weapons[this.previousWeaponType] || this.previousWeaponType
+        );
+        this.updateWeaponTypes(this.previousWeaponType);
+      },
+      (event, keys, combo) => {
+        this.weapon.draw();
+      }
+    );
 
     KeyboardJS.on(
       'r',
