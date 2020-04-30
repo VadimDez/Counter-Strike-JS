@@ -463,7 +463,7 @@ export const ModelRender = function(gl, modelData) {
     const path = Sound.getSoundPath(event, modelData);
 
     if (path) {
-      createjs.Sound.registerSound(path, path);
+      // createjs.Sound.registerSound(path, path);
       createjs.Sound.play(path, {
         interrupt: createjs.Sound.INTERRUPT_ANY,
         volume: 0.1

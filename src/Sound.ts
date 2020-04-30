@@ -20,6 +20,7 @@ export class Sound {
     modelData.sequences.forEach(sequence => {
       sequence.events.forEach(event => {
         const path = Sound.getSoundPath(event, modelData);
+        console.log(path);
         if (path) {
           createjs.Sound.registerSound(path, path);
         }

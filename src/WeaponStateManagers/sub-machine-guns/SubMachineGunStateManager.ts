@@ -53,7 +53,9 @@ export class SubMachineGunStateManager extends WeaponStateManager {
   onDraw(weapon: Weapon) {
     const render = weapon.renderer;
     const weaponData = WeaponAnimations[weapon.name][0];
-    render.forceAnimation(weaponData.draw);
-    render.queueAnimation(weaponData.idle);
+    if (render) {
+      render.forceAnimation(weaponData.draw);
+      render.queueAnimation(weaponData.idle);
+    }
   }
 }

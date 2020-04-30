@@ -7,13 +7,13 @@ import { vec3 } from 'gl-matrix';
 import { MapParser } from './parsers/MapParser';
 import { GameInfo } from './GameInfo';
 
-let samePosition = function(vStart, vEnd) {
+let samePosition = function (vStart, vEnd) {
   return (
     vStart[0] === vEnd[0] && vStart[1] === vEnd[1] && vStart[2] === vEnd[2]
   );
 };
 
-let trace = function(vStart, vEnd, shouldSlide) {
+let trace = function (vStart, vEnd, shouldSlide) {
   let mapData = GameInfo.map.mapData;
   // No need to do anything if no movement is required
   if (samePosition(vStart, vEnd)) {
@@ -23,7 +23,7 @@ let trace = function(vStart, vEnd, shouldSlide) {
   let traceObj = {
     plane: <any>{},
     allSolid: true,
-    ratio: 1.0 // How far we got before colliding with anything
+    ratio: 1.0, // How far we got before colliding with anything
   };
 
   // models[0] is the geometry of the entire map
@@ -64,14 +64,14 @@ let trace = function(vStart, vEnd, shouldSlide) {
   let vEndPosition = [
     vEnd[0] - traceObj.plane.vNormal[0] * distance,
     vEnd[1] - traceObj.plane.vNormal[1] * distance,
-    vEnd[2] - traceObj.plane.vNormal[2] * distance
+    vEnd[2] - traceObj.plane.vNormal[2] * distance,
   ];
 
   // Make sure we don't collide with anything else from the new positions
   return trace(vNewPosition, vEndPosition, true);
 };
 
-let recursiveHullCheck = function(iNode, p1f, p2f, p1, p2, traceObj) {
+let recursiveHullCheck = function (iNode, p1f, p2f, p1, p2, traceObj) {
   let mapData = GameInfo.map.mapData;
 
   if (iNode < 0) {
@@ -85,11 +85,11 @@ let recursiveHullCheck = function(iNode, p1f, p2f, p1, p2, traceObj) {
   let node = mapData.clipNodes[iNode];
   let plane = mapData.planes.planes[node.iPlane];
   // Get normal of plane
-  let vNormal = [
+  let vNormal = vec3.fromValues(
     mapData.planes.normals[3 * node.iPlane],
     mapData.planes.normals[3 * node.iPlane + 1],
     mapData.planes.normals[3 * node.iPlane + 2]
-  ];
+  );
 
   let t1, t2;
 
@@ -192,17 +192,17 @@ let recursiveHullCheck = function(iNode, p1f, p2f, p1, p2, traceObj) {
 };
 
 // Check whether the point p is a solid or not
-let hullPointContentIsSolid = function(iNode, p) {
+let hullPointContentIsSolid = function (iNode, p) {
   let mapData = GameInfo.map.mapData;
 
   while (iNode >= 0) {
     let node = mapData.clipNodes[iNode];
     let plane = mapData.planes.planes[node.iPlane];
-    let vNormal = [
+    let vNormal = vec3.fromValues(
       mapData.planes.normals[3 * node.iPlane],
       mapData.planes.normals[3 * node.iPlane + 1],
       mapData.planes.normals[3 * node.iPlane + 2]
-    ];
+    );
 
     let d = vec3.dot(vNormal, p) - plane.distance;
 
@@ -221,11 +221,11 @@ export const CollisionDetection = {
     return trace(vStart, vEnd, true);
   },
 
-  isOnGround: function(pos) {
+  isOnGround: function (pos) {
     let x = pos[0];
     let y = pos[1];
     let z = pos[2];
     let t = trace(pos, [x, y, z - 1], false);
     return Math.abs(t[2] - z) < 0.000001;
-  }
+  },
 };

@@ -136,6 +136,7 @@ export class Weapon {
       };
     }
 
+    console.log('=============== sprite:');
     console.log(this.sprite);
 
     await this.renderHud();
@@ -211,7 +212,8 @@ export class Weapon {
 
     if (this.weapon) {
       mat4.identity(GameInfo.mvMatrix);
-      mat4.translate(GameInfo.mvMatrix, GameInfo.mvMatrix, [-50.0, 15.0, -50]);
+      // mat4.translate(GameInfo.mvMatrix, GameInfo.mvMatrix, [-50.0, 15.0, -50]);
+      mat4.translate(GameInfo.mvMatrix, GameInfo.mvMatrix, [10.0, -1.0, -10]);
       this.weapon.render();
     }
 
