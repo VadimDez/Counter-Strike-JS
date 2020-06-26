@@ -27,7 +27,7 @@
   "dependencies": {
     "@types/gl-matrix": "^2.4.5",
     "gl-matrix": "^3.3.0",
-    "keyboardjs": "^2.5.1",
+    "keyboardjs": "^2.6.2",
     "peerjs": "^1.2.0",
     "soundjs": "^1.0.1",
     "snyk": "^1.333.0"
