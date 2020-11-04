@@ -62,5 +62,5 @@ import '../stylesmenu.scss';
 
   init();
 
-  Menu.startGame();
+  // Menu.startGame();
 })();

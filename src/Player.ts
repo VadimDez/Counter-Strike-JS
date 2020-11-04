@@ -18,6 +18,7 @@ import { CollisionDetection } from './CollisionDetection';
 import { Weapon } from './Weapon';
 import { BuyMenu } from './BuyMenu';
 import { WeaponTypes } from './WeaponTypes';
+import { Console } from './Console';
 
 export class Player {
   x: number;
@@ -37,6 +38,8 @@ export class Player {
   buyMenu: BuyMenu;
   actualWeaponType: WeaponTypes = WeaponTypes.PRIMARY;
   previousWeaponType: WeaponTypes = WeaponTypes.PISTOL;
+  isConsoleShown: boolean = false;
+  console: Console;
 
   constructor(public gl, x, y, z) {
     this.x = x;
@@ -48,6 +51,7 @@ export class Player {
     this.setupKey();
 
     this.buyMenu = new BuyMenu(this.onSelectMenuItem.bind(this));
+    this.console = new Console();
   }
 
   private onSelectMenuItem(item: { code: string; type: string }) {
@@ -384,5 +388,16 @@ export class Player {
 
     // night vision
     KeyboardJS.on('n', (event: KeyboardEvent) => {});
+
+    // night vision
+    KeyboardJS.on('`', (event: KeyboardEvent) => {
+      this.isConsoleShown = !this.isConsoleShown;
+
+      if (this.isConsoleShown) {
+        this.console.showConsole();
+      } else {
+        this.console.hideConsole();
+      }
+    });
   }
 }

@@ -1,71 +1,122 @@
-@import "./colors";
-@import "./mixins";
+@import './colors';
+@import './mixins';
 
 * {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 html,
 body {
-    width: 100%;
-    height: 100%;
-    font-family: Tahoma, Verdana, Segoe, sans-serif;
+  width: 100%;
+  height: 100%;
+  font-family: Tahoma, Verdana, Segoe, sans-serif;
 }
 
 canvas {
-    display: block;
-    // display: none;
-    margin: 0;
-    padding: 0;
+  // display: block;
+  display: none;
+  margin: 0;
+  padding: 0;
+}
+
+input[type='text'] {
+  @include border-reversed();
+  background-color: $secondary-green;
 }
 
 .main-menu {
-    display: none;
-    // display: block;
+  // display: none;
+  display: block;
 }
 
 #buy-menu {
-    position: absolute;
-    top: 0;
-    left: 6px;
-    bottom: 0;
+  position: absolute;
+  top: 0;
+  left: 6px;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  color: #fff;
+  display: none;
+
+  #buy-menu-container > div {
     display: flex;
-    align-items: center;
-    color: #fff;
-    display: none;
+  }
 
-    #buy-menu-container>div {
-        display: flex;
-    }
-
-    .price {
-        flex: 1;
-        padding-left: 24px;
-        text-align: right;
-    }
+  .price {
+    flex: 1;
+    padding-left: 24px;
+    text-align: right;
+  }
 }
 
 .styled-select {
-    // background: url(http://i62.tinypic.com/15xvbd5.png) no-repeat 96% 0;
-    height: 29px;
-    overflow: hidden;
-    background-color: $secondary-green;
-    border: 1px solid $secondary-green;
-    color: $grey;
-    width: 268px;
-    ;
-
-    @include border-reversed();
+  // background: url(http://i62.tinypic.com/15xvbd5.png) no-repeat 96% 0;
+  height: 29px;
+  overflow: hidden;
+  background-color: $secondary-green;
+  border: 1px solid $secondary-green;
+  color: $grey;
+  width: 268px;
+  @include border-reversed();
 }
 
 .styled-select select {
-    background: transparent;
-    border: none;
-    font-size: 14px;
-    height: 29px;
-    padding: 5px;
-    color: $grey;
-    /* If you add too much padding here, the options won't show in IE */
-    width: 268px;
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  height: 29px;
+  padding: 5px;
+  color: $grey;
+  /* If you add too much padding here, the options won't show in IE */
+  width: 268px;
+}
+
+#console-container {
+  display: none;
+  position: static;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+#console {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  bottom: 20px;
+  left: 20px;
+  background-color: $secondary-green;
+  @include border-reversed();
+}
+
+#console-container .output-container {
+  flex: 1;
+  margin: 6px;
+  @include border-reversed();
+}
+#console-container .input-container {
+  height: 40px;
+  display: flex;
+  padding: 6px;
+}
+#console-container .input-container button {
+  color: $grey;
+  background-color: $main-green;
+  padding: 8px;
+  font-size: 16px;
+  height: 40px;
+  @include border();
+}
+#console-container .input-container input {
+  width: 100%;
+  height: 40px;
+  margin-right: 6px;
+  outline: none;
+  color: $grey;
 }
