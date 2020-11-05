@@ -25,6 +25,14 @@ input[type='text'] {
   background-color: $secondary-green;
 }
 
+button {
+  outline: none;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
 .main-menu {
   // display: none;
   display: block;
