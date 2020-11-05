@@ -37,3 +37,7 @@ npm start
 
 ![Menu](https://user-images.githubusercontent.com/3748453/78078377-5a9b8e80-73aa-11ea-8a1c-b23307d4c235.png)
 ![Screenshot](https://user-images.githubusercontent.com/3748453/50407004-1dbc1180-07cf-11e9-8976-7472bc17183d.jpg)
+
+
+## 
+[Vadym Yatsyuk](https://github.com/vadimdez)
