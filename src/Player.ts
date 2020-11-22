@@ -389,7 +389,7 @@ export class Player {
     // night vision
     KeyboardJS.on('n', (event: KeyboardEvent) => {});
 
-    // night vision
+    // console
     KeyboardJS.on('`', (event: KeyboardEvent) => {
       this.isConsoleShown = !this.isConsoleShown;
 

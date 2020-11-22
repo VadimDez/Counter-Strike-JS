@@ -197,10 +197,9 @@ export class Main {
       a => `${skyname}${a}`
     );
 
-    for (let a of sides) {
-      // `gfx/env/${a}.tga`
+    for (let side of sides) {
       const data: any = await download(
-        `cstrike/gfx/env/${a}.tga`,
+        `cstrike/gfx/env/${side}.tga`,
         'arraybuffer',
         true
       );
