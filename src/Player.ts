@@ -41,7 +41,7 @@ export class Player {
   isConsoleShown: boolean = false;
   console: Console;
 
-  constructor(public gl, x, y, z) {
+  constructor(public gl, x: number, y: number, z: number) {
     this.x = x;
     this.y = y;
     this.z = z;
@@ -55,7 +55,6 @@ export class Player {
   }
 
   private onSelectMenuItem(item: { code: string; type: string }) {
-    console.log(item);
     this.isBuyMenuShown = false;
 
     if (item.type === 'primary') {
@@ -303,7 +302,7 @@ export class Player {
       (event, keys, combo) => {
         this.weapon.reload();
       },
-      (event, keys, combo) => {}
+      (event, keys, combo) => { }
     );
 
     KeyboardJS.on(
@@ -365,7 +364,18 @@ export class Player {
           this.dir[2] = 1;
         }
       },
-      function(event) {}
+      function (event) { }
+    );
+
+    KeyboardJS.on(
+      'ctrl',
+      event => {
+        let d = this.dir[2];
+        if (d < 0.0001 && d > -0.0001) {
+          this.dir[2] = 0.5;
+        }
+      },
+      function (event) { }
     );
 
     // walk
@@ -387,7 +397,7 @@ export class Player {
     });
 
     // night vision
-    KeyboardJS.on('n', (event: KeyboardEvent) => {});
+    KeyboardJS.on('n', (event: KeyboardEvent) => { });
 
     // console
     KeyboardJS.on('`', (event: KeyboardEvent) => {
@@ -399,5 +409,17 @@ export class Player {
         this.console.hideConsole();
       }
     });
+
+    // back to menu
+    KeyboardJS.on(
+      'esc',
+      event => {
+        console.log('esc');
+
+      },
+      event => {
+        console.log('esc');
+      }
+    );
   }
 }

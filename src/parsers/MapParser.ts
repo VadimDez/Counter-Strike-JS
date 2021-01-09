@@ -31,7 +31,7 @@ const constants = {
   CONTENTS_SOLID: -2
 };
 
-let uintToString = function(uintArray: any) {
+let uintToString = function (uintArray: any) {
   let encodedString = String.fromCharCode.apply(null, uintArray);
   return decodeURIComponent(escape(encodedString));
 };
@@ -96,7 +96,7 @@ export class MapParser {
   }
 
   static parseHeader(data) {
-    let magic = DataReader.readInteger(data, 0);
+    const magic = DataReader.readInteger(data, 0);
     if (magic !== constants.BSP_VERSION) {
       console.log('Invalid magic number. Expected: 30, but was: ' + magic);
       return;
@@ -118,10 +118,10 @@ export class MapParser {
     let entitiesArray = sEntities.split('}\n{');
 
     // Helper formatters
-    let identity = function(x: any) {
+    let identity = function (x: any) {
       return x;
     };
-    let parseList = function(formatter: any) {
+    let parseList = function (formatter: any) {
       return str =>
         str.split(' ').map(v => {
           return formatter(v);
@@ -139,7 +139,7 @@ export class MapParser {
       skyname: identity,
       sounds: parseInt,
       wad: wadStr => wadStr.split(';'),
-      model: function(x) {
+      model: function (x) {
         // Most entities have a value of the form *N where N is an integer
         // But some entities have a string value instead,
         // (i.e path to models in case of hostages)
@@ -447,7 +447,7 @@ export class MapParser {
     // A visivility leaf is a non solid leaf that has a valid offset
     // into the visibility lump
     let count =
-      leaves.filter(function(leaf) {
+      leaves.filter(function (leaf) {
         // Not a solid and has visibility
         return (
           leaf.nContents !== constants.CONTENTS_SOLID && leaf.nVisOffset >= 0
