@@ -6,6 +6,8 @@ Counter-Strike 1.6 implementation in TypeScript utilizing state of the art brows
 
 ### Demo
 
+> No hosted demo, run locally
+
 ### Current state
 
 - Parses and renders .bsp files (version 30) containing map data
