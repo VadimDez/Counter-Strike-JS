@@ -7,16 +7,21 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 var config = {
   entry: [
-    'webpack-dev-server/client?http://0.0.0.0:9000',
-    'webpack/hot/only-dev-server',
-    './src/app.ts'
+    // 'webpack-dev-server/client?http://0.0.0.0:9000',
+    // 'webpack/hot/only-dev-server',
+    './src/app.ts',
   ],
   output: {
     filename: 'bundle.js',
-    path: __dirname
+    path: __dirname,
   },
   devServer: {
-    open: true
+    static: {
+      directory: __dirname,
+    },
+    host: process.env.HOST || 'localhost',
+    port: process.env.PORT || 9000,
+    open: true, // open page in browser
   },
   module: {
     rules: [
@@ -34,15 +39,15 @@ var config = {
         use: [
           'style-loader', // creates style nodes from JS strings
           'css-loader', // translates CSS into CommonJS
-          'sass-loader' // compiles Sass to CSS, using Node Sass by default
-        ]
+          'sass-loader', // compiles Sass to CSS, using Node Sass by default
+        ],
       },
       {
         test: /\.tsx?$/,
         loader: 'ts-loader',
-        exclude: /node_modules/
-      }
-    ]
+        exclude: /node_modules/,
+      },
+    ],
   },
   plugins: [
     //   new HtmlWebpackPlugin({
@@ -50,8 +55,8 @@ var config = {
     //   })
   ],
   resolve: {
-    extensions: ['.tsx', '.ts', '.js']
-  }
+    extensions: ['.tsx', '.ts', '.js'],
+  },
 };
 
 module.exports = config;
