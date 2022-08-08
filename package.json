@@ -28,7 +28,7 @@
     "@types/gl-matrix": "^2.4.5",
     "gl-matrix": "^3.4.3",
     "keyboardjs": "^2.6.4",
-    "peerjs": "^1.4.0",
+    "peerjs": "^1.4.6",
     "soundjs": "^1.0.1",
     "snyk": "^1.973.0"
   },
