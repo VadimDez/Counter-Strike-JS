@@ -30,7 +30,7 @@
     "keyboardjs": "^2.7.0",
     "peerjs": "^1.4.7",
     "soundjs": "^1.0.1",
-    "snyk": "^1.1069.0"
+    "snyk": "^1.1071.0"
   },
   "devDependencies": {
     "css-loader": "^6.5.1",
