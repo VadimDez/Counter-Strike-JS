@@ -26,7 +26,7 @@
   "homepage": "https://github.com/VadimDez/CS#readme",
   "dependencies": {
     "@types/gl-matrix": "^2.4.5",
-    "gl-matrix": "^3.4.3",
+    "gl-matrix": "^3.4.4",
     "keyboardjs": "^2.7.0",
     "peerjs": "^1.4.7",
     "soundjs": "^1.0.1",
